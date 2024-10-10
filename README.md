@@ -1,7 +1,7 @@
 # ByeByeDPI Android
 
 <div style="text-align: center;">
-  <img alt="Логотип ByeDPI" src="https://github.com/romanvht/ByeDPIAndroid/.github/images/logo.svg" width="100%" height="200px">
+  <img alt="Логотип ByeDPI" src="https://github.com/romanvht/ByeDPIAndroid/blob/master/.github/images/logo.svg" width="100%" height="200px">
 </div>
 
 ---
@@ -15,8 +15,8 @@
 * Улучшена совместимость с Android TV/BOX, исправлены некоторые ошибки оригинала
 
 <div style="display: flex; align-items: center;">
-    <img alt="Скриншот-1" src="https://github.com/romanvht/ByeDPIAndroid/.github/images/settings_screen_2.png">
-    <img alt="Скриншот-2" src="https://github.com/romanvht/ByeDPIAndroid/.github/images/apps_screen_2.png">
+    <img alt="Скриншот-1" src="https://github.com/romanvht/ByeDPIAndroid/blob/master/.github/images/settings_screen_2.png">
+    <img alt="Скриншот-2" src="https://github.com/romanvht/ByeDPIAndroid/blob/master/.github/images/apps_screen_2.png">
 </div>
 
 ### Использование
