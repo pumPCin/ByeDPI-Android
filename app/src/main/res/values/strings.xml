@@ -22,7 +22,7 @@
     <string name="dbs_ip_setting">DNS</string>
     <string name="bye_dpi_proxy_ip_setting">Адрес прослушивания</string>
     <string name="byedpi_proxy_port_setting">Порт</string>
-    <string name="byedpi_max_connections_setting">Максимальное количество подключений</string>
+    <string name="byedpi_max_connections_setting">Максимальное к-во подключений</string>
     <string name="byedpi_buffer_size_setting">Размер буфера</string>
     <string name="byedpi_default_ttl_setting">TTL по умолчанию</string>
     <string name="byedpi_no_domain_setting">Без домена</string>

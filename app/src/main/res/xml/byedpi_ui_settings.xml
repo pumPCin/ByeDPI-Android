@@ -106,10 +106,10 @@
             android:title="@string/byedpi_split_at_host_setting"
             android:defaultValue="false" />
 
-        <CheckBoxPreference
+        <!-- <CheckBoxPreference
             android:key="byedpi_drop_sack"
             android:title="@string/byedpi_drop_sack_setting"
-            android:defaultValue="false" />
+            android:defaultValue="false" /> -->
 
         <com.takisoft.preferencex.EditTextPreference
             android:key="byedpi_fake_ttl"
@@ -140,8 +140,7 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
-        android:title="@string/byedpi_protocols_category"
-        android:summary="@string/byedpi_protocols_hint">
+        android:title="@string/byedpi_protocols_category">
 
         <CheckBoxPreference
             android:key="byedpi_desync_http"
