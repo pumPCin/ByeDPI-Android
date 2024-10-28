@@ -147,9 +147,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val lang = getPreferences().getString("language", "system")
-        MainSettingsFragment.setLang(lang ?: "system")
-
         val theme = getPreferences().getString("app_theme", null)
         MainSettingsFragment.setTheme(theme ?: "system")
 

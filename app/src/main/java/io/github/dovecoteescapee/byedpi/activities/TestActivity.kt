@@ -58,7 +58,7 @@ class TestActivity : AppCompatActivity() {
     private var originalCmdArgs: String = ""
     private var testJob: Job? = null
     private var proxyIp: String = "127.0.0.1"
-    private var proxyPort: Int = 10080
+    private var proxyPort: Int = 1080
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

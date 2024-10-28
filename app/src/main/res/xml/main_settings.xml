@@ -8,14 +8,6 @@
         android:title="@string/general_category">
 
         <ListPreference
-            android:key="language"
-            android:title="@string/lang_settings"
-            android:entries="@array/languages"
-            android:entryValues="@array/languages_entries"
-            android:summary="%s"
-            android:defaultValue="system" />
-
-        <ListPreference
             android:key="app_theme"
             android:title="@string/theme_settings"
             android:entries="@array/themes"
@@ -34,7 +26,7 @@
         <com.takisoft.preferencex.EditTextPreference
             android:key="dns_ip"
             android:title="@string/dbs_ip_setting"
-            android:defaultValue="8.8.8.8"
+            android:defaultValue="1.1.1.1"
             app:useSimpleSummaryProvider="true" />
 
         <SwitchPreference
@@ -95,7 +87,7 @@
         <SwitchPreference
             android:key="byedpi_enable_cmd_settings"
             android:title="@string/use_command_line_settings"
-            android:defaultValue="false" />
+            android:defaultValue="true" />
 
         <Preference
             android:key="byedpi_ui_settings"
