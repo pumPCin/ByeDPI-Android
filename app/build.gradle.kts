@@ -8,19 +8,16 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "io.github.romanvht.byedpi"
+        applicationId = "io.github.dovecoteescapee.byedpi"
         minSdk = 21
         targetSdk = 34
-        versionCode = 10
-        versionName = "1.3.7"
+        versionCode = 11
+        versionName = "1.4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
-            abiFilters.add("armeabi-v7a")
             abiFilters.add("arm64-v8a")
-            abiFilters.add("x86")
-            abiFilters.add("x86_64")
         }
     }
 
