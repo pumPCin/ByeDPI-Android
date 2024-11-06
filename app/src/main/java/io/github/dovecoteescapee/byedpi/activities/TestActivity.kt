@@ -69,7 +69,6 @@ class TestActivity : AppCompatActivity() {
         resultsTextView = findViewById(R.id.resultsTextView)
         progressTextView = findViewById(R.id.progressTextView)
 
-        originalCmdArgs = getPreferences().getString("byedpi_cmd_args", "").toString()
         resultsTextView.movementMethod = LinkMovementMethod.getInstance()
 
         lifecycleScope.launch {
@@ -187,6 +186,7 @@ class TestActivity : AppCompatActivity() {
         resultsTextView.text = ""
         progressTextView.text = ""
 
+        originalCmdArgs = getPreferences().getString("byedpi_cmd_args", "").toString()
         sites = loadSites().toMutableList()
         cmds = loadCmds()
         clearLog()
@@ -232,7 +232,7 @@ class TestActivity : AppCompatActivity() {
                 }
 
                 val checkResults = checkSitesAsync(sites, requestsCount, fullLog)
-                val successfulCount = checkResults.count { it.second > 0 }
+                val successfulCount = checkResults.count { it.second == requestsCount }
                 val successPercentage = (successfulCount * 100) / sites.size
 
                 if (successPercentage >= 50) {
@@ -251,7 +251,8 @@ class TestActivity : AppCompatActivity() {
             progressTextView.text = getString(R.string.test_complete)
             appendTextToResults("${getString(R.string.test_good_cmds)}\n\n")
 
-            for ((cmd, success) in successfulCmds) {
+            successfulCmds.forEachIndexed { index, (cmd, success) ->
+                appendTextToResults("${index + 1}. ")
                 appendLinkToResults("$cmd\n")
                 appendTextToResults("$success%\n\n")
             }
