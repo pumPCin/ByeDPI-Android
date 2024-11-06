@@ -12,12 +12,15 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = 11
-        versionName = "1.4.0"
+        versionName = "1.4.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
+            abiFilters.add("armeabi-v7a")
             abiFilters.add("arm64-v8a")
+            abiFilters.add("x86")
+            abiFilters.add("x86_64")
         }
     }
 

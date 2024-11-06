@@ -1,6 +1,7 @@
 package io.github.dovecoteescapee.byedpi.core
 
 import android.content.SharedPreferences
+import android.util.Log
 import io.github.dovecoteescapee.byedpi.utility.getStringNotNull
 import io.github.dovecoteescapee.byedpi.utility.shellSplit
 
@@ -15,20 +16,38 @@ sealed interface ByeDpiProxyPreferences {
 }
 
 class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreferences {
-    constructor(cmd: String) : this(cmdToArgs(cmd))
-
     constructor(preferences: SharedPreferences) : this(
-        preferences.getStringNotNull(
-            "byedpi_cmd_args",
-            ""
+        cmdToArgs(
+            preferences.getStringNotNull("byedpi_cmd_args", ""),
+            preferences
         )
     )
 
     companion object {
-        private fun cmdToArgs(cmd: String): Array<String> {
+        private fun cmdToArgs(cmd: String, preferences: SharedPreferences): Array<String> {
             val firstArgIndex = cmd.indexOf("-")
-            val argsStr = (if (firstArgIndex > 0) cmd.substring(firstArgIndex) else cmd).trim()
-            return arrayOf("ciadpi") + shellSplit(argsStr)
+            val args = (if (firstArgIndex > 0) cmd.substring(firstArgIndex) else cmd).trim()
+
+            Log.i("ProxyPref", "Parse args: $args")
+
+            val hasIp = args.contains("-i ") || args.contains("--ip ")
+            val hasPort = args.contains("-p ") || args.contains("--port ")
+
+            val ip = preferences.getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
+            val port = preferences.getStringNotNull("byedpi_proxy_port", "1080")
+
+            val prefix = buildString {
+                if (!hasIp) append("-i $ip ")
+                if (!hasPort) append("-p $port ")
+            }
+
+            Log.i("ProxyPref", "Added from settings: $prefix")
+
+            if (prefix.isNotEmpty()) {
+                return arrayOf("ciadpi") + shellSplit("$prefix$args")
+            }
+
+            return arrayOf("ciadpi") + shellSplit(args)
         }
     }
 }

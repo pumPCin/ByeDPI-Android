@@ -1,0 +1,43 @@
+--fake -1 --ttl 10
+-d 2 --auto=t -f 3
+-f 1 -n ya.ru -s 3+h
+--disorder 1 --fake 7
+--split 2 --disorder 7
+-o 2 --auto=t,r,a,s -d 2
+-s1 -O3 -q1+s -s25+s -t8
+-s1 -O3 -q1+s -s29+s -t8
+--disoob 2 --tlsrec 3+sni
+-q1+s -s25+s -o5+s -f-1 -S
+-q1+s -s29+s -o5+s -f-1 -S
+-q1+s -s25+s -o5+s -f-1 -S -As
+-q1+s -s29+s -o5+s -f-1 -S -As
+-s1 -q1 -Y -At -f-1 -r1+s -As
+--disoob 2+sni --fake 517 --ttl 5
+-n vk.com -q 1+s -O 1 -s 25+s -t 5
+-n vk.com -q 1+s -O 1 -s 29+s -t 5
+-s0 -o1 -Ar -o1 -At -f-1 -r1+s -As
+-s1 -o1 -Ar -o1 -At -f-1 -r1+s -As
+-s 2 -r 1+s -r 1+h -o 2 -f -1 -t 4
+-s1 -q1 -a2 -Art -f-1 -r1+s -a3 -Asn
+-s1 -d1 -o1 -Ar -o3 -At -f-1 -r1+s -As
+-s1 -q1 -Y -a2 -Art -f-1 -r1+s -a3 -Asn
+--split 2 --disorder 3 --fake -1 --ttl 5
+-s 2 -M h,d -A torst -T 3 -f -1 -r 3+s -S
+-n www.google.com -d 1+s -O 1 -s 25+s -t 5
+-n www.google.com -q 1+s -O 1 -s 29+s -t 5
+-n www.google.com -q 2+s -O 1 -s 25+s -t 5
+-n www.google.com -q 2+s -O 1 -s 29+s -t 5
+-s1 -q1 -Y -At -T5 -b1000 -S -f-1 -r1+s -As
+--split 2 --disoob 3+sni --fake 517 --ttl 5
+--split 1 --disorder 3+sni --fake -1 --ttl 5
+--split 2 --disorder 3+sni --fake -1 --ttl 5
+-s0 -o1 -d1 -r1+s -Ar -o1 -At -f-1 -r1+s -As
+--disoob 3+sni --split -1+host --tlsrec 1+sni
+--split 2 --fake 0+e --ttl 5 --tls-sni=www.google.com
+-s1 -q1 -Y -Ar -s5 -o1+s -At -f-1 -r1+s -As -s1 -o1+s -s-1 -An
+--split 1 --disorder 3+s --mod-http=h,d --auto=torst --tlsrec 1+s
+-s1 -q1 -Y -Ar -s5 -o25000+s -At -f-1 -r1+s -As -s1 -o1+s -s-1 -An -b+500
+--split 1 --disorder 3+s --mod-http=h,d --auto=torst --tlsrec 1+s --tlsrec 3+sni
+-s1 -o1 -Atr -f16 -l':\x16\x03\x01\x02\x87\x01\x00\x02\x83\x03\x03\x5f\x15\x63\xcb\x06' -As
+-s1 -o1 -Ar -o1 -At -f32 -r1+s -l':\x16\x03\x01\x02\x87\x01\x00\x02\x83\x03\x03\x5f\x15\x63\xcb\x06\xea\x1c\xdd\x40\x76\xf5\x8c\x44\x50\x6e\x01\xf3\xa3\x83\xac\xc2' -As
+--proto=udp --pf=443 --fake-data=':\xC2\x00\x00\x00\x01\x14\x2E\xE3\xE3\x5F\x6B\xBB\x23\xA8\xE6\x5D\xA9\x78\x21\xCF\xC2\x72\x4C\x8F\xC4\x5E\x14\x00\x00\x00\x00\xC5\x00\x00\x00\x00\x4C\x00\xA7\x00\x00\x00\x00\x00\x00\x44\x00\x00\x80\x00\x00\x00\x0D\xFC\xFA\x1D\xCD\x73\xBA\x2A\x90\x93\xB3\xEE\xF7\x43\xC5\x85\xDA\xFF\x45\x3C\x00\x00\x00\x00\x00\x00\x7C\x00\x9B\x00\xF6\x00\x00\xDD\x00\x00\x00\x00\x00\x00\x00\x00\x00\x59\xA8\xE4\x00\x00\x00\x00\x00\x00\x00\x00\x7B\x00\x0F\x00\x00\x00\x48\x4E\x00\x00\x00\x06\xF3\x00\x00\x00\x00\xD9\x5A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' --udp-fake=10 --auto=none -s1 -o1

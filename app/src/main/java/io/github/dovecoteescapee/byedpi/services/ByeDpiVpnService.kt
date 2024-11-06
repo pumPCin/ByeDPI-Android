@@ -179,8 +179,22 @@ class ByeDpiVpnService : LifecycleVpnService() {
         }
 
         val sharedPreferences = getPreferences()
-        val port = sharedPreferences.getString("byedpi_proxy_port", null)?.toInt() ?: 1080
-        val dns = sharedPreferences.getStringNotNull("dns_ip", "1.1.1.1")
+
+        val cmdEnable = sharedPreferences.getBoolean("byedpi_enable_cmd_settings", false)
+        val cmdArgs = if (cmdEnable) sharedPreferences.getStringNotNull("byedpi_cmd_args", "") else null
+        val args = cmdArgs?.split(" ") ?: emptyList()
+        val cmdIp = args.let { argsList ->
+            val ipIndex = argsList.indexOfFirst { it == "-i" || it == "--ip" }
+            if (ipIndex != -1) argsList[ipIndex + 1] else null
+        }
+        val cmdPort = args.let { argsList ->
+            val portIndex = argsList.indexOfFirst { it == "-p" || it == "--port" }
+            if (portIndex != -1) argsList[portIndex + 1] else null
+        }
+
+        val ip = cmdIp ?: sharedPreferences.getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
+        val port = cmdPort ?: sharedPreferences.getStringNotNull("byedpi_proxy_port", "1080")
+        val dns = sharedPreferences.getStringNotNull("dns_ip", "8.8.8.8")
         val ipv6 = sharedPreferences.getBoolean("ipv6_enable", false)
 
         val tun2socksConfig = """
@@ -188,7 +202,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         |   task-stack-size: 81920
         | socks5:
         |   mtu: 8500
-        |   address: 127.0.0.1
+        |   address: $ip
         |   port: $port
         |   udp: udp
         """.trimMargin("| ")
@@ -209,7 +223,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         TProxyService.TProxyStartService(configPath.absolutePath, fd.fd)
 
-        Log.i(TAG, "Tun2Socks started")
+        Log.i(TAG, "Tun2Socks started. ip: $ip port: $port")
     }
 
     private fun stopTun2Socks() {
