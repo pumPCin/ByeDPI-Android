@@ -33,7 +33,7 @@
     <string name="byedpi_proxy">Proxy</string>
     <string name="byedpi_proxy_port_setting">Порт</string>
     <string name="byedpi_readme">Документация</string>
-    <string name="byedpi_readme_link">Что все это значит?</string>
+    <string name="byedpi_readme_link">Что всё это значит?</string>
     <string name="byedpi_split_at_host_setting">Разделить в хосте</string>
     <string name="byedpi_split_position_setting">Позиция разделения</string>
     <string name="byedpi_tcp_fast_open_setting">TCP Fast Open</string>
@@ -49,8 +49,8 @@
     <string name="cmd_history_pinned">Закреплено</string>
     <string name="cmd_history_title">История настроек Command line</string>
     <string name="cmd_history_unpin">Открепить</string>
-    <string name="command_line_arguments">Настройки для Command line</string>
-    <string name="command_line_editor">Редактор настроек для Command line</string>
+    <string name="command_line_arguments">Настройки Command line</string>
+    <string name="command_line_editor">Редактор настроек Command line</string>
     <string name="dbs_ip_setting">DNS</string>
     <string name="desync_http">Десинхронизация HTTP</string>
     <string name="desync_http_category">HTTP</string>
