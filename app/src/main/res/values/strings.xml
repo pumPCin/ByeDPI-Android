@@ -41,6 +41,7 @@
     <string name="byedpi_tlsrec_enabled_setting">Разделить TLS запись</string>
     <string name="byedpi_tlsrec_position_setting">Позиция разделения TLS записи</string>
     <string name="byedpi_udp_fake_count">Количество поддельных UDP</string>
+    <string name="byedpi_version">ByeDPI</string>
     <string name="cmd_history_apply">Применить</string>
     <string name="cmd_history_copy">Копировать</string>
     <string name="cmd_history_delete">Удалить</string>
