@@ -15,7 +15,7 @@ void reset_params(void) {
     params = default_params;
 }
 
-extern const struct option options[38];
+extern const struct option options[41];
 
 int parse_args(int argc, char **argv)
 {
@@ -35,12 +35,16 @@ int parse_args(int argc, char **argv)
     }
 
     params.laddr.sin6_port = htons(1080);
+    if (!ipv6_support()) {
+        params.baddr.sin6_family = AF_INET;
+    }
 
     int rez;
     int invalid = 0;
 
-    long val;
+    long val = 0;
     char *end = 0;
+    bool all_limited = 1;
 
     struct desync_params *dp = add((void *)&params.dp,
                                    &params.dp_count, sizeof(struct desync_params));
@@ -65,6 +69,11 @@ int parse_args(int argc, char **argv)
             case 'U':
                 params.udp = 0;
                 break;
+#ifdef __linux__
+                case 'E':
+            params.transparent = 1;
+            break;
+#endif
 
 //            case 'h':
 //                printf(help_text);
@@ -117,13 +126,24 @@ int parse_args(int argc, char **argv)
                     invalid = 1;
                 break;
 
-            // desync options
+                // desync options
 
             case 'F':
                 params.tfo = 1;
                 break;
 
+            case 'L':
+                val = strtol(optarg, &end, 0);
+                if (val < 0 || val > 1 || *end)
+                    invalid = 1;
+                else
+                    params.auto_level = val;
+                break;
+
             case 'A':
+                if (!(dp->hosts || dp->proto || dp->pf[0] || dp->detect)) {
+                    all_limited = 0;
+                }
                 dp = add((void *)&params.dp, &params.dp_count,
                          sizeof(struct desync_params));
                 if (!dp) {
@@ -152,6 +172,9 @@ int parse_args(int argc, char **argv)
                     end = strchr(end, ',');
                     if (end) end++;
                 }
+                if (dp->detect && params.auto_level == AUTO_NOBUFF) {
+                    params.auto_level = AUTO_NOSAVE;
+                }
                 break;
 
             case 'u':
@@ -165,7 +188,7 @@ int parse_args(int argc, char **argv)
             case 'T':;
 #ifdef __linux__
                 float f = strtof(optarg, &end);
-                val = (long)(f * 1000);
+            val = (long)(f * 1000);
 #else
                 val = strtol(optarg, &end, 0);
 #endif
@@ -370,6 +393,24 @@ int parse_args(int argc, char **argv)
                 }
                 break;
 
+            case 'R':
+                val = strtol(optarg, &end, 0);
+                if (val <= 0 || val > INT_MAX)
+                    invalid = 1;
+                else {
+                    dp->rounds[0] = val;
+                    if (*end == '-') {
+                        val = strtol(end + 1, &end, 0);
+                        if (val <= 0 || val > INT_MAX)
+                            invalid = 1;
+                    }
+                    if (*end)
+                        invalid = 1;
+                    else
+                        dp->rounds[1] = val;
+                }
+                break;
+
             case 'g':
                 val = strtol(optarg, &end, 0);
                 if (val <= 0 || val > 255 || *end)
@@ -395,9 +436,9 @@ int parse_args(int argc, char **argv)
                 params.wait_send = 0;
                 break;
 #ifdef __linux__
-            case 'P':
-                params.protect_path = optarg;
-                break;
+                case 'P':
+            params.protect_path = optarg;
+            break;
 #endif
             case 0:
                 break;
@@ -417,7 +458,7 @@ int parse_args(int argc, char **argv)
         reset_params();
         return -1;
     }
-    if (dp->hosts || dp->proto || dp->pf[0]) {
+    if (all_limited) {
         dp = add((void *)&params.dp,
                  &params.dp_count, sizeof(struct desync_params));
         if (!dp) {

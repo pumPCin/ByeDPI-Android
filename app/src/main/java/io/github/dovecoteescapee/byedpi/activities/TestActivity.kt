@@ -355,7 +355,6 @@ class TestActivity : AppCompatActivity() {
         }.awaitAll()
     }
 
-
     private suspend fun checkSiteAccessibility(site: String, requestsCount: Int): Int = withContext(Dispatchers.IO) {
         var responseCount = 0
         val formattedUrl =
@@ -394,7 +393,6 @@ class TestActivity : AppCompatActivity() {
 
         responseCount
     }
-
 
     private fun loadSites(): List<String> {
         val userDomains = getPreferences().getBoolean("byedpi_proxytest_userdomains", false)

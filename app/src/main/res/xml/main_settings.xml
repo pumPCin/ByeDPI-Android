@@ -130,6 +130,11 @@
             app:useSimpleSummaryProvider="true"
             tools:summary="1.0.0" />
 
+        <Preference
+            android:key="version"
+            android:title="@string/byedpi_version"
+            android:summary="0.15" />
+
     </androidx.preference.PreferenceCategory>
 
 </PreferenceScreen>
