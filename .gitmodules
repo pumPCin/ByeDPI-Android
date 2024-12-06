@@ -5,4 +5,4 @@
 [submodule "byedpi"]
 	path = app/src/main/cpp/byedpi
 	url = https://github.com/pumPCin/byedpi.git
-	branch = experimental
+	branch = master
