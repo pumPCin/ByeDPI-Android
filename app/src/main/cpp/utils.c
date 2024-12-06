@@ -35,9 +35,6 @@ int parse_args(int argc, char **argv)
     }
 
     params.laddr.sin6_port = htons(1080);
-    if (!ipv6_support()) {
-        params.baddr.sin6_family = AF_INET;
-    }
 
     int rez;
     int invalid = 0;
