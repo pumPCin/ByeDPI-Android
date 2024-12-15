@@ -15,38 +15,31 @@ class ByeDpiProxy {
 
     suspend fun startProxy(preferences: ByeDpiProxyPreferences): Int {
         val fd = createSocket(preferences)
-        if (fd < 0) {
-            return -1 // TODO: should be error code
-        }
+        if (fd < 0) return -1
+
         return jniStartProxy(fd)
     }
 
     suspend fun stopProxy(): Int {
         mutex.withLock {
-            if (fd < 0) {
-                throw IllegalStateException("Proxy is not running")
-            }
+            if (fd < 0) throw IllegalStateException("Proxy is not running")
 
             val result = jniStopProxy(fd)
-            if (result == 0) {
-                fd = -1
-            }
+            fd = -1
+
             return result
         }
     }
 
     private suspend fun createSocket(preferences: ByeDpiProxyPreferences): Int =
         mutex.withLock {
-            if (fd >= 0) {
-                throw IllegalStateException("Proxy is already running")
-            }
+            if (fd >= 0) throw IllegalStateException("Proxy is already running")
 
-            val fd = createSocketFromPreferences(preferences)
-            if (fd < 0) {
-                return -1
-            }
-            this.fd = fd
-            fd
+            val result = createSocketFromPreferences(preferences)
+            if (result < 0) return -1
+            fd = result
+
+            return result
         }
 
     private fun createSocketFromPreferences(preferences: ByeDpiProxyPreferences) =

@@ -1,6 +1,5 @@
 <resources>
     <string name="about_category">О приложении</string>
-    <string name="accessibility_service_description">Автозапуск приложения при включении устройства</string>
     <string name="accessibility_service_disabled">Для работы автозапуска активируйте службу специальных возможностей</string>
     <string name="accessibility_service_enabled">Служба активна, автозапуск работает</string>
     <string name="accessibility_service_status">Статус автозапуска</string>
@@ -10,6 +9,7 @@
     <string name="autoconnect_settings">Автоматическое подключение при открытии приложения</string>
     <string name="autohide_settings">Автоматически скрывать приложение после автозапуска</string>
     <string name="automation">Автоматизация</string>
+    <string name="autostart_settings">Автозапуск приложения при включении устройства</string>
     <string name="bye_dpi_proxy_ip_setting">Адрес</string>
     <string name="byedpi_buffer_size_setting">Размер буфера</string>
     <string name="byedpi_category">ByeDPI</string>

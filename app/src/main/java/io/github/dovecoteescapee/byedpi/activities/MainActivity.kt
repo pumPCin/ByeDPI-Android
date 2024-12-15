@@ -235,23 +235,9 @@ class MainActivity : AppCompatActivity() {
         Log.i(TAG, "Updating status: $status, $mode")
 
         val preferences = getPreferences()
+        val (ip, port) = preferences.getProxyIpAndPort()
 
-        val cmdEnable = preferences.getBoolean("byedpi_enable_cmd_settings", false)
-        val cmdArgs = if (cmdEnable) preferences.getStringNotNull("byedpi_cmd_args", "") else null
-        val args = cmdArgs?.split(" ") ?: emptyList()
-        val cmdIp = args.let { argsList ->
-            val ipIndex = argsList.indexOfFirst { it == "-i" || it == "--ip" }
-            if (ipIndex != -1) argsList[ipIndex + 1] else null
-        }
-        val cmdPort = args.let { argsList ->
-            val portIndex = argsList.indexOfFirst { it == "-p" || it == "--port" }
-            if (portIndex != -1) argsList[portIndex + 1] else null
-        }
-
-        val proxyIp = cmdIp ?: preferences.getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
-        val proxyPort = cmdPort ?: preferences.getStringNotNull("byedpi_proxy_port", "1080")
-
-        binding.proxyAddress.text = getString(R.string.proxy_address, proxyIp, proxyPort)
+        binding.proxyAddress.text = getString(R.string.proxy_address, ip, port)
 
         when (status) {
             AppStatus.Halted -> {

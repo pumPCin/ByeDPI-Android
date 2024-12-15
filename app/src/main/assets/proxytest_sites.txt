@@ -1,4 +1,4 @@
-www.youtube.com
+youtube.com
 manifest.googlevideo.com
 i.ytimg.com
 yt3.ggpht.com

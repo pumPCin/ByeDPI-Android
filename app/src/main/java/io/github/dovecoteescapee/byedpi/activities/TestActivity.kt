@@ -31,6 +31,7 @@ import io.github.dovecoteescapee.byedpi.data.ServiceStatus
 import io.github.dovecoteescapee.byedpi.services.ByeDpiProxyService
 import io.github.dovecoteescapee.byedpi.services.ServiceManager
 import io.github.dovecoteescapee.byedpi.utility.GoogleVideoUtils
+import io.github.dovecoteescapee.byedpi.utility.HistoryUtils
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -49,6 +50,7 @@ class TestActivity : AppCompatActivity() {
     private lateinit var sites: List<String>
     private lateinit var cmds: List<String>
 
+    private lateinit var cmdHistoryUtils: HistoryUtils
     private lateinit var scrollTextView: ScrollView
     private lateinit var progressTextView: TextView
     private lateinit var resultsTextView: TextView
@@ -64,6 +66,7 @@ class TestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_proxy_test)
 
+        cmdHistoryUtils = HistoryUtils(this)
         scrollTextView = findViewById(R.id.scrollView)
         startStopButton = findViewById(R.id.startStopButton)
         resultsTextView = findViewById(R.id.resultsTextView)
@@ -299,7 +302,7 @@ class TestActivity : AppCompatActivity() {
                         .setTitle(getString(R.string.cmd_history_menu))
                         .setItems(options) { _, which ->
                             when (which) {
-                                0 -> updateCmdInPreferences(text.trim())
+                                0 -> addToHistory(text.trim())
                                 1 -> copyToClipboard(text.trim())
                             }
                         }
@@ -337,6 +340,11 @@ class TestActivity : AppCompatActivity() {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("command", text)
         clipboard.setPrimaryClip(clip)
+    }
+
+    private fun addToHistory(command: String) {
+        updateCmdInPreferences(command)
+        cmdHistoryUtils.addCommand(command)
     }
 
     private suspend fun checkSitesAsync(sites: List<String>,requestsCount: Int, fullLog: Boolean): List<Pair<String, Int>> {

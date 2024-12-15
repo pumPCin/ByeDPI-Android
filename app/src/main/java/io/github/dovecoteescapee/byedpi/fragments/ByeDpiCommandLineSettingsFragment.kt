@@ -8,63 +8,36 @@ import androidx.preference.*
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.utility.findPreferenceNotNull
 import androidx.appcompat.app.AlertDialog
+import io.github.dovecoteescapee.byedpi.utility.HistoryUtils
 
 class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
 
-    private val historyKey = "byedpi_cmd_history"
-    private val pinnedHistoryKey = "byedpi_cmd_pinned_history"
-    private val maxHistorySize = 20
-
+    private lateinit var cmdHistoryUtils: HistoryUtils
     private lateinit var editTextPreference: EditTextPreference
     private lateinit var historyCategory: PreferenceCategory
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.byedpi_cmd_settings, rootKey)
 
+        cmdHistoryUtils = HistoryUtils(requireContext())
+
         editTextPreference = findPreferenceNotNull("byedpi_cmd_args")
         historyCategory = findPreferenceNotNull("cmd_history_category")
 
         editTextPreference.setOnPreferenceChangeListener { _, newValue ->
             val newCommand = newValue.toString()
-            if (newCommand.isNotBlank()) addToHistory(newCommand)
+            if (newCommand.isNotBlank()) cmdHistoryUtils.addCommand(newCommand)
+            updateHistoryCategory()
             true
         }
 
         updateHistoryCategory()
     }
 
-    private fun addToHistory(command: String) {
-        val sharedPreferences = getSharedPreferences()
-        val history = getHistory(sharedPreferences)
-
-        history.remove(command)
-        history.add(0, command)
-        if (history.size > maxHistorySize) {
-            history.removeAt(maxHistorySize)
-        }
-
-        saveHistory(sharedPreferences, history, historyKey)
-        updateHistoryCategory()
-    }
-
-    private fun getSharedPreferences() =
-        PreferenceManager.getDefaultSharedPreferences(requireContext())
-
-    private fun getHistory(sharedPreferences: android.content.SharedPreferences) =
-        sharedPreferences.getStringSet(historyKey, emptySet())?.toMutableList() ?: mutableListOf()
-
-    private fun getPinnedHistory(sharedPreferences: android.content.SharedPreferences) =
-        sharedPreferences.getStringSet(pinnedHistoryKey, emptySet())?.toMutableList() ?: mutableListOf()
-
-    private fun saveHistory(sharedPreferences: android.content.SharedPreferences, history: List<String>, key: String) {
-        sharedPreferences.edit().putStringSet(key, history.toSet()).apply()
-    }
-
     private fun updateHistoryCategory() {
         historyCategory.removeAll()
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val history = getHistory(sharedPreferences)
-        val pinnedHistory = getPinnedHistory(sharedPreferences)
+        val history = cmdHistoryUtils.getHistory()
+        val pinnedHistory = cmdHistoryUtils.getPinnedHistory()
 
         pinnedHistory.forEach { command ->
             val preference = createPreference(command, isPinned = true)
@@ -115,49 +88,17 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun pinCommand(command: String) {
-        val sharedPreferences = getSharedPreferences()
-        val history = getHistory(sharedPreferences)
-        val pinnedHistory = getPinnedHistory(sharedPreferences)
-
-        if (command in history) {
-            history.remove(command)
-        }
-
-        if (command !in pinnedHistory) {
-            pinnedHistory.add(command)
-            saveHistory(sharedPreferences, pinnedHistory, pinnedHistoryKey)
-        }
-
+        cmdHistoryUtils.pinCommand(command)
         updateHistoryCategory()
     }
 
     private fun unpinCommand(command: String) {
-        val sharedPreferences = getSharedPreferences()
-        val pinnedHistory = getPinnedHistory(sharedPreferences)
-
-        if (command in pinnedHistory) {
-            pinnedHistory.remove(command)
-            saveHistory(sharedPreferences, pinnedHistory, pinnedHistoryKey)
-        }
-
+        cmdHistoryUtils.unpinCommand(command)
         updateHistoryCategory()
     }
 
     private fun deleteCommand(command: String) {
-        val sharedPreferences = getSharedPreferences()
-        val history = getHistory(sharedPreferences)
-        val pinnedHistory = getPinnedHistory(sharedPreferences)
-
-        if (command in history) {
-            history.remove(command)
-            saveHistory(sharedPreferences, history, historyKey)
-        }
-
-        if (command in pinnedHistory) {
-            pinnedHistory.remove(command)
-            saveHistory(sharedPreferences, pinnedHistory, pinnedHistoryKey)
-        }
-
+        cmdHistoryUtils.deleteCommand(command)
         updateHistoryCategory()
     }
 
