@@ -74,13 +74,18 @@ class TestActivity : AppCompatActivity() {
 
         resultsTextView.movementMethod = LinkMovementMethod.getInstance()
 
-        lifecycleScope.launch {
-            val previousLogs = loadLog()
+        if (isTestRunning()) {
+            progressTextView.text = getString(R.string.test_proxy_error)
+            resultsTextView.text = getString(R.string.test_crash)
+        } else {
+            lifecycleScope.launch {
+                val previousLogs = loadLog()
 
-            if (previousLogs.isNotEmpty()) {
-                progressTextView.text = getString(R.string.test_complete)
-                resultsTextView.text = ""
-                displayLog(previousLogs)
+                if (previousLogs.isNotEmpty()) {
+                    progressTextView.text = getString(R.string.test_complete)
+                    resultsTextView.text = ""
+                    displayLog(previousLogs)
+                }
             }
         }
 
@@ -158,9 +163,9 @@ class TestActivity : AppCompatActivity() {
         while (System.currentTimeMillis() - startTime < timeout) {
             if (isProxyRunning()) {
                 Log.i("TestDPI", "Wait done: Proxy connected")
+                delay(100)
                 return true
             }
-            delay(100)
         }
         return false
     }
@@ -170,9 +175,9 @@ class TestActivity : AppCompatActivity() {
         while (System.currentTimeMillis() - startTime < timeout) {
             if (!isProxyRunning()) {
                 Log.i("TestDPI", "Wait done: Proxy disconnected")
+                delay(100)
                 return true
             }
-            delay(100)
         }
         return false
     }
@@ -184,7 +189,8 @@ class TestActivity : AppCompatActivity() {
     }
 
     private fun startTesting() {
-        isTesting = true
+        setTestRunningState(true)
+
         startStopButton.text = getString(R.string.test_stop)
         resultsTextView.text = ""
         progressTextView.text = ""
@@ -196,11 +202,10 @@ class TestActivity : AppCompatActivity() {
 
         val successfulCmds = mutableListOf<Pair<String, Int>>()
         val delay = getPreferences().getString("byedpi_proxytest_delay", "1")?.toIntOrNull() ?: 1
-        val requestsCount = getPreferences().getString("byedpi_proxytest_requestsсount", "1")?.toIntOrNull() ?: 1
         val gdomain = getPreferences().getBoolean("byedpi_proxytest_gdomain", true)
         val fullLog = getPreferences().getBoolean("byedpi_proxytest_fulllog", false)
         val logClickable = getPreferences().getBoolean("byedpi_proxytest_logclickable", false)
-        var cmdIndex = 0
+        val requestsCount = getPreferences().getString("byedpi_proxytest_requestsсount", "1")?.toIntOrNull()?.takeIf { it > 0 } ?: 1
 
         testJob = lifecycleScope.launch {
             if (gdomain) {
@@ -214,8 +219,8 @@ class TestActivity : AppCompatActivity() {
                 }
             }
 
-            for (cmd in cmds) {
-                cmdIndex++
+            cmds.forEachIndexed { index, cmd ->
+                val cmdIndex = index + 1
                 progressTextView.text = getString(R.string.test_process, cmdIndex, cmds.size)
 
                 try {
@@ -225,7 +230,7 @@ class TestActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     appendTextToResults("${getString(R.string.test_proxy_error)}\n\n")
                     stopTesting()
-                    break
+                    return@launch
                 }
 
                 if (logClickable) {
@@ -234,15 +239,16 @@ class TestActivity : AppCompatActivity() {
                     appendTextToResults("$cmd\n")
                 }
 
+                val totalRequests = sites.size * requestsCount
                 val checkResults = checkSitesAsync(sites, requestsCount, fullLog)
-                val successfulCount = checkResults.count { it.second == requestsCount }
-                val successPercentage = (successfulCount * 100) / sites.size
+                val successfulCount = checkResults.sumOf { it.second }
+                val successPercentage = (successfulCount * 100) / totalRequests
 
                 if (successPercentage >= 50) {
                     successfulCmds.add(cmd to successPercentage)
                 }
 
-                appendTextToResults("$successfulCount/${sites.size} ($successPercentage%)\n\n")
+                appendTextToResults("$successfulCount/${totalRequests} ($successPercentage%)\n\n")
 
                 delay(delay * 1000L)
                 stopProxyService()
@@ -265,10 +271,22 @@ class TestActivity : AppCompatActivity() {
         }
     }
 
+    private fun setTestRunningState(isRunning: Boolean) {
+        val sharedPreferences = getPreferences()
+        sharedPreferences.edit().putBoolean("is_test_running", isRunning).apply()
+        isTesting = isRunning
+    }
+
+    private fun isTestRunning(): Boolean {
+        val sharedPreferences = getPreferences()
+        return sharedPreferences.getBoolean("is_test_running", false)
+    }
+
     private fun stopTesting() {
         updateCmdInPreferences(originalCmdArgs)
+        setTestRunningState(false)
+
         testJob?.cancel()
-        isTesting = false
         startStopButton.text = getString(R.string.test_start)
 
         lifecycleScope.launch {
@@ -397,6 +415,8 @@ class TestActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e("CheckSite", "Error accessing for $site")
             }
+
+            delay(100)
         }
 
         responseCount
