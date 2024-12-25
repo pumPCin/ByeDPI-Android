@@ -12,12 +12,12 @@
 #include "utils.h"
 
 const enum demode DESYNC_METHODS[] = {
-    DESYNC_NONE,
-    DESYNC_SPLIT,
-    DESYNC_DISORDER,
-    DESYNC_FAKE,
-    DESYNC_OOB,
-    DESYNC_DISOOB,
+        DESYNC_NONE,
+        DESYNC_SPLIT,
+        DESYNC_DISORDER,
+        DESYNC_FAKE,
+        DESYNC_OOB,
+        DESYNC_DISOOB,
 };
 
 enum hosts_mode {
@@ -271,12 +271,10 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(
         jint fd) {
     LOG(LOG_S, "start_proxy, fd: %d", fd);
     NOT_EXIT = 1;
-
     if (event_loop(fd) < 0) {
         uniperror("event_loop");
         return get_e();
     }
-
     return 0;
 }
 
@@ -286,12 +284,6 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(
         __attribute__((unused)) jobject thiz,
         jint fd) {
     LOG(LOG_S, "stop_proxy, fd: %d", fd);
-    NOT_EXIT = 0;
-
-    if (fd < 0) {
-        LOG(LOG_S, "Socket already closed");
-        return 0;
-    }
 
     int res = shutdown(fd, SHUT_RDWR);
     reset_params();
@@ -300,6 +292,5 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(
         uniperror("shutdown");
         return get_e();
     }
-
     return 0;
 }
