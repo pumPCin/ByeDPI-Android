@@ -5,13 +5,13 @@ plugins {
 
 android {
     namespace = "io.github.dovecoteescapee.byedpi"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "io.github.dovecoteescapee.byedpi"
         minSdk = 21
         //noinspection OldTargetApi
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 16
         versionName = "1.4.6"
 
@@ -42,16 +42,16 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
+            version = "3.28.1"
         }
     }
     buildFeatures {
