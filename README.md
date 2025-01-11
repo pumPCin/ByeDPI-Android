@@ -1,7 +1,7 @@
 # ByeDPI Android 
 
 <div style="text-align: center;">
-  <img alt="Логотип ByeDPI" src="https://github.com/romanvht/ByeDPIAndroid/raw/master/.github/images/logo.svg" width="100%" height="200px">
+  <img alt="Логотип ByeDPI" src="https://github.com/pumPCin/ByeDPI-Android/raw/master/.github/images/logo.svg" width="100%" height="200px">
 </div>
 
 ---
