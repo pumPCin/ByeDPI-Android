@@ -24,11 +24,6 @@
 * Сохранение списков параметров командной строки с возможностью переключения
 * Улучшена совместимость с Android TV/BOX, исправлены некоторые ошибки оригинала
 
-<div style="text-align: center;">
-    <img alt="Скриншот-1" src="https://github.com/romanvht/ByeDPIAndroid/raw/master/.github/images/settings_screen_2.png">
-    <img alt="Скриншот-2" src="https://github.com/romanvht/ByeDPIAndroid/raw/master/.github/images/apps_screen_2.png">
-</div>
-
 ### Использование
 * Для работы автозапуска активируйте пункт в настройках.
 * Рекомендуется подключится один раз к VPN, чтобы принять запрос.
