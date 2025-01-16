@@ -3,64 +3,66 @@ package io.github.dovecoteescapee.byedpi.utility
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import io.github.dovecoteescapee.byedpi.data.Command
+import com.google.gson.Gson
 
 class HistoryUtils(context: Context) {
 
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-    private val historyKey = "byedpi_cmd_history"
-    private val pinnedHistoryKey = "byedpi_cmd_pinned_history"
+    private val historyKey = "byedpi_command_history"
     private val maxHistorySize = 20
 
     fun addCommand(command: String) {
         if (command.isBlank()) return
 
         val history = getHistory().toMutableList()
+        val search = history.find { it.text == command }
 
-        history.remove(command)
-        history.add(0, command)
-        if (history.size > maxHistorySize) {
-            history.removeAt(maxHistorySize)
+        if (search == null) {
+            history.add(0, Command(command))
+            if (history.size > maxHistorySize) {
+                history.removeAt(maxHistorySize)
+            }
         }
 
-        saveHistory(history, historyKey)
+        saveHistory(history)
     }
 
     fun pinCommand(command: String) {
-        val pinnedHistory = getPinnedHistory().toMutableList()
-        if (!pinnedHistory.contains(command)) {
-            pinnedHistory.add(command)
-            saveHistory(pinnedHistory, pinnedHistoryKey)
-        }
+        val history = getHistory().toMutableList()
+        history.find { it.text == command }?.pinned = true
+        saveHistory(history)
     }
 
     fun unpinCommand(command: String) {
-        val pinnedHistory = getPinnedHistory().toMutableList()
-        if (pinnedHistory.remove(command)) {
-            saveHistory(pinnedHistory, pinnedHistoryKey)
-        }
+        val history = getHistory().toMutableList()
+        history.find { it.text == command }?.pinned = false
+        saveHistory(history)
     }
 
     fun deleteCommand(command: String) {
         val history = getHistory().toMutableList()
-        val pinnedHistory = getPinnedHistory().toMutableList()
-
-        history.remove(command)
-        pinnedHistory.remove(command)
-
-        saveHistory(history, historyKey)
-        saveHistory(pinnedHistory, pinnedHistoryKey)
+        history.removeAll { it.text == command }
+        saveHistory(history)
     }
 
-    fun getHistory(): List<String> {
-        return sharedPreferences.getStringSet(historyKey, emptySet())?.toList() ?: emptyList()
+    fun renameCommand(command: String, newName: String) {
+        val history = getHistory().toMutableList()
+        history.find { it.text == command }?.name = newName
+        saveHistory(history)
     }
 
-    fun getPinnedHistory(): List<String> {
-        return sharedPreferences.getStringSet(pinnedHistoryKey, emptySet())?.toList() ?: emptyList()
+    fun getHistory(): List<Command> {
+        val historyJson = sharedPreferences.getString(historyKey, null)
+        return if (historyJson != null) {
+            Gson().fromJson(historyJson, Array<Command>::class.java).toList()
+        } else {
+            emptyList()
+        }
     }
 
-    private fun saveHistory(history: List<String>, key: String) {
-        sharedPreferences.edit().putStringSet(key, history.toSet()).apply()
+    fun saveHistory(history: List<Command>) {
+        val historyJson = Gson().toJson(history)
+        sharedPreferences.edit().putString(historyKey, historyJson).apply()
     }
 }

@@ -140,7 +140,7 @@
         <Preference
             android:key="version"
             android:title="@string/byedpi_version"
-            android:summary="0.15" />
+            android:summary="0.16" />
 
     </androidx.preference.PreferenceCategory>
 

@@ -39,6 +39,12 @@ class AppSelectionFragment : Fragment() {
         return view
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        recyclerView.adapter = null
+        searchView.setOnQueryTextListener(null)
+    }
+
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(context)
     }

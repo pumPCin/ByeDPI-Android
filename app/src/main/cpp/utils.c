@@ -15,7 +15,7 @@ void reset_params(void) {
     params = default_params;
 }
 
-extern const struct option options[41];
+extern const struct option options[42];
 
 int parse_args(int argc, char **argv)
 {
@@ -34,10 +34,10 @@ int parse_args(int argc, char **argv)
         }
     }
 
-    params.laddr.sin6_port = htons(1080);
-    //if (!ipv6_support()) {
-        //params.baddr.sin6_family = AF_INET;
-    //}
+    params.laddr.in.sin_port = htons(1080);
+    if (!ipv6_support()) {
+        params.baddr.sa.sa_family = AF_INET;
+    }
 
     int rez;
     int invalid = 0;
@@ -46,8 +46,7 @@ int parse_args(int argc, char **argv)
     char *end = 0;
     bool all_limited = 1;
 
-    struct desync_params *dp = add((void *)&params.dp,
-                                   &params.dp_count, sizeof(struct desync_params));
+    struct desync_params *dp = add((void *)&params.dp, &params.dp_count, sizeof(struct desync_params));
     if (!dp) {
         reset_params();
         return -1;
@@ -69,24 +68,17 @@ int parse_args(int argc, char **argv)
             case 'U':
                 params.udp = 0;
                 break;
+            case 'G':
+                params.http_connect = 1;
+                break;
 #ifdef __linux__
-                case 'E':
-            params.transparent = 1;
-            break;
+            case 'E':
+                params.transparent = 1;
+                break;
 #endif
 
-//            case 'h':
-//                printf(help_text);
-//                reset_params();
-//                return 0;
-//            case 'v':
-//                printf("%s\n", VERSION);
-//                reset_params();
-//                return 0;
-
             case 'i':
-                if (get_addr(optarg,
-                             (struct sockaddr_ina *)&params.laddr) < 0)
+                if (get_addr(optarg, &params.laddr) < 0)
                     invalid = 1;
                 break;
 
@@ -95,12 +87,11 @@ int parse_args(int argc, char **argv)
                 if (val <= 0 || val > 0xffff || *end)
                     invalid = 1;
                 else
-                    params.laddr.sin6_port = htons(val);
+                    params.laddr.in.sin_port = htons(val);
                 break;
 
             case 'I':
-                if (get_addr(optarg,
-                             (struct sockaddr_ina *)&params.baddr) < 0)
+                if (get_addr(optarg, &params.baddr) < 0)
                     invalid = 1;
                 break;
 
@@ -141,7 +132,7 @@ int parse_args(int argc, char **argv)
                 break;
 
             case 'A':
-                if (!(dp->hosts || dp->proto || dp->pf[0] || dp->detect)) {
+                if (!(dp->hosts || dp->proto || dp->pf[0] || dp->detect || dp->ipset)) {
                     all_limited = 0;
                 }
                 dp = add((void *)&params.dp, &params.dp_count,
@@ -188,11 +179,11 @@ int parse_args(int argc, char **argv)
             case 'T':;
 #ifdef __linux__
                 float f = strtof(optarg, &end);
-            val = (long)(f * 1000);
+                val = (long)(f * 1000);
 #else
                 val = strtol(optarg, &end, 0);
 #endif
-                if (val <= 0 || val > UINT_MAX || *end)
+                if (val <= 0 || val > (long)UINT_MAX || *end)
                     invalid = 1;
                 else
                     params.timeout = val;
@@ -210,6 +201,9 @@ int parse_args(int argc, char **argv)
                             break;
                         case 'u':
                             dp->proto |= IS_UDP;
+                            break;
+                        case 'i':
+                            dp->proto |= IS_IPV4;
                             break;
                         default:
                             invalid = 1;
@@ -232,10 +226,29 @@ int parse_args(int argc, char **argv)
                 }
                 dp->hosts = parse_hosts(dp->file_ptr, dp->file_size);
                 if (!dp->hosts) {
-                    perror("parse_hosts");
+                    uniperror("parse_hosts");
                     reset_params();
                     return -1;
                 }
+                break;
+
+            case 'j':;
+                if (dp->ipset) {
+                    continue;
+                }
+                ssize_t size;
+                char *data = ftob(optarg, &size);
+                if (!data) {
+                    uniperror("read/parse");
+                    invalid = 1;
+                    continue;
+                }
+                dp->ipset = parse_ipset(data, size);
+                if (!dp->ipset) {
+                    uniperror("parse_ipset");
+                    invalid = 1;
+                }
+                free(data);
                 break;
 
             case 's':
@@ -425,20 +438,13 @@ int parse_args(int argc, char **argv)
                 dp->drop_sack = 1;
                 break;
 
-            case 'w': //
-                params.sfdelay = strtol(optarg, &end, 0);
-                if (params.sfdelay < 0 || optarg == end
-                    || params.sfdelay >= 1000 || *end)
-                    invalid = 1;
-                break;
-
             case 'W':
                 params.wait_send = 0;
                 break;
 #ifdef __linux__
-                case 'P':
-            params.protect_path = optarg;
-            break;
+            case 'P':
+                params.protect_path = optarg;
+                break;
 #endif
             case 0:
                 break;
@@ -467,7 +473,7 @@ int parse_args(int argc, char **argv)
         }
     }
 
-    if (params.baddr.sin6_family != AF_INET6) {
+    if (params.baddr.sa.sa_family != AF_INET6) {
         params.ipv6 = 0;
     }
     if (!params.def_ttl) {
@@ -476,12 +482,13 @@ int parse_args(int argc, char **argv)
             return -1;
         }
     }
-    params.mempool = mem_pool(0);
+    params.mempool = mem_pool(0, CMP_BYTES);
     if (!params.mempool) {
         uniperror("mem_pool");
         reset_params();
         return -1;
     }
+    srand((unsigned int)time(0));
 
     return 0;
 }

@@ -48,6 +48,7 @@
     <string name="cmd_history_menu">Выберите действие</string>
     <string name="cmd_history_pin">Закрепить</string>
     <string name="cmd_history_pinned">Закреплено</string>
+    <string name="cmd_history_rename">Переименовать</string>
     <string name="cmd_history_title">История настроек Command line</string>
     <string name="cmd_history_unpin">Открепить</string>
     <string name="command_line_arguments">Настройки Command line</string>

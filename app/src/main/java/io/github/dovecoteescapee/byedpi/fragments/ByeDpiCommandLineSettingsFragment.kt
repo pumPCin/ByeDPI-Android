@@ -4,10 +4,13 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.preference.*
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.utility.findPreferenceNotNull
 import androidx.appcompat.app.AlertDialog
+import io.github.dovecoteescapee.byedpi.data.Command
 import io.github.dovecoteescapee.byedpi.utility.HistoryUtils
 
 class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
@@ -37,35 +40,41 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
     private fun updateHistoryCategory() {
         historyCategory.removeAll()
         val history = cmdHistoryUtils.getHistory()
-        val pinnedHistory = cmdHistoryUtils.getPinnedHistory()
 
-        pinnedHistory.forEach { command ->
-            val preference = createPreference(command, isPinned = true)
-            historyCategory.addPreference(preference)
-        }
-
-        history.forEach { command ->
-            if (command !in pinnedHistory) {
-                val preference = createPreference(command, isPinned = false)
+        history.sortedWith(compareByDescending<Command> { it.pinned }.thenBy { history.indexOf(it) })
+            .forEach { command ->
+                val preference = createPreference(command)
                 historyCategory.addPreference(preference)
             }
-        }
     }
 
-    private fun createPreference(command: String, isPinned: Boolean) =
+    private fun createPreference(command: Command) =
         Preference(requireContext()).apply {
-            title = command
-            summary = if (isPinned) context.getString(R.string.cmd_history_pinned) else null
+            title = command.text
+            summary = buildSummary(command)
             setOnPreferenceClickListener {
-                showActionDialog(command, isPinned)
+                showActionDialog(command)
                 true
             }
         }
 
-    private fun showActionDialog(command: String, isPinned: Boolean) {
+    private fun buildSummary(command: Command): String {
+        val summary = StringBuilder()
+        if (command.name != null) {
+            summary.append(command.name)
+        }
+        if (command.pinned) {
+            if (summary.isNotEmpty()) summary.append(" - ")
+            summary.append(context?.getString(R.string.cmd_history_pinned))
+        }
+        return summary.toString()
+    }
+
+    private fun showActionDialog(command: Command) {
         val options = arrayOf(
             getString(R.string.cmd_history_apply),
-            if (isPinned) getString(R.string.cmd_history_unpin) else getString(R.string.cmd_history_pin),
+            if (command.pinned) getString(R.string.cmd_history_unpin) else getString(R.string.cmd_history_pin),
+            getString(R.string.cmd_history_rename),
             getString(R.string.cmd_history_copy),
             getString(R.string.cmd_history_delete)
         )
@@ -74,12 +83,38 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
             .setTitle(getString(R.string.cmd_history_menu))
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> applyCommand(command)
-                    1 -> if (isPinned) unpinCommand(command) else pinCommand(command)
-                    2 -> copyToClipboard(command)
-                    3 -> deleteCommand(command)
+                    0 -> applyCommand(command.text)
+                    1 -> if (command.pinned) unpinCommand(command.text) else pinCommand(command.text)
+                    2 -> showRenameDialog(command)
+                    3 -> copyToClipboard(command.text)
+                    4 -> deleteCommand(command.text)
                 }
             }
+            .show()
+    }
+
+    private fun showRenameDialog(command: Command) {
+        val input = EditText(requireContext()).apply {
+            setText(command.name)
+        }
+
+        val container = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(50, 20, 50, 20)
+            addView(input)
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.cmd_history_rename))
+            .setView(container)
+            .setPositiveButton(getString(android.R.string.ok)) { _, _ ->
+                val newName = input.text.toString()
+                if (newName.isNotBlank()) {
+                    cmdHistoryUtils.renameCommand(command.text, newName)
+                    updateHistoryCategory()
+                }
+            }
+            .setNegativeButton(getString(android.R.string.cancel), null)
             .show()
     }
 

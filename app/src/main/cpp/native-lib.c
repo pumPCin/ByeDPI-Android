@@ -53,7 +53,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocketWithComman
         return -1;
     }
 
-    int fd = listen_socket((struct sockaddr_ina *)&params.laddr);
+    int fd = listen_socket((union sockaddr_u *)&params.laddr);
     if (fd < 0) {
         uniperror("listen_socket");
         return -1;
@@ -95,7 +95,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         jint udp_fake_count,
         jboolean drop_sack,
         jint fake_offset) {
-    struct sockaddr_ina s;
+    union sockaddr_u s;
 
     const char *address = (*env)->GetStringUTFChars(env, ip, 0);
     int res = get_addr(address, &s);
@@ -247,7 +247,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         }
     }
 
-    params.mempool = mem_pool(0);
+    params.mempool = mem_pool(0, CMP_BYTES);
     if (!params.mempool) {
         uniperror("mem_pool");
         clear_params();

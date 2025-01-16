@@ -1,21 +1,22 @@
 package io.github.dovecoteescapee.byedpi.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
+import com.google.gson.Gson
 import io.github.dovecoteescapee.byedpi.BuildConfig
 import io.github.dovecoteescapee.byedpi.R
+import io.github.dovecoteescapee.byedpi.data.AppSettings
 import io.github.dovecoteescapee.byedpi.fragments.MainSettingsFragment
+import io.github.dovecoteescapee.byedpi.utility.HistoryUtils
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
-import org.json.JSONArray
-import org.json.JSONObject
+import io.github.dovecoteescapee.byedpi.utility.getSelectedApps
 
 class SettingsActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -69,26 +70,25 @@ class SettingsActivity : AppCompatActivity() {
     ) { uri ->
         uri?.let {
             val prefs = getPreferences()
-            val json = JSONObject()
+            val history = HistoryUtils(this).getHistory()
+            val apps = prefs.getSelectedApps()
 
-            json.put("app_package", BuildConfig.APPLICATION_ID)
-            json.put("app_version", BuildConfig.VERSION_NAME)
-
-            prefs.all.forEach { (key, value) ->
-                when (key) {
-                    "byedpi_cmd_history", "byedpi_cmd_pinned_history", "selected_apps" -> {
-                        if (value is Set<*>) {
-                            json.put(key, JSONArray(value.toList()))
-                        }
-                    }
-                    else -> {
-                        json.put(key, value)
-                    }
-                }
+            val settings = prefs.all.filterKeys { key ->
+                key !in setOf("byedpi_command_history", "selected_apps")
             }
 
+            val export = AppSettings(
+                app = BuildConfig.APPLICATION_ID,
+                version = BuildConfig.VERSION_NAME,
+                history = history,
+                apps = apps,
+                settings = settings
+            )
+
+            val json = Gson().toJson(export)
+
             contentResolver.openOutputStream(it)?.use { outputStream ->
-                outputStream.write(json.toString().toByteArray())
+                outputStream.write(json.toByteArray())
             }
         }
     }
@@ -98,9 +98,11 @@ class SettingsActivity : AppCompatActivity() {
     ) { uri ->
         uri?.let {
             contentResolver.openInputStream(it)?.use { inputStream ->
-                val json = JSONObject(inputStream.bufferedReader().readText())
+                val json = inputStream.bufferedReader().readText()
 
-                if (json.optString("app_package", "") != BuildConfig.APPLICATION_ID) {
+                val import = Gson().fromJson(json, AppSettings::class.java)
+
+                if (import.app != BuildConfig.APPLICATION_ID) {
                     Toast.makeText(this, "Invalid config", Toast.LENGTH_LONG).show()
                     return@use
                 }
@@ -108,35 +110,20 @@ class SettingsActivity : AppCompatActivity() {
                 val prefs = getPreferences()
                 val editor = prefs.edit()
 
-                json.remove("app_package")
-                json.remove("app_version")
                 editor.clear()
-
-                json.keys().forEach { key ->
-                    when (key) {
-                        "byedpi_cmd_history", "byedpi_cmd_pinned_history", "selected_apps" -> {
-                            val listJson = json.optJSONArray(key)
-                            if (listJson != null) {
-                                val set = mutableSetOf<String>()
-                                for (i in 0 until listJson.length()) {
-                                    set.add(listJson.getString(i))
-                                }
-                                editor.putStringSet(key, set)
-                            }
-                        }
-                        else -> {
-                            when (val value = json.get(key)) {
-                                is Int -> editor.putInt(key, value)
-                                is Boolean -> editor.putBoolean(key, value)
-                                is String -> editor.putString(key, value)
-                                is Float -> editor.putFloat(key, value)
-                                is Long -> editor.putLong(key, value)
-                            }
-                        }
+                import.settings.forEach { (key, value) ->
+                    when (value) {
+                        is Int -> editor.putInt(key, value)
+                        is Boolean -> editor.putBoolean(key, value)
+                        is String -> editor.putString(key, value)
+                        is Float -> editor.putFloat(key, value)
+                        is Long -> editor.putLong(key, value)
                     }
                 }
-
+                editor.putStringSet("selected_apps", import.apps.toSet())
                 editor.apply()
+                HistoryUtils(this).saveHistory(import.history)
+
                 recreate()
             }
         }
