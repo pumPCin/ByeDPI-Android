@@ -15,7 +15,7 @@ void reset_params(void) {
     params = default_params;
 }
 
-extern const struct option options[42];
+extern const struct option options[44];
 
 int parse_args(int argc, char **argv)
 {
@@ -194,10 +194,10 @@ int parse_args(int argc, char **argv)
                 while (end && !invalid) {
                     switch (*end) {
                         case 't':
-                            dp->proto |= IS_HTTPS;
+                            dp->proto |= IS_TCP | IS_HTTPS;
                             break;
                         case 'h':
-                            dp->proto |= IS_HTTP;
+                            dp->proto |= IS_TCP | IS_HTTP;
                             break;
                         case 'u':
                             dp->proto |= IS_UDP;

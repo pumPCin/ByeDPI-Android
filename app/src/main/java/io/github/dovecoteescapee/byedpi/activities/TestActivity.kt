@@ -33,12 +33,11 @@ import io.github.dovecoteescapee.byedpi.utility.GoogleVideoUtils
 import io.github.dovecoteescapee.byedpi.utility.HistoryUtils
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import kotlinx.coroutines.*
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.io.File
+import java.net.HttpURLConnection
 import java.net.InetSocketAddress
 import java.net.Proxy
-import java.util.concurrent.TimeUnit
+import java.net.URL
 
 class TestActivity : AppCompatActivity() {
 
@@ -390,13 +389,12 @@ class TestActivity : AppCompatActivity() {
         requestsCount: Int,
         fullLog: Boolean
     ): List<Pair<String, Int>> {
-        val client = createOkHttpClient()
         return withContext(Dispatchers.IO) {
             sites.map { site ->
                 async {
                     if (!isProxyRunning()) return@async site to 0
 
-                    val successCount = checkSiteAccess(client, site, requestsCount)
+                    val successCount = checkSiteAccess(site, requestsCount)
                     if (fullLog) {
                         withContext(Dispatchers.Main) {
                             appendTextToResults("$site - $successCount/$requestsCount\n")
@@ -409,7 +407,6 @@ class TestActivity : AppCompatActivity() {
     }
 
     private suspend fun checkSiteAccess(
-        client: OkHttpClient,
         site: String,
         requestsCount: Int
     ): Int = withContext(Dispatchers.IO) {
@@ -422,30 +419,22 @@ class TestActivity : AppCompatActivity() {
         repeat(requestsCount) { attempt ->
             Log.i("CheckSite", "Attempt ${attempt + 1}/$requestsCount for $site")
             try {
-                val request = Request.Builder().url(formattedUrl).get().build()
-                client.newCall(request).execute().use { response ->
-                    if (response.code in listOf(200, 400, 404, 405)) {
-                        responseCount++
-                        Log.i("CheckSite", "Successful response for $site: ${response.code}")
-                    } else {
-                        Log.w("CheckSite", "Unsuccessful response for $site: ${response.code}")
-                    }
-                }
+                val url = URL(formattedUrl)
+                val proxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress(proxyIp, proxyPort))
+                val connection = url.openConnection(proxy) as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connectTimeout = 2000
+                connection.readTimeout = 2000
+
+                val responseCode = connection.responseCode
+                responseCount++
+                Log.i("CheckSite", "Response for $site: $responseCode")
+                connection.disconnect()
             } catch (e: Exception) {
                 Log.e("CheckSite", "Error accessing $site: ${e.message}")
             }
-            delay(100)
         }
         responseCount
-    }
-
-    private fun createOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
-            .proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress(proxyIp, proxyPort)))
-            .connectTimeout(2, TimeUnit.SECONDS)
-            .readTimeout(2, TimeUnit.SECONDS)
-            .writeTimeout(2, TimeUnit.SECONDS)
-            .build()
     }
 
     private fun updateCmdInPreferences(cmd: String) {
