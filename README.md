@@ -6,13 +6,14 @@
 
 ---
 
-Приложение для Android, которое локально запускает ByeDPI и перенаправляет весь TCP трафик через него.
+Приложение для Android, которое локально запускает ByeDPI и перенаправляет весь трафик через него.
 
 Для стабильной работы может потребоваться изменить настройки. Подробнее о различных настройках можно прочитать в [документации ByeDPI](https://github.com/hufrea/byedpi/blob/v0.13/README.md).
 
 Приложение не является VPN. Оно использует VPN-режим на Android для перенаправления трафика, но не передает ничего на удаленный сервер. Оно не шифрует трафик и не скрывает ваш IP-адрес.
 
-Приложения является форком [ByeDPIAndroid](https://github.com/dovecoteescapee/ByeDPIAndroid)
+Приложение является форком [ByeByeDPI Android](https://github.com/romanvht/ByeDPIAndroid) 
+Оригинальное приложение [ByeDPI Android](https://github.com/dovecoteescapee/ByeDPIAndroid)
 
 ---
 
@@ -40,3 +41,7 @@
 Хост: 127.0.0.1
 Порт: 1080 (по умолчанию)
 ```
+
+### Зависимости
+- [ByeDPI](https://github.com/hufrea/byedpi)
+- [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
