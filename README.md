@@ -13,6 +13,7 @@
 Приложение не является VPN. Оно использует VPN-режим на Android для перенаправления трафика, но не передает ничего на удаленный сервер. Оно не шифрует трафик и не скрывает ваш IP-адрес.
 
 Приложение является форком [ByeByeDPI Android](https://github.com/romanvht/ByeDPIAndroid) 
+
 Оригинальное приложение [ByeDPI Android](https://github.com/dovecoteescapee/ByeDPIAndroid)
 
 ---

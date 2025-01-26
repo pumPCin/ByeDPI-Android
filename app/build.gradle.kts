@@ -6,6 +6,7 @@ plugins {
 android {
     namespace = "io.github.dovecoteescapee.byedpi"
     compileSdk = 35
+    ndkVersion = "28.0.12674087"
 
     defaultConfig {
         applicationId = "io.github.dovecoteescapee.byedpi"
@@ -33,12 +34,20 @@ android {
         release {
             buildConfigField("String", "VERSION_NAME",  "\"${defaultConfig.versionName}\"")
 
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
         }
         debug {
             buildConfigField("String", "VERSION_NAME",  "\"${defaultConfig.versionName}-debug\"")
+        }
+    }
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            isUniversalApk = true
         }
     }
     compileOptions {
@@ -68,6 +77,7 @@ android {
 }
 
 dependencies {
+    //noinspection GradleDependency
     implementation("androidx.fragment:fragment-ktx:1.8.5")
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")

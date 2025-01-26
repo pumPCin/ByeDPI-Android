@@ -2,11 +2,13 @@ name: Build
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths-ignore:
+      - '*.md'
   push:
     branches: [ master ]
     paths-ignore:
-      - '**.md'
-
+      - '*.md'
 
 jobs:
   build:
@@ -15,19 +17,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
         with:
-          submodules: "recursive"
-          fetch-depth: 0
+          submodules: 'recursive'
 
-      - name: Setup Java
-        uses: actions/setup-java@main
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@main
+
+      - name: Install JDK 21
+        uses: actions/setup-java@v4
         with:
-          distribution: "temurin"
-          java-version: "21"
+          java-version: 21
+          distribution: temurin
+          cache: gradle
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@main
-        with:
-          cache-cleanup: always
 
       - name: Setup golang
         uses: actions/setup-go@main
@@ -44,8 +47,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build with Gradle
-        run: |
-          ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --no-daemon
 
       - name: Upload
         uses: actions/upload-artifact@main
