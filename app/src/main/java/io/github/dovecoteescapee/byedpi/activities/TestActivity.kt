@@ -54,7 +54,7 @@ class TestActivity : AppCompatActivity() {
     private var testJob: Job? = null
 
     private val proxyIp: String = "127.0.0.1"
-    private val proxyPort: Int = 1080
+    private val proxyPort: Int = 10080
 
     private var isTesting: Boolean
         get() = prefs.getBoolean("is_test_running", false)

@@ -49,7 +49,8 @@ int parse_args(int argc, char **argv)
     char *end = 0;
     bool all_limited = 1;
 
-    struct desync_params *dp = add((void *)&params.dp, &params.dp_count, sizeof(struct desync_params));
+    struct desync_params *dp = add((void *)&params.dp,
+                                   &params.dp_count, sizeof(struct desync_params));
     if (!dp) {
         reset_params();
         return -1;
