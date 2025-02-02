@@ -1,6 +1,5 @@
 package io.github.dovecoteescapee.byedpi.services
 
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,14 +12,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.service.quicksettings.PendingIntentActivityWrapper
-import androidx.core.service.quicksettings.TileServiceCompat
 import io.github.dovecoteescapee.byedpi.R
-import io.github.dovecoteescapee.byedpi.activities.MainActivity
 import io.github.dovecoteescapee.byedpi.data.*
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import io.github.dovecoteescapee.byedpi.utility.mode
-
 
 @RequiresApi(Build.VERSION_CODES.N)
 class QuickTileService : TileService() {
@@ -74,15 +69,6 @@ class QuickTileService : TileService() {
         unregisterReceiver(receiver)
     }
 
-    private fun launchActivity() {
-        TileServiceCompat.startActivityAndCollapse(
-            this, PendingIntentActivityWrapper(
-                this, 0, Intent(this, MainActivity::class.java),
-                PendingIntent.FLAG_UPDATE_CURRENT, false
-            )
-        )
-    }
-
     override fun onClick() {
         if (qsTile.state == Tile.STATE_UNAVAILABLE) {
             return
@@ -113,8 +99,6 @@ class QuickTileService : TileService() {
                 val mode = getPreferences().mode()
 
                 if (mode == Mode.VPN && VpnService.prepare(this) != null) {
-                    updateStatus()
-                    launchActivity()
                     return
                 }
 

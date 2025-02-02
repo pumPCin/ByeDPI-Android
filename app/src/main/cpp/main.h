@@ -1,6 +1,3 @@
-extern char *oob_char;
-extern int NOT_EXIT;
-
 union sockaddr_u;
 
 int get_default_ttl();

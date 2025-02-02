@@ -33,11 +33,14 @@ int parse_args(int argc, char **argv)
             opt[o] = ':';
         }
     }
-
+    //
     params.laddr.in.sin_port = htons(1080);
     if (!ipv6_support()) {
         params.baddr.sa.sa_family = AF_INET;
     }
+
+    char *pid_file = 0;
+    bool daemonize = 0;
 
     int rez;
     int invalid = 0;
@@ -75,6 +78,16 @@ int parse_args(int argc, char **argv)
             case 'E':
                 params.transparent = 1;
                 break;
+#endif
+
+#ifdef DAEMON
+                case 'D':
+            daemonize = 1;
+            break;
+
+        case 'w':
+            pid_file = optarg;
+            break;
 #endif
 
             case 'i':
@@ -183,7 +196,7 @@ int parse_args(int argc, char **argv)
 #else
                 val = strtol(optarg, &end, 0);
 #endif
-                if (val <= 0 || val > UINT_MAX || *end)
+                if (val <= 0 || (unsigned long)val > UINT_MAX || *end)
                     invalid = 1;
                 else
                     params.timeout = val;
@@ -439,8 +452,9 @@ int parse_args(int argc, char **argv)
                 break;
 
             case 'W':
-                params.wait_send = 0;
+                params.await_int = atoi(optarg);
                 break;
+
 #ifdef __linux__
             case 'P':
                 params.protect_path = optarg;

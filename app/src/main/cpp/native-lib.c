@@ -270,8 +270,8 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(
         __attribute__((unused)) jobject thiz,
         jint fd) {
     LOG(LOG_S, "start_proxy, fd: %d", fd);
-    NOT_EXIT = 1;
-    if (event_loop(fd) < 0) {
+
+    if (start_event_loop(fd) < 0) {
         uniperror("event_loop");
         return get_e();
     }
