@@ -10,7 +10,7 @@ class HistoryUtils(context: Context) {
 
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val historyKey = "byedpi_command_history"
-    private val maxHistorySize = 20
+    private val maxHistorySize = 40
 
     fun addCommand(command: String) {
         if (command.isBlank()) return
