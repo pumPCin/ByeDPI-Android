@@ -14,7 +14,7 @@ android {
         //noinspection OldTargetApi
         targetSdk = 35
         versionCode = 20
-        versionName = "1.5.1"
+        versionName = "1.5.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

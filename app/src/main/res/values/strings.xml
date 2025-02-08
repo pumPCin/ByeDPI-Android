@@ -104,6 +104,7 @@
     <string name="theme_settings">Тема</string>
     <string name="title_settings">Настройки</string>
     <string name="title_test">Тест преднастроек</string>
+    <string name="toggle_connect">Вкл/Выкл</string>
     <string name="ui_editor">Расширенные настройки</string>
     <string name="use_command_line_settings">Использовать Command line</string>
     <string name="version">Версия</string>
