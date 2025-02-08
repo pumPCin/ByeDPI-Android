@@ -1,18 +1,12 @@
 package io.github.dovecoteescapee.byedpi.services
 
-import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.net.VpnService
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
-import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.*
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import io.github.dovecoteescapee.byedpi.utility.mode
@@ -21,78 +15,25 @@ import io.github.dovecoteescapee.byedpi.utility.mode
 class QuickTileService : TileService() {
 
     companion object {
-        private val TAG: String = QuickTileService::class.java.simpleName
-    }
+        private const val TAG = "QuickTileService"
 
-    private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val senderOrd = intent.getIntExtra(SENDER, -1)
-            val sender = Sender.entries.getOrNull(senderOrd)
-            if (sender == null) {
-                Log.w(TAG, "Received intent with unknown sender: $senderOrd")
-                return
-            }
-
-            when (val action = intent.action) {
-                STARTED_BROADCAST,
-                STOPPED_BROADCAST -> updateStatus()
-
-                FAILED_BROADCAST -> {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.failed_to_start, sender.name),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    updateStatus()
-                }
-
-                else -> Log.w(TAG, "Unknown action: $action")
-            }
+        fun updateTile(context: Context) {
+            requestListeningState(context, ComponentName(context, QuickTileService::class.java))
         }
     }
 
     override fun onStartListening() {
+        super.onStartListening()
         updateStatus()
-        ContextCompat.registerReceiver(
-            this,
-            receiver,
-            IntentFilter().apply {
-                addAction(STARTED_BROADCAST)
-                addAction(STOPPED_BROADCAST)
-                addAction(FAILED_BROADCAST)
-            },
-            ContextCompat.RECEIVER_EXPORTED,
-        )
-    }
-
-    override fun onStopListening() {
-        unregisterReceiver(receiver)
     }
 
     override fun onClick() {
-        if (qsTile.state == Tile.STATE_UNAVAILABLE) {
-            return
-        }
+        if (qsTile.state == Tile.STATE_UNAVAILABLE) return
 
-        unlockAndRun(this::handleClick)
-    }
-
-    private fun setState(newState: Int) {
-        qsTile.apply {
-            state = newState
-            updateTile()
-        }
-    }
-
-    private fun updateStatus() {
-        val (status) = appStatus
-        setState(if (status == AppStatus.Halted) Tile.STATE_INACTIVE else Tile.STATE_ACTIVE)
+        unlockAndRun { handleClick() }
     }
 
     private fun handleClick() {
-        setState(Tile.STATE_ACTIVE)
-        setState(Tile.STATE_UNAVAILABLE)
-
         val (status) = appStatus
         when (status) {
             AppStatus.Halted -> {
@@ -103,9 +44,31 @@ class QuickTileService : TileService() {
                 }
 
                 ServiceManager.start(this, mode)
+                setState(Tile.STATE_ACTIVE)
             }
+            AppStatus.Running -> {
+                ServiceManager.stop(this)
+                setState(Tile.STATE_INACTIVE)
+            }
+        }
 
-            AppStatus.Running -> ServiceManager.stop(this)
+        updateTile(this)
+    }
+
+    private fun updateStatus() {
+        val (status) = appStatus
+
+        if (status == AppStatus.Running) {
+            setState(Tile.STATE_ACTIVE)
+        } else {
+            setState(Tile.STATE_INACTIVE)
+        }
+    }
+
+    private fun setState(newState: Int) {
+        qsTile.apply {
+            state = newState
+            updateTile()
         }
     }
 }

@@ -59,9 +59,9 @@
 - На вкладке **Консоль** выполните команды:
 
 ```
-  shell pm grant io.github.romanvht.byedpi android.permission.WRITE_SECURE_SETTINGS
-  shell appops set io.github.romanvht.byedpi WRITE_SETTINGS allow
-  shell appops set io.github.romanvht.byedpi ACTIVATE_VPN allow
+  shell pm grant io.github.dovecoteescapee.byedpi android.permission.WRITE_SECURE_SETTINGS
+  shell appops set io.github.dovecoteescapee.byedpi WRITE_SETTINGS allow
+  shell appops set io.github.dovecoteescapee.byedpi ACTIVATE_VPN allow
 ```
 
 ## Инструкция для Android 9
@@ -80,9 +80,9 @@
 - На вкладке **Консоль** выполните:
 
 ```
-  pm grant io.github.romanvht.byedpi android.permission.WRITE_SECURE_SETTINGS
-  appops set io.github.romanvht.byedpi WRITE_SETTINGS allow
-  appops set io.github.romanvht.byedpi ACTIVATE_VPN allow
+  pm grant io.github.dovecoteescapee.byedpi android.permission.WRITE_SECURE_SETTINGS
+  appops set io.github.dovecoteescapee.byedpi WRITE_SETTINGS allow
+  appops set io.github.dovecoteescapee.byedpi ACTIVATE_VPN allow
 ```
 
 ### 2Б. Через компьютер
@@ -92,9 +92,9 @@
 - На вкладке **Консоль** выполните:
 
 ```
-  shell pm grant io.github.romanvht.byedpi android.permission.WRITE_SECURE_SETTINGS
-  shell appops set io.github.romanvht.byedpi WRITE_SETTINGS allow
-  shell appops set io.github.romanvht.byedpi ACTIVATE_VPN allow
+  shell pm grant io.github.dovecoteescapee.byedpi android.permission.WRITE_SECURE_SETTINGS
+  shell appops set io.github.dovecoteescapee.byedpi WRITE_SETTINGS allow
+  shell appops set io.github.dovecoteescapee.byedpi ACTIVATE_VPN allow
 ```
 
 # Решение проблем
