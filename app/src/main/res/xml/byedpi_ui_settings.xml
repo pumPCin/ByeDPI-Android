@@ -195,7 +195,7 @@
             android:key="byedpi_udp_fake_count"
             android:title="@string/byedpi_udp_fake_count"
             android:inputType="number"
-            android:defaultValue="0"
+            android:defaultValue="1"
             app:useSimpleSummaryProvider="true" />
 
     </androidx.preference.PreferenceCategory>

@@ -110,7 +110,7 @@ class ByeDpiProxyUIPreferences(
         if (this.hostsMode == HostsMode.Disable) null
         else hosts?.trim()
     val tcpFastOpen: Boolean = tcpFastOpen ?: false
-    val udpFakeCount: Int = udpFakeCount ?: 0
+    val udpFakeCount: Int = udpFakeCount ?: 1
     val dropSack: Boolean = dropSack ?: false
     val fakeOffset: Int = byedpiFakeOffset ?: 0
 
