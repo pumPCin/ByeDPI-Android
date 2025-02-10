@@ -28,7 +28,7 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
             val firstArgIndex = cmd.indexOf("-")
             val args = (if (firstArgIndex > 0) cmd.substring(firstArgIndex) else cmd).trim()
 
-            Log.i("ProxyPref", "Parse args: $args")
+            Log.d("ProxyPref", "CMD: $args")
 
             val hasIp = args.contains("-i ") || args.contains("--ip ")
             val hasPort = args.contains("-p ") || args.contains("--port ")
@@ -41,7 +41,7 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
                 if (!hasPort) append("-p $port ")
             }
 
-            Log.i("ProxyPref", "Added from settings: $prefix")
+            Log.d("ProxyPref", "Added from settings: $prefix")
 
             if (prefix.isNotEmpty()) {
                 return arrayOf("ciadpi") + shellSplit("$prefix$args")
@@ -192,4 +192,142 @@ class ByeDpiProxyUIPreferences(
             }
         }
     }
+
+    val uiargs: Array<String>
+        get() {
+            val args = mutableListOf("ciadpi")
+
+            ip.takeIf { it.isNotEmpty() }?.let {
+                args.add("-i${it}")
+            }
+
+            port.takeIf { it != 0 }?.let {
+                args.add("-p${it}")
+            }
+
+            maxConnections.takeIf { it != 0 }?.let {
+                args.add("-c${it}")
+            }
+
+            bufferSize.takeIf { it != 0 }?.let {
+                args.add("-b${it}")
+            }
+
+            val protocols = mutableListOf<String>()
+            if (desyncHttps) protocols.add("t")
+            if (desyncHttp) protocols.add("h")
+
+            if (!hosts.isNullOrBlank()) {
+                val hostStr = ":${hosts}"
+                val hostBlock = mutableListOf<String>()
+
+                when (hostsMode) {
+                    HostsMode.Blacklist -> {
+                        hostBlock.add("-H${hostStr}")
+                        hostBlock.add("-An")
+                        if (protocols.isNotEmpty()) {
+                            hostBlock.add("-K${protocols.joinToString(",")}")
+                        }
+                    }
+                    HostsMode.Whitelist -> {
+                        if (protocols.isNotEmpty()) {
+                            hostBlock.add("-K${protocols.joinToString(",")}")
+                        }
+                        hostBlock.add("-H${hostStr}")
+                    }
+                    else -> {}
+                }
+                args.addAll(hostBlock)
+            } else {
+                if (protocols.isNotEmpty()) {
+                    args.add("-K${protocols.joinToString(",")}")
+                }
+            }
+
+            defaultTtl.takeIf { it != 0 }?.let {
+                args.add("-g${it}")
+            }
+
+            if (noDomain) {
+                args.add("-N")
+            }
+
+            desyncMethod.let { method ->
+                splitPosition.takeIf { it != 0 }?.let { pos ->
+                    var posArg = pos.toString()
+                    if (splitAtHost) {
+                        posArg += "+h"
+                    }
+                    val option = when (method) {
+                        DesyncMethod.Split -> "-s"
+                        DesyncMethod.Disorder -> "-d"
+                        DesyncMethod.OOB -> "-o"
+                        DesyncMethod.DISOOB -> "-q"
+                        DesyncMethod.Fake -> "-f"
+                        DesyncMethod.None -> ""
+                    }
+                    args.add("${option}${posArg}")
+                }
+            }
+
+            if (desyncMethod == DesyncMethod.Fake) {
+                fakeTtl.takeIf { it != 0 }?.let {
+                    args.add("-t${it}")
+                }
+
+                fakeSni.takeIf { it.isNotEmpty() }?.let {
+                    args.add("-n${it}")
+                }
+
+                fakeOffset.takeIf { it != 0 }?.let {
+                    args.add("-O${it}")
+                }
+            }
+
+            if (desyncMethod == DesyncMethod.OOB ||
+                desyncMethod == DesyncMethod.DISOOB) {
+                args.add("-e${oobChar}")
+            }
+
+            val modHttpFlags = mutableListOf<String>()
+            if (hostMixedCase) modHttpFlags.add("h")
+            if (domainMixedCase) modHttpFlags.add("d")
+            if (hostRemoveSpaces) modHttpFlags.add("r")
+            if (modHttpFlags.isNotEmpty()) {
+                args.add("-M${modHttpFlags.joinToString(",")}")
+            }
+
+            if (tlsRecordSplit) {
+                tlsRecordSplitPosition.takeIf { it != 0 }?.let {
+                    var tlsRecArg = it.toString()
+                    if (tlsRecordSplitAtSni) {
+                        tlsRecArg += "+s"
+                    }
+                    args.add("-r${tlsRecArg}")
+                }
+            }
+
+            if (tcpFastOpen) {
+                args.add("-F")
+            }
+
+            if (dropSack) {
+                args.add("-Y")
+            }
+
+            args.add("-An")
+
+            if (desyncUdp) {
+                args.add("-Ku")
+
+                udpFakeCount.takeIf { it != 0 }?.let {
+                    args.add("-a${it}")
+                }
+
+                args.add("-An")
+            }
+
+            Log.d("ProxyPref", "UI to cmd: ${args.joinToString(" ")}")
+            return args.toTypedArray()
+        }
 }
