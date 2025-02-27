@@ -10,6 +10,8 @@ import com.google.gson.Gson
 import io.github.dovecoteescapee.byedpi.BuildConfig
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.AppSettings
+import io.github.dovecoteescapee.byedpi.fragments.ByeDpiCommandLineSettingsFragment
+import io.github.dovecoteescapee.byedpi.fragments.ByeDpiUISettingsFragment
 import io.github.dovecoteescapee.byedpi.fragments.MainSettingsFragment
 import io.github.dovecoteescapee.byedpi.utility.HistoryUtils
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
@@ -21,10 +23,28 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.settings, MainSettingsFragment())
-            .commit()
+        val openFragment = intent.getStringExtra("open_fragment")
+
+        when (openFragment) {
+            "cmd" -> {
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.settings, ByeDpiCommandLineSettingsFragment())
+                    .commit()
+            }
+            "ui" -> {
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.settings, ByeDpiUISettingsFragment())
+                    .commit()
+            }
+            else -> {
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.settings, MainSettingsFragment())
+                    .commit()
+            }
+        }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }

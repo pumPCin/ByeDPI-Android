@@ -8,6 +8,7 @@
         android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:iconifiedByDefault="false"
         android:visibility="gone"
         android:queryHint="@string/search_apps" />
 

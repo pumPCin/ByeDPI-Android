@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,6 +9,7 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/status_button"
         android:backgroundTint="?attr/colorPrimary"
+        android:textColor="?attr/colorOnPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -37,5 +37,17 @@
         android:layout_below="@+id/status_text"
         android:layout_centerHorizontal="true"
         tools:text="127.0.0.1:1080" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/open_editor_link"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_below="@id/proxy_address"
+        android:layout_marginTop="8dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="?attr/colorPrimary"
+        android:text="@string/open_editor"
+        android:clickable="true"
+        android:focusable="true" />
 
 </RelativeLayout>

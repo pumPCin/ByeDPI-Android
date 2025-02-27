@@ -69,6 +69,7 @@
     <string name="mode_setting">Режим</string>
     <string name="notification_title">ByeDPI</string>
     <string name="oob_data">Данные OOB</string>
+    <string name="open_editor">Открыть редактор</string>
     <string name="proxy_address">%1$s:%2$s</string>
     <string name="proxy_channel_name">Proxy</string>
     <string name="proxy_down">Proxy выключен</string>

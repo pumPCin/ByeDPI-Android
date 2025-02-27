@@ -109,10 +109,8 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
             .setView(container)
             .setPositiveButton(getString(android.R.string.ok)) { _, _ ->
                 val newName = input.text.toString()
-                if (newName.isNotBlank()) {
-                    cmdHistoryUtils.renameCommand(command.text, newName)
-                    updateHistoryCategory()
-                }
+                cmdHistoryUtils.renameCommand(command.text, newName)
+                updateHistoryCategory()
             }
             .setNegativeButton(getString(android.R.string.cancel), null)
             .show()
