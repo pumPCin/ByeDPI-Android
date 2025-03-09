@@ -74,12 +74,11 @@ class ByeDpiProxyService : LifecycleService() {
         }
 
         try {
+            startForeground()
             mutex.withLock {
                 startProxy()
             }
-
             updateStatus(ServiceStatus.Connected)
-            startForeground()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start proxy", e)
             updateStatus(ServiceStatus.Failed)
@@ -146,9 +145,13 @@ class ByeDpiProxyService : LifecycleService() {
             return
         }
 
-        proxy.stopProxy()
-        proxyJob?.join()
-        proxyJob = null
+        try {
+            proxy.stopProxy()
+            proxyJob?.join()
+            proxyJob = null
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to close proxyJob", e)
+        }
 
         Log.i(TAG, "Proxy stopped")
     }

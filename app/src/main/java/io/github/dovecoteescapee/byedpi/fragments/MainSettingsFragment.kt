@@ -105,11 +105,8 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         val selectedApps = findPreferenceNotNull<Preference>("selected_apps")
 
         if (sharedPreferences?.getBoolean("byedpi_enable_cmd_settings", false) == true) {
-            val cmdArgs = sharedPreferences?.getStringNotNull("byedpi_cmd_args", "")?.split(" ")
-            val ipIndex = cmdArgs?.indexOfFirst { it == "-i" || it == "--ip" }
-            val portIndex = cmdArgs?.indexOfFirst { it == "-p" || it == "--port" }
-
-            proxy.isVisible = ipIndex == -1 && portIndex == -1
+            val (cmdIp, cmdPort) = sharedPreferences?.checkIpAndPortInCmd() ?: Pair(null, null)
+            proxy.isVisible = cmdIp == null && cmdPort == null
         } else {
             proxy.isVisible = true
         }

@@ -26,23 +26,38 @@ fun SharedPreferences.getSelectedApps(): List<String> {
     return getStringSet("selected_apps", emptySet())?.toList() ?: emptyList()
 }
 
-fun SharedPreferences.getProxyIpAndPort(): Pair<String, String> {
+fun SharedPreferences.checkIpAndPortInCmd(): Pair<String?, String?> {
     val cmdEnable = getBoolean("byedpi_enable_cmd_settings", true)
-    val cmdArgs = if (cmdEnable) getString("byedpi_cmd_args", "-s1 -q1 -Y -At -f-1 -r1+s -As") else null
-    val args = cmdArgs?.split(" ") ?: emptyList()
+    if (!cmdEnable) return Pair(null, null)
+
+    val cmdArgs = getString("byedpi_cmd_args", "-s1 -q1 -Y -At -f-1 -r1+s -As")?.let { shellSplit(it) } ?: emptyList()
 
     fun getArgValue(argsList: List<String>, keys: List<String>): String? {
         for (key in keys) {
-            val index = argsList.indexOf(key)
-            if (index != -1 && index + 1 < argsList.size) {
-                return argsList[index + 1]
+            val index = argsList.indexOfFirst { arg -> keys.any { arg.startsWith(it) } }
+            if (index != -1) {
+                val arg = argsList[index]
+                val keyMatch = keys.firstOrNull { arg.startsWith(it) }
+                if (keyMatch != null) {
+                    return if (arg.length > keyMatch.length) {
+                        arg.substring(keyMatch.length)
+                    } else if (index + 1 < argsList.size) {
+                        argsList[index + 1]
+                    } else null
+                }
             }
         }
         return null
     }
 
-    val cmdIp = getArgValue(args, listOf("-i", "--ip"))
-    val cmdPort = getArgValue(args, listOf("-p", "--port"))
+    val cmdIp = getArgValue(cmdArgs, listOf("-i", "--ip"))
+    val cmdPort = getArgValue(cmdArgs, listOf("-p", "--port"))
+
+    return Pair(cmdIp, cmdPort)
+}
+
+fun SharedPreferences.getProxyIpAndPort(): Pair<String, String> {
+    val (cmdIp, cmdPort) = checkIpAndPortInCmd()
 
     val ip = cmdIp ?: getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
     val port = cmdPort ?: getStringNotNull("byedpi_proxy_port", "1080")

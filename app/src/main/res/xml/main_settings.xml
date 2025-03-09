@@ -108,6 +108,12 @@
             android:defaultValue="1080"
             app:useSimpleSummaryProvider="true" />
 
+        <SwitchPreference
+            android:key="byedpi_http_connect"
+            android:title="@string/byedpi_http_connect_setting"
+            android:defaultValue="false"
+            android:summary="@string/byedpi_http_connect_summary"/>
+
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

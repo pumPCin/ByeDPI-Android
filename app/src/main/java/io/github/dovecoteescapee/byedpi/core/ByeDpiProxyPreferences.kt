@@ -30,15 +30,19 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
 
             Log.d("ProxyPref", "CMD: $args")
 
-            val hasIp = args.contains("-i ") || args.contains("--ip ")
-            val hasPort = args.contains("-p ") || args.contains("--port ")
+            val hasIp = args.contains("-i") || args.contains("--ip")
+            val hasPort = args.contains("-p") || args.contains("--port")
+
+            val enableHttp = preferences.getBoolean("byedpi_http_connect", false)
+            val hasHttp = args.contains("-G") || args.contains("--http-connect")
 
             val ip = preferences.getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
             val port = preferences.getStringNotNull("byedpi_proxy_port", "1080")
 
             val prefix = buildString {
-                if (!hasIp) append("-i $ip ")
-                if (!hasPort) append("-p $port ")
+                if (!hasIp) append("-i$ip ")
+                if (!hasPort) append("-p$port ")
+                if (enableHttp && !hasHttp) append("-G ")
             }
 
             Log.d("ProxyPref", "Added from settings: $prefix")
@@ -55,6 +59,7 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
 class ByeDpiProxyUIPreferences(
     ip: String? = null,
     port: Int? = null,
+    httpConnect: Boolean? = null,
     maxConnections: Int? = null,
     bufferSize: Int? = null,
     defaultTtl: Int? = null,
@@ -83,10 +88,10 @@ class ByeDpiProxyUIPreferences(
 ) : ByeDpiProxyPreferences {
     val ip: String = ip ?: "127.0.0.1"
     val port: Int = port ?: 1080
+    val httpConnect: Boolean = httpConnect ?: false
     val maxConnections: Int = maxConnections ?: 512
     val bufferSize: Int = bufferSize ?: 16384
     val defaultTtl: Int = defaultTtl ?: 0
-    val customTtl: Boolean = defaultTtl != null
     val noDomain: Boolean = noDomain ?: false
     val desyncHttp: Boolean = desyncHttp ?: true
     val desyncHttps: Boolean = desyncHttps ?: true
@@ -117,6 +122,7 @@ class ByeDpiProxyUIPreferences(
     constructor(preferences: SharedPreferences) : this(
         ip = preferences.getString("byedpi_proxy_ip", null),
         port = preferences.getString("byedpi_proxy_port", null)?.toIntOrNull(),
+        httpConnect = preferences.getBoolean("byedpi_http_connect", false),
         maxConnections = preferences.getString("byedpi_max_connections", null)?.toIntOrNull(),
         bufferSize = preferences.getString("byedpi_buffer_size", null)?.toIntOrNull(),
         defaultTtl = preferences.getString("byedpi_default_ttl", null)?.toIntOrNull(),
@@ -212,6 +218,8 @@ class ByeDpiProxyUIPreferences(
             bufferSize.takeIf { it != 0 }?.let {
                 args.add("-b${it}")
             }
+
+            if (httpConnect) args.add("-G")
 
             val protocols = mutableListOf<String>()
             if (desyncHttps) protocols.add("t")

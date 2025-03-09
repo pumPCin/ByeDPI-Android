@@ -1,8 +1,5 @@
 <resources>
     <string name="about_category">О приложении</string>
-    <string name="accessibility_service_disabled">Для работы автозапуска активируйте службу специальных возможностей</string>
-    <string name="accessibility_service_enabled">Служба активна, автозапуск работает</string>
-    <string name="accessibility_service_status">Статус автозапуска</string>
     <string name="app_name">ByeDPI</string>
     <string name="applist_setting">Фильтр приложений</string>
     <string name="apps_select">Выбрать приложения</string>
@@ -26,6 +23,8 @@
     <string name="byedpi_hosts_blacklist_setting">Чёрный список хостов</string>
     <string name="byedpi_hosts_mode_setting">Хосты</string>
     <string name="byedpi_hosts_whitelist_setting">Белый список хостов</string>
+    <string name="byedpi_http_connect_setting">HTTP соединение</string>
+    <string name="byedpi_http_connect_summary">Проксировать кроме HTTP соединений</string>
     <string name="byedpi_max_connections_setting">Максимум подключений</string>
     <string name="byedpi_no_domain_setting">Без домена</string>
     <string name="byedpi_protocols_category">Протоколы</string>

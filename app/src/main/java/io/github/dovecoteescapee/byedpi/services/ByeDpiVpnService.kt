@@ -81,12 +81,12 @@ class ByeDpiVpnService : LifecycleVpnService() {
         }
 
         try {
+            startForeground()
             mutex.withLock {
                 startProxy()
                 startTun2Socks()
             }
             updateStatus(ServiceStatus.Connected)
-            startForeground()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start VPN", e)
             updateStatus(ServiceStatus.Failed)
@@ -142,8 +142,8 @@ class ByeDpiVpnService : LifecycleVpnService() {
             withContext(Dispatchers.Main) {
                 if (code != 0) {
                     Log.e(TAG, "Proxy stopped with code $code")
+                    stop()
                     updateStatus(ServiceStatus.Failed)
-                    stopTun2Socks()
                 } else {
                     if (!stopping) {
                         stop()
@@ -164,9 +164,13 @@ class ByeDpiVpnService : LifecycleVpnService() {
             return
         }
 
-        byeDpiProxy.stopProxy()
-        proxyJob?.join() ?: throw IllegalStateException("ProxyJob field null")
-        proxyJob = null
+        try {
+            byeDpiProxy.stopProxy()
+            proxyJob?.join()
+            proxyJob = null
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to close proxyJob", e)
+        }
 
         Log.i(TAG, "Proxy stopped")
     }
@@ -216,7 +220,11 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private fun stopTun2Socks() {
         Log.i(TAG, "Stopping tun2socks")
 
-        TProxyService.TProxyStopService()
+        try {
+            TProxyService.TProxyStopService()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to stop TProxyService", e)
+        }
 
         try {
             File(cacheDir, "config.tmp").delete()
@@ -224,8 +232,12 @@ class ByeDpiVpnService : LifecycleVpnService() {
             Log.e(TAG, "Failed to delete config file", e)
         }
 
-        tunFd?.close() ?: Log.w(TAG, "VPN not running")
-        tunFd = null
+        try {
+            tunFd?.close()
+            tunFd = null
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to close tunFd", e)
+        }
 
         Log.i(TAG, "Tun2socks stopped")
     }
