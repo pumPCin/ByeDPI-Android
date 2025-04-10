@@ -79,7 +79,7 @@ android {
 dependencies {
     //noinspection GradleDependency
     implementation("androidx.fragment:fragment-ktx:1.8.6")
-    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.core:core-ktx:1.16.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
