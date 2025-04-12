@@ -7,7 +7,7 @@
     <string name="autohide_settings">Автоматически скрывать приложение после автозапуска</string>
     <string name="automation">Автоматизация</string>
     <string name="autostart_settings">Автозапуск приложения при включении устройства</string>
-    <string name="bye_dpi_proxy_ip_setting">Адрес</string>
+    <string name="bye_dpi_proxy_ip_setting">IP адрес</string>
     <string name="byedpi_buffer_size_setting">Размер буфера</string>
     <string name="byedpi_category">ByeDPI</string>
     <string name="byedpi_default_ttl_setting">TTL по умолчанию</string>
@@ -61,7 +61,7 @@
     <string name="desync_udp_category">UDP</string>
     <string name="export_settings">Экспорт настроек</string>
     <string name="failed_to_start">Ошибка запуска %1$s</string>
-    <string name="general_category">Основное</string>
+    <string name="general_category">Общие</string>
     <string name="import_settings">Импорт настроек</string>
     <string name="ipv6_setting">IPv6</string>
     <string name="logs_failed">Ошибка сбора логов</string>
@@ -87,7 +87,7 @@
     <string name="telegram_link">Группа Telegram</string>
     <string name="test_complete">Тест выполнен</string>
     <string name="test_complete_info">Скопируйте и вставьте преднастройку в редакторе Command line</string>
-    <string name="test_delay">Пауза между преднастройками (в секундах)</string>
+    <string name="test_delay">Пауза между преднастройками\n(в секундах)</string>
     <string name="test_good_cmds">Преднастройки с вероятностью успеха более 50%</string>
     <string name="test_process">Проверка %1$d/%2$d</string>
     <string name="test_proxy_error">Ошибка Proxy. Тест прерван</string>

@@ -33,25 +33,29 @@ fun SharedPreferences.checkIpAndPortInCmd(): Pair<String?, String?> {
     val cmdArgs = getString("byedpi_cmd_args", "-s1 -q1 -Y -At -f-1 -r1+s -As")?.let { shellSplit(it) } ?: emptyList()
 
     fun getArgValue(argsList: List<String>, keys: List<String>): String? {
-        for (key in keys) {
-            val index = argsList.indexOfFirst { arg -> keys.any { arg.startsWith(it) } }
-            if (index != -1) {
-                val arg = argsList[index]
-                val keyMatch = keys.firstOrNull { arg.startsWith(it) }
-                if (keyMatch != null) {
-                    return if (arg.length > keyMatch.length) {
-                        arg.substring(keyMatch.length)
-                    } else if (index + 1 < argsList.size) {
-                        argsList[index + 1]
-                    } else null
+        for (i in argsList.indices) {
+            val arg = argsList[i]
+            for (key in keys) {
+                if (key.startsWith("--")) {
+                    if (arg == key && i + 1 < argsList.size) {
+                        return argsList[i + 1]
+                    } else if (arg.startsWith("$key=")) {
+                        return arg.substringAfter('=')
+                    }
+                } else if (key.startsWith("-")) {
+                    if (arg.startsWith(key) && arg.length > key.length) {
+                        return arg.substring(key.length)
+                    } else if (arg == key && i + 1 < argsList.size) {
+                        return argsList[i + 1]
+                    }
                 }
             }
         }
         return null
     }
 
-    val cmdIp = getArgValue(cmdArgs, listOf("-i", "--ip"))
-    val cmdPort = getArgValue(cmdArgs, listOf("-p", "--port"))
+    val cmdIp = getArgValue(cmdArgs, listOf("--ip", "-i"))
+    val cmdPort = getArgValue(cmdArgs, listOf("--port", "-p"))
 
     return Pair(cmdIp, cmdPort)
 }

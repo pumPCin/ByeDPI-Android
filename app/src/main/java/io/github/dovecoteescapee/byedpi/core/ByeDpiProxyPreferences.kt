@@ -2,6 +2,7 @@ package io.github.dovecoteescapee.byedpi.core
 
 import android.content.SharedPreferences
 import android.util.Log
+import io.github.dovecoteescapee.byedpi.utility.checkIpAndPortInCmd
 import io.github.dovecoteescapee.byedpi.utility.getStringNotNull
 import io.github.dovecoteescapee.byedpi.utility.shellSplit
 
@@ -30,8 +31,9 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
 
             Log.d("ProxyPref", "CMD: $args")
 
-            val hasIp = args.contains("-i") || args.contains("--ip")
-            val hasPort = args.contains("-p") || args.contains("--port")
+            val (cmdIp, cmdPort) = preferences.checkIpAndPortInCmd()
+            val hasIp = cmdIp != null
+            val hasPort = cmdPort != null
 
             val enableHttp = preferences.getBoolean("byedpi_http_connect", false)
             val hasHttp = args.contains("-G") || args.contains("--http-connect")
@@ -40,9 +42,9 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
             val port = preferences.getStringNotNull("byedpi_proxy_port", "1080")
 
             val prefix = buildString {
-                if (!hasIp) append("-i$ip ")
-                if (!hasPort) append("-p$port ")
-                if (enableHttp && !hasHttp) append("-G ")
+                if (!hasIp) append("--ip $ip ")
+                if (!hasPort) append("--port $port ")
+                if (enableHttp && !hasHttp) append("--http-connect ")
             }
 
             Log.d("ProxyPref", "Added from settings: $prefix")
