@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.statusButton.setOnClickListener {
-            binding.statusButton.isEnabled = false
+            binding.statusButton.isClickable = false
 
             val (status, _) = appStatus
             when (status) {
@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             binding.statusButton.postDelayed({
-                binding.statusButton.isEnabled = true
+                binding.statusButton.isClickable = true
             }, 500)
         }
 
