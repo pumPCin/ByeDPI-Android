@@ -54,8 +54,12 @@
 
         <activity
             android:name=".activities.ToggleActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:exported="true">
+            android:theme="@android:style/Theme.NoDisplay"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="io.github.dovecoteescapee.byedpi.TOGGLE_SERVICE" />
                 <category android:name="android.intent.category.DEFAULT" />
