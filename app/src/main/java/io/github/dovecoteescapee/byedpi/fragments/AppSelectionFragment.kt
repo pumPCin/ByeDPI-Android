@@ -85,10 +85,22 @@ class AppSelectionFragment : Fragment() {
         return installedApps
             .filter { it.packageName != requireContext().packageName }
             .map {
+                val appName = try {
+                    pm.getApplicationLabel(it).toString()
+                } catch (e: Exception) {
+                    it.packageName
+                }
+
+                val appIcon = try {
+                    pm.getApplicationIcon(it.packageName)
+                } catch (e: Exception) {
+                    pm.defaultActivityIcon
+                }
+
                 AppInfo(
-                    pm.getApplicationLabel(it).toString(),
+                    appName,
                     it.packageName,
-                    pm.getApplicationIcon(it.packageName),
+                    appIcon,
                     selectedApps.contains(it.packageName)
                 )
             }

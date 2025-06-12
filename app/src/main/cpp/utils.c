@@ -9,13 +9,26 @@
 #include "utils.h"
 
 struct params default_params;
+extern const struct option options[46];
 
 void reset_params(void) {
     clear_params();
     params = default_params;
 }
 
-extern const struct option options[44];
+static struct desync_params *add_group(struct desync_params *prev)
+{
+    struct desync_params *dp = calloc(1, sizeof(*prev));
+    if (!dp) {
+        return 0;
+    }
+    if (prev) {
+        dp->prev = prev;
+        prev->next = dp;
+    }
+    params.dp_n++;
+    return dp;
+}
 
 int parse_args(int argc, char **argv)
 {
@@ -49,18 +62,19 @@ int parse_args(int argc, char **argv)
     char *end = 0;
     bool all_limited = 1;
 
-    struct desync_params *dp = add((void *)&params.dp,
-                                   &params.dp_count, sizeof(struct desync_params));
+    int curr_optind = 1;
+
+    struct desync_params *dp = add_group(0);
     if (!dp) {
         reset_params();
         return -1;
     }
+    params.dp = dp;
 
     optind = optreset = 1;
 
     while (!invalid && (rez = getopt_long(
             argc, argv, opt, options, 0)) != -1) {
-
         switch (rez) {
 
             case 'N':
@@ -90,6 +104,14 @@ int parse_args(int argc, char **argv)
             pid_file = optarg;
             break;
 #endif
+//            case 'h':
+//                printf(help_text);
+//                reset_params();
+//                return 0;
+//            case 'v':
+//                printf("%s\n", VERSION);
+//                reset_params();
+//                return 0;
 
             case 'i':
                 if (get_addr(optarg, &params.laddr) < 0)
@@ -146,11 +168,14 @@ int parse_args(int argc, char **argv)
                 break;
 
             case 'A':
+                if (optind < curr_optind) {
+                    optind = curr_optind;
+                    continue;
+                }
                 if (!(dp->hosts || dp->proto || dp->pf[0] || dp->detect || dp->ipset)) {
                     all_limited = 0;
                 }
-                dp = add((void *)&params.dp, &params.dp_count,
-                         sizeof(struct desync_params));
+                dp = add_group(dp);
                 if (!dp) {
                     reset_params();
                     return -1;
@@ -179,6 +204,30 @@ int parse_args(int argc, char **argv)
                 }
                 if (dp->detect && params.auto_level == AUTO_NOBUFF) {
                     params.auto_level = AUTO_NOSAVE;
+                }
+                dp->_optind = optind;
+                dp->id = params.dp_n - 1;
+                break;
+
+            case 'B':
+                if (optind < curr_optind) {
+                    continue;
+                }
+                if (*optarg == 'i') {
+                    dp->pf[0] = htons(1);
+                    continue;
+                }
+                val = strtol(optarg, &end, 0);
+                struct desync_params *itdp = params.dp;
+
+                while (itdp && itdp->id != val - 1) {
+                    itdp = itdp->next;
+                }
+                if (!itdp)
+                    invalid = 1;
+                else {
+                    curr_optind = optind;
+                    optind = itdp->_optind;
                 }
                 break;
 
@@ -302,41 +351,44 @@ int parse_args(int argc, char **argv)
                     dp->ttl = val;
                 break;
 
-            case 'k':
-                if (dp->ip_options) {
-                    continue;
-                }
-                if (optarg)
-                    dp->ip_options = ftob(optarg, &dp->ip_options_len);
-                else {
-                    dp->ip_options = ip_option;
-                    dp->ip_options_len = sizeof(ip_option);
-                }
-                if (!dp->ip_options) {
-                    uniperror("read/parse");
-                    invalid = 1;
-                }
-                break;
-
             case 'S':
                 dp->md5sig = 1;
                 break;
 
             case 'O':
-                val = strtol(optarg, &end, 0);
-                if (val <= 0 || *end)
+                if (parse_offset(&dp->fake_offset, optarg)) {
                     invalid = 1;
-                else
-                    dp->fake_offset = val;
+                    break;
+                } else dp->fake_offset.m = 1;
                 break;
 
-            case 'n':
-                if (change_tls_sni(optarg, fake_tls.data, fake_tls.size)) {
-                    perror("change_tls_sni");
-                    reset_params();
-                    return -1;
+            case 'Q':
+                end = optarg;
+                while (end && !invalid) {
+                    switch (*end) {
+                        case 'r':
+                            dp->fake_mod |= FM_RAND;
+                            break;
+                        case 'o':
+                            dp->fake_mod |= FM_ORIG;
+                            break;
+                        default:
+                            invalid = 1;
+                            continue;
+                    }
+                    end = strchr(end, ',');
+                    if (end) end++;
                 }
-                LOG(LOG_S, "sni: %s", optarg);
+                break;
+
+            case 'n':;
+                const char **p = add((void *)&dp->fake_sni_list,
+                                     &dp->fake_sni_count, sizeof(optarg));
+                if (!p) {
+                    invalid = 1;
+                    continue;
+                }
+                *p = optarg;
                 break;
 
             case 'l':
@@ -452,8 +504,19 @@ int parse_args(int argc, char **argv)
                 dp->drop_sack = 1;
                 break;
 
+            case 'Z':
+                params.wait_send = 1;
+                break;
+
             case 'W':
                 params.await_int = atoi(optarg);
+                break;
+
+            case 'C':
+                if (get_addr(optarg, &dp->custom_dst_addr) < 0)
+                    invalid = 1;
+                else
+                    dp->custom_dst = 1;
                 break;
 
 #ifdef __linux__
@@ -480,8 +543,7 @@ int parse_args(int argc, char **argv)
         return -1;
     }
     if (all_limited) {
-        dp = add((void *)&params.dp,
-                 &params.dp_count, sizeof(struct desync_params));
+        dp = add_group(dp);
         if (!dp) {
             reset_params();
             return -1;
@@ -504,6 +566,5 @@ int parse_args(int argc, char **argv)
         return -1;
     }
     srand((unsigned int)time(0));
-
     return 0;
 }

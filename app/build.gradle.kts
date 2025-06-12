@@ -5,16 +5,16 @@ plugins {
 
 android {
     namespace = "io.github.dovecoteescapee.byedpi"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "29.0.13113456"
 
     defaultConfig {
         applicationId = "io.github.dovecoteescapee.byedpi"
         minSdk = 21
         //noinspection OldTargetApi
-        targetSdk = 35
-        versionCode = 23
-        versionName = "1.6.1"
+        targetSdk = 36
+        versionCode = 162
+        versionName = "1.6.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
