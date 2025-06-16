@@ -65,4 +65,13 @@ class HistoryUtils(context: Context) {
         val historyJson = Gson().toJson(history)
         sharedPreferences.edit().putString(historyKey, historyJson).apply()
     }
+
+    fun clearAllHistory() {
+        saveHistory(emptyList())
+    }
+
+    fun clearUnpinnedHistory() {
+        val history = getHistory().filter { it.pinned }
+        saveHistory(history)
+    }
 }

@@ -17,7 +17,9 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var cmdHistoryUtils: HistoryUtils
     private lateinit var editTextPreference: EditTextPreference
-    private lateinit var historyCategory: PreferenceCategory
+    private lateinit var historyHeader: Preference
+    private lateinit var clearButton: Preference
+    private val historyPreferences = mutableListOf<Preference>()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.byedpi_cmd_settings, rootKey)
@@ -25,27 +27,46 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
         cmdHistoryUtils = HistoryUtils(requireContext())
 
         editTextPreference = findPreferenceNotNull("byedpi_cmd_args")
-        historyCategory = findPreferenceNotNull("cmd_history_category")
+        historyHeader = findPreferenceNotNull("cmd_history_header")
+        clearButton = findPreferenceNotNull("clear_cmd_args")
 
         editTextPreference.setOnPreferenceChangeListener { _, newValue ->
             val newCommand = newValue.toString()
             if (newCommand.isNotBlank()) cmdHistoryUtils.addCommand(newCommand)
-            updateHistoryCategory()
+            updateHistoryItems()
             true
         }
 
-        updateHistoryCategory()
+        clearButton.setOnPreferenceClickListener {
+            editTextPreference.text = ""
+            true
+        }
+
+        historyHeader.setOnPreferenceClickListener {
+            showHistoryClearDialog()
+            true
+        }
+
+        updateHistoryItems()
     }
 
-    private fun updateHistoryCategory() {
-        historyCategory.removeAll()
-        val history = cmdHistoryUtils.getHistory()
+    private fun updateHistoryItems() {
+        historyPreferences.forEach { preference ->
+            preferenceScreen.removePreference(preference)
+        }
 
-        history.sortedWith(compareByDescending<Command> { it.pinned }.thenBy { history.indexOf(it) })
-            .forEach { command ->
-                val preference = createPreference(command)
-                historyCategory.addPreference(preference)
-            }
+        historyPreferences.clear()
+        val history = cmdHistoryUtils.getHistory()
+        historyHeader.isVisible = history.isNotEmpty()
+
+        if (history.isNotEmpty()) {
+            history.sortedWith(compareByDescending<Command> { it.pinned }.thenBy { history.indexOf(it) })
+                .forEachIndexed { _, command ->
+                    val preference = createPreference(command)
+                    historyPreferences.add(preference)
+                    preferenceScreen.addPreference(preference)
+                }
+        }
     }
 
     private fun createPreference(command: Command) =
@@ -68,6 +89,34 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
             summary.append(context?.getString(R.string.cmd_history_pinned))
         }
         return summary.toString()
+    }
+
+    private fun showHistoryClearDialog() {
+        val options = arrayOf(
+            getString(R.string.cmd_history_delete_all),
+            getString(R.string.cmd_history_delete_unpinned),
+        )
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.cmd_history_menu))
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> deleteAllHistory()
+                    1 -> deleteUnpinnedHistory()
+                }
+            }
+            .setNegativeButton(getString(android.R.string.cancel), null)
+            .show()
+    }
+
+    private fun deleteAllHistory() {
+        cmdHistoryUtils.clearAllHistory()
+        updateHistoryItems()
+    }
+
+    private fun deleteUnpinnedHistory() {
+        cmdHistoryUtils.clearUnpinnedHistory()
+        updateHistoryItems()
     }
 
     private fun showActionDialog(command: Command) {
@@ -110,7 +159,7 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
             .setPositiveButton(getString(android.R.string.ok)) { _, _ ->
                 val newName = input.text.toString()
                 cmdHistoryUtils.renameCommand(command.text, newName)
-                updateHistoryCategory()
+                updateHistoryItems()
             }
             .setNegativeButton(getString(android.R.string.cancel), null)
             .show()
@@ -122,17 +171,17 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
 
     private fun pinCommand(command: String) {
         cmdHistoryUtils.pinCommand(command)
-        updateHistoryCategory()
+        updateHistoryItems()
     }
 
     private fun unpinCommand(command: String) {
         cmdHistoryUtils.unpinCommand(command)
-        updateHistoryCategory()
+        updateHistoryItems()
     }
 
     private fun deleteCommand(command: String) {
         cmdHistoryUtils.deleteCommand(command)
-        updateHistoryCategory()
+        updateHistoryItems()
     }
 
     private fun copyToClipboard(command: String) {

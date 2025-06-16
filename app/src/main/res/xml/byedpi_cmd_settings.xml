@@ -19,8 +19,15 @@
         android:inputType="textMultiLine"
         app:useSimpleSummaryProvider="true" />
 
-    <androidx.preference.PreferenceCategory
-        android:key="cmd_history_category"
-        android:title="@string/cmd_history_title" />
+    <Preference
+        android:key="clear_cmd_args"
+        android:layout="@layout/cmd_clear"
+        android:title="@string/cmd_args_clear" />
+
+    <Preference
+        android:key="cmd_history_header"
+        android:title="@string/cmd_history_title"
+        android:summary="@string/cmd_history_title_summary"
+        android:layout="@layout/cmd_category" />
 
 </PreferenceScreen>

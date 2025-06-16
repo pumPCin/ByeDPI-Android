@@ -1,29 +1,29 @@
 #include <string.h>
 
 #include <jni.h>
-#include <android/log.h>
+#include <malloc.h>
+#include <getopt.h>
 
 #include "byedpi/error.h"
-#include "byedpi/proxy.h"
-#include "utils.h"
+#include "main.h"
 
-static int g_proxy_fd = -1;
+extern int server_fd;
+static int g_proxy_running = 0;
 
 JNIEXPORT jint JNI_OnLoad(
         __attribute__((unused)) JavaVM *vm,
         __attribute__((unused)) void *reserved) {
-    default_params = params;
     return JNI_VERSION_1_6;
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(
         JNIEnv *env,
         __attribute__((unused)) jobject thiz,
         jobjectArray args) {
 
-    if (g_proxy_fd != -1) {
-        LOG(LOG_S, "proxy already running, fd: %d", g_proxy_fd);
+    if (g_proxy_running) {
+        LOG(LOG_S, "proxy already running");
         return -1;
     }
 
@@ -36,35 +36,19 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniCreateSocket(
         (*env)->ReleaseStringUTFChars(env, arg, arg_str);
     }
 
-    int res = parse_args(argc, argv);
+    g_proxy_running = 1;
+    optind = optreset = 1;
+    LOG(LOG_S, "starting proxy with %d args", argc);
+    int result = main(argc, argv);
 
-    if (res < 0) {
-        uniperror("parse_args");
-        return -1;
+    for (int i = 0; i < argc; i++) {
+        free(argv[i]);
     }
 
-    int fd = listen_socket((union sockaddr_u *)&params.laddr);
-
-    if (fd < 0) {
-        uniperror("listen_socket");
-        return -1;
-    }
-
-    g_proxy_fd = fd;
-    LOG(LOG_S, "listen_socket, fd: %d", fd);
-    return fd;
-}
-
-JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(
-        __attribute__((unused)) JNIEnv *env,
-        __attribute__((unused)) jobject thiz) {
-
-    LOG(LOG_S, "start_proxy, fd: %d", g_proxy_fd);
-
-    if (start_event_loop(g_proxy_fd) < 0) {
-        uniperror("event_loop");
-        return get_e();
+    g_proxy_running = 0;
+    if (result < 0) {
+        LOG(LOG_S, "proxy failed to start");
+        return result;
     }
 
     return 0;
@@ -75,21 +59,16 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(
         __attribute__((unused)) JNIEnv *env,
         __attribute__((unused)) jobject thiz) {
 
-    LOG(LOG_S, "stop_proxy, fd: %d", g_proxy_fd);
+    LOG(LOG_S, "send shutdown to proxy");
 
-    if (g_proxy_fd < 0) {
-        LOG(LOG_S, "proxy is not running, fd: %d", g_proxy_fd);
+    if (!g_proxy_running) {
+        LOG(LOG_S, "proxy is not running");
         return 0;
     }
 
-    reset_params();
-    int res = shutdown(g_proxy_fd, SHUT_RDWR);
-    g_proxy_fd = -1;
+    shutdown(server_fd, SHUT_RDWR);
+    clear_params();
 
-    if (res < 0) {
-        uniperror("shutdown");
-        return get_e();
-    }
-
-    return 0;
+    g_proxy_running = 0;
+    return 1;
 }
