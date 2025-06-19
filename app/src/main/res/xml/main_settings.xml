@@ -146,7 +146,7 @@
         <Preference
             android:key="version"
             android:title="@string/byedpi_version"
-            android:summary="0.17.0" />
+            android:summary="0.17.1" />
 
     </androidx.preference.PreferenceCategory>
 
