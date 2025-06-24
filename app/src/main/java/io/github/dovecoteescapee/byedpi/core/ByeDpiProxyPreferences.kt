@@ -19,7 +19,7 @@ sealed interface ByeDpiProxyPreferences {
 class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreferences {
     constructor(preferences: SharedPreferences) : this(
         cmdToArgs(
-            preferences.getStringNotNull("byedpi_cmd_args", ""),
+            preferences.getStringNotNull("byedpi_cmd_args", "-Ku -a3 -An -Kt,h -d1 -s0+s -d3+s -s6+s -d9+s -s12+s -d15+s -s20+s -d25+s -s30+s -d35+s -An"),
             preferences
         )
     )
@@ -39,7 +39,7 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
             val hasHttp = args.contains("-G") || args.contains("--http-connect")
 
             val ip = preferences.getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
-            val port = preferences.getStringNotNull("byedpi_proxy_port", "1080")
+            val port = preferences.getStringNotNull("byedpi_proxy_port", "10080")
 
             val prefix = buildString {
                 if (!hasIp) append("--ip $ip ")
@@ -89,7 +89,7 @@ class ByeDpiProxyUIPreferences(
     byedpiFakeOffset: Int? = null,
 ) : ByeDpiProxyPreferences {
     val ip: String = ip ?: "127.0.0.1"
-    val port: Int = port ?: 1080
+    val port: Int = port ?: 10080
     val httpConnect: Boolean = httpConnect ?: false
     val maxConnections: Int = maxConnections ?: 512
     val bufferSize: Int = bufferSize ?: 16384
