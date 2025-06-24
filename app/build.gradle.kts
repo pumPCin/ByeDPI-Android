@@ -5,14 +5,13 @@ plugins {
 
 android {
     namespace = "io.github.dovecoteescapee.byedpi"
-    compileSdk = 36
-    ndkVersion = "29.0.13113456"
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "io.github.dovecoteescapee.byedpi"
         minSdk = 21
         //noinspection OldTargetApi
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 164
         versionName = "1.6.4"
 
@@ -34,20 +33,12 @@ android {
         release {
             buildConfigField("String", "VERSION_NAME",  "\"${defaultConfig.versionName}\"")
 
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
         }
         debug {
             buildConfigField("String", "VERSION_NAME",  "\"${defaultConfig.versionName}-debug\"")
-        }
-    }
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = true
         }
     }
     compileOptions {

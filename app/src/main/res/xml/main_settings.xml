@@ -26,7 +26,7 @@
         <com.takisoft.preferencex.EditTextPreference
             android:key="dns_ip"
             android:title="@string/dbs_ip_setting"
-            android:defaultValue="1.1.1.1"
+            android:defaultValue="8.8.8.8"
             app:useSimpleSummaryProvider="true" />
 
         <SwitchPreference
