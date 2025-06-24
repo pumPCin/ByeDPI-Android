@@ -42,6 +42,19 @@
 Порт: 1080 (по умолчанию)
 ```
 
+### Сборка
+1. Клонируйте репозиторий с сабмодулями:
+```bash
+git clone --recurse-submodules
+```
+2. Запустите скрипт сборки из корня репозитория:
+```bash
+./gradlew assembleRelease
+```
+3. APK будет в `app/build/outputs/apk/release/`
+
+> P.S.: hev_socks5_tunnel не соберется под Windows, вам нужно будет использовать WSL
+
 ### Зависимости
 - [ByeDPI](https://github.com/hufrea/byedpi)
 - [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
