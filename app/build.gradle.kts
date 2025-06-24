@@ -10,6 +10,7 @@ android {
     defaultConfig {
         applicationId = "io.github.dovecoteescapee.byedpi"
         minSdk = 21
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1640
         versionName = "1.6.4"
