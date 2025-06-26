@@ -66,7 +66,7 @@ class QuickTileService : TileService() {
     }
 
     private fun setState(newState: Int) {
-        qsTile.apply {
+        qsTile?.apply {
             state = newState
             updateTile()
         }
