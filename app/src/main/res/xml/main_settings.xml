@@ -55,12 +55,12 @@
         <SwitchPreference
             android:key="autostart"
             android:title="@string/autostart_settings"
-            android:defaultValue="false" />
+            android:defaultValue="true" />
 
         <SwitchPreference
             android:key="auto_connect"
             android:title="@string/autoconnect_settings"
-            android:defaultValue="false" />
+            android:defaultValue="true" />
 
     </androidx.preference.PreferenceCategory>
 
@@ -118,15 +118,6 @@
 
     <androidx.preference.PreferenceCategory
         android:title="@string/about_category">
-
-        <Preference
-            android:key="telegram_group"
-            android:title="@string/telegram_link"
-            android:icon="@drawable/ic_telegram">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://t.me/byebyedpi_group" />
-        </Preference>
 
         <Preference
             android:key="source_code"
