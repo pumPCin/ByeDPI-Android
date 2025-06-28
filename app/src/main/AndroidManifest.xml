@@ -71,6 +71,7 @@
 
         <activity
             android:name=".activities.TestActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_test"
             android:exported="false"/>
 
