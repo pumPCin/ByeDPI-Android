@@ -3,7 +3,6 @@ package io.github.dovecoteescapee.byedpi.fragments
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.*
 import io.github.dovecoteescapee.byedpi.BuildConfig
@@ -26,7 +25,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             "light" -> AppCompatDelegate.MODE_NIGHT_NO
             "dark" -> AppCompatDelegate.MODE_NIGHT_YES
             else -> {
-                Log.w(TAG, "Invalid value for app_theme: $name")
                 null
             }
         }
@@ -128,7 +126,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
                     else -> {
                         applistType.isVisible = true
                         selectedApps.isVisible = false
-                        Log.w(TAG, "Unexpected applistType value: ${applistType.value}")
                     }
                 }
             }

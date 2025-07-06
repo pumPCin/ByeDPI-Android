@@ -58,4 +58,23 @@
         <item name="blacklist">blacklist</item>
         <item name="whitelist">whitelist</item>
     </array>
+
+    <array name="domain_lists_entries">
+        <item>YouTube</item>
+        <item>GoogleVideo</item>
+        <item>Discord</item>
+        <item>Cloudflare</item>
+        <item>Свой список</item>
+    </array>
+    <array name="domain_lists_values">
+        <item>youtube</item>
+        <item>googlevideo</item>
+        <item>discord</item>
+        <item>cloudflare</item>
+        <item>custom</item>
+    </array>
+    <array name="domain_lists_default">
+        <item>youtube</item>
+        <item>googlevideo</item>
+    </array>
 </resources>

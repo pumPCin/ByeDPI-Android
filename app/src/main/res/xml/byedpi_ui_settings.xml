@@ -78,7 +78,7 @@
             android:title="@string/byedpi_desync_method_setting"
             android:entries="@array/byedpi_desync_methods"
             android:entryValues="@array/byedpi_desync_methods_entries"
-            android:defaultValue="disorder"
+            android:defaultValue="oob"
             android:summary="%s" />
 
         <com.takisoft.preferencex.EditTextPreference

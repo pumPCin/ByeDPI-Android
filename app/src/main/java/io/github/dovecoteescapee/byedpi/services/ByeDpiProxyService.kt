@@ -4,7 +4,6 @@ import android.app.Notification
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import io.github.dovecoteescapee.byedpi.R
@@ -18,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 class ByeDpiProxyService : LifecycleService() {
     private var proxy = ByeDpiProxy()
@@ -30,10 +30,6 @@ class ByeDpiProxyService : LifecycleService() {
         private const val NOTIFICATION_CHANNEL_ID: String = "ByeDPI Proxy"
 
         private var status: ServiceStatus = ServiceStatus.Disconnected
-
-        fun getStatus(): ServiceStatus {
-            return status
-        }
     }
 
     override fun onCreate() {
@@ -59,17 +55,13 @@ class ByeDpiProxyService : LifecycleService() {
             }
 
             else -> {
-                Log.w(TAG, "Unknown action: $action")
                 START_NOT_STICKY
             }
         }
     }
 
     private suspend fun start() {
-        Log.i(TAG, "Starting")
-
         if (status == ServiceStatus.Connected) {
-            Log.w(TAG, "Proxy already connected")
             return
         }
 
@@ -80,7 +72,6 @@ class ByeDpiProxyService : LifecycleService() {
             }
             updateStatus(ServiceStatus.Connected)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to start proxy", e)
             updateStatus(ServiceStatus.Failed)
             stop()
         }
@@ -100,8 +91,6 @@ class ByeDpiProxyService : LifecycleService() {
     }
 
     private suspend fun stop() {
-        Log.i(TAG, "Stopping")
-
         mutex.withLock {
             stopProxy()
         }
@@ -110,11 +99,8 @@ class ByeDpiProxyService : LifecycleService() {
         stopSelf()
     }
 
-    private suspend fun startProxy() {
-        Log.i(TAG, "Starting proxy")
-
+    private fun startProxy() {
         if (proxyJob != null) {
-            Log.w(TAG, "Proxy fields not null")
             throw IllegalStateException("Proxy fields not null")
         }
 
@@ -126,42 +112,39 @@ class ByeDpiProxyService : LifecycleService() {
 
             withContext(Dispatchers.Main) {
                 if (code != 0) {
-                    Log.e(TAG, "Proxy stopped with code $code")
                     updateStatus(ServiceStatus.Failed)
                 } else {
                     updateStatus(ServiceStatus.Disconnected)
                 }
             }
         }
-
-        Log.i(TAG, "Proxy started")
     }
 
     private suspend fun stopProxy() {
-        Log.i(TAG, "Stopping proxy")
-
         if (status == ServiceStatus.Disconnected) {
-            Log.w(TAG, "Proxy already disconnected")
             return
         }
 
         try {
             proxy.stopProxy()
-            proxyJob?.join()
-            proxyJob = null
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to close proxyJob", e)
-        }
+            proxyJob?.cancel()
 
-        Log.i(TAG, "Proxy stopped")
+            val completed = withTimeoutOrNull(1000) {
+                proxyJob?.join()
+            }
+
+            if (completed == null) {
+                proxy.jniForceClose()
+            }
+
+            proxyJob = null
+        } catch (e: Exception) {}
     }
 
     private fun getByeDpiPreferences(): ByeDpiProxyPreferences =
         ByeDpiProxyPreferences.fromSharedPreferences(getPreferences())
 
     private fun updateStatus(newStatus: ServiceStatus) {
-        Log.d(TAG, "Proxy status changed from $status to $newStatus")
-
         status = newStatus
 
         setStatus(

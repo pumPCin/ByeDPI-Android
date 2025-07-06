@@ -26,9 +26,13 @@
         android:title="@string/test_settings_logclickable"
         android:defaultValue="true" />
 
-    <SwitchPreference
-        android:key="byedpi_proxytest_userdomains"
-        android:title="@string/test_settings_userdomains" />
+    <MultiSelectListPreference
+        android:key="byedpi_proxytest_domain_lists"
+        android:title="@string/test_settings_domain_lists"
+        android:entries="@array/domain_lists_entries"
+        android:entryValues="@array/domain_lists_values"
+        android:defaultValue="@array/domain_lists_default"
+        app:useSimpleSummaryProvider="true" />
 
     <EditTextPreference
         android:key="byedpi_proxytest_domains"

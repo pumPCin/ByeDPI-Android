@@ -24,4 +24,5 @@ class ByeDpiProxy {
 
     private external fun jniStartProxy(args: Array<String>): Int
     private external fun jniStopProxy(): Int
+    external fun jniForceClose(): Int
 }

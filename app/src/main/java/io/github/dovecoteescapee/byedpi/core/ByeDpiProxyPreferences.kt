@@ -1,7 +1,6 @@
 package io.github.dovecoteescapee.byedpi.core
 
 import android.content.SharedPreferences
-import android.util.Log
 import io.github.dovecoteescapee.byedpi.utility.checkIpAndPortInCmd
 import io.github.dovecoteescapee.byedpi.utility.getStringNotNull
 import io.github.dovecoteescapee.byedpi.utility.shellSplit
@@ -29,7 +28,6 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
             val firstArgIndex = cmd.indexOf("-")
             val args = (if (firstArgIndex > 0) cmd.substring(firstArgIndex) else cmd).trim()
 
-            Log.d("ProxyPref", "CMD: $args")
 
             val (cmdIp, cmdPort) = preferences.checkIpAndPortInCmd()
             val hasIp = cmdIp != null
@@ -46,8 +44,6 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
                 if (!hasPort) append("--port $port ")
                 if (enableHttp && !hasHttp) append("--http-connect ")
             }
-
-            Log.d("ProxyPref", "Added from settings: $prefix")
 
             if (prefix.isNotEmpty()) {
                 return arrayOf("ciadpi") + shellSplit("$prefix$args")
@@ -98,7 +94,7 @@ class ByeDpiProxyUIPreferences(
     val desyncHttp: Boolean = desyncHttp ?: true
     val desyncHttps: Boolean = desyncHttps ?: true
     val desyncUdp: Boolean = desyncUdp ?: false
-    val desyncMethod: DesyncMethod = desyncMethod ?: DesyncMethod.Disorder
+    val desyncMethod: DesyncMethod = desyncMethod ?: DesyncMethod.OOB
     val splitPosition: Int = splitPosition ?: 1
     val splitAtHost: Boolean = splitAtHost ?: false
     val fakeTtl: Int = fakeTtl ?: 8
@@ -110,16 +106,12 @@ class ByeDpiProxyUIPreferences(
     val tlsRecordSplit: Boolean = tlsRecordSplit ?: false
     val tlsRecordSplitPosition: Int = tlsRecordSplitPosition ?: 0
     val tlsRecordSplitAtSni: Boolean = tlsRecordSplitAtSni ?: false
-    val hostsMode: HostsMode =
-        if (hosts?.isBlank() != false) HostsMode.Disable
-        else hostsMode ?: HostsMode.Disable
-    val hosts: String? =
-        if (this.hostsMode == HostsMode.Disable) null
-        else hosts?.trim()
     val tcpFastOpen: Boolean = tcpFastOpen ?: false
     val udpFakeCount: Int = udpFakeCount ?: 1
     val dropSack: Boolean = dropSack ?: false
     val fakeOffset: Int = byedpiFakeOffset ?: 0
+    val hostsMode: HostsMode = if (hosts?.isBlank() != false) HostsMode.Disable else hostsMode ?: HostsMode.Disable
+    val hosts: String? = if (this.hostsMode == HostsMode.Disable) null  else hosts?.trim()
 
     constructor(preferences: SharedPreferences) : this(
         ip = preferences.getString("byedpi_proxy_ip", null),
@@ -132,8 +124,7 @@ class ByeDpiProxyUIPreferences(
         desyncHttp = preferences.getBoolean("byedpi_desync_http", true),
         desyncHttps = preferences.getBoolean("byedpi_desync_https", true),
         desyncUdp = preferences.getBoolean("byedpi_desync_udp", false),
-        desyncMethod = preferences.getString("byedpi_desync_method", null)
-            ?.let { DesyncMethod.fromName(it) },
+        desyncMethod = preferences.getString("byedpi_desync_method", null)?.let { DesyncMethod.fromName(it) },
         splitPosition = preferences.getString("byedpi_split_position", null)?.toIntOrNull(),
         splitAtHost = preferences.getBoolean("byedpi_split_at_host", false),
         fakeTtl = preferences.getString("byedpi_fake_ttl", null)?.toIntOrNull(),
@@ -143,11 +134,13 @@ class ByeDpiProxyUIPreferences(
         domainMixedCase = preferences.getBoolean("byedpi_domain_mixed_case", false),
         hostRemoveSpaces = preferences.getBoolean("byedpi_host_remove_spaces", false),
         tlsRecordSplit = preferences.getBoolean("byedpi_tlsrec_enabled", false),
-        tlsRecordSplitPosition = preferences.getString("byedpi_tlsrec_position", null)
-            ?.toIntOrNull(),
+        tlsRecordSplitPosition = preferences.getString("byedpi_tlsrec_position", null)?.toIntOrNull(),
         tlsRecordSplitAtSni = preferences.getBoolean("byedpi_tlsrec_at_sni", false),
-        hostsMode = preferences.getString("byedpi_hosts_mode", null)
-            ?.let { HostsMode.fromName(it) },
+        tcpFastOpen = preferences.getBoolean("byedpi_tcp_fast_open", false),
+        udpFakeCount = preferences.getString("byedpi_udp_fake_count", null)?.toIntOrNull(),
+        dropSack = preferences.getBoolean("byedpi_drop_sack", false),
+        byedpiFakeOffset = preferences.getString("byedpi_fake_offset", null)?.toIntOrNull(),
+        hostsMode = preferences.getString("byedpi_hosts_mode", null)?.let { HostsMode.fromName(it) },
         hosts = preferences.getString("byedpi_hosts_mode", null)?.let {
             when (HostsMode.fromName(it)) {
                 HostsMode.Blacklist -> preferences.getString("byedpi_hosts_blacklist", null)
@@ -155,10 +148,6 @@ class ByeDpiProxyUIPreferences(
                 else -> null
             }
         },
-        tcpFastOpen = preferences.getBoolean("byedpi_tcp_fast_open", false),
-        udpFakeCount = preferences.getString("byedpi_udp_fake_count", null)?.toIntOrNull(),
-        dropSack = preferences.getBoolean("byedpi_drop_sack", false),
-        byedpiFakeOffset = preferences.getString("byedpi_fake_offset", null)?.toIntOrNull(),
     )
 
     enum class DesyncMethod {
@@ -336,8 +325,6 @@ class ByeDpiProxyUIPreferences(
 
                 args.add("-An")
             }
-
-            Log.d("ProxyPref", "UI to cmd: ${args.joinToString(" ")}")
             return args.toTypedArray()
         }
 }

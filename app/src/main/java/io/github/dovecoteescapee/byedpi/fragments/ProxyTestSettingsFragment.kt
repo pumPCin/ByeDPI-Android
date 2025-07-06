@@ -29,15 +29,18 @@ class ProxyTestSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun updatePreferences() {
-        val switchUserDomains = findPreferenceNotNull<SwitchPreference>("byedpi_proxytest_userdomains")
         val switchUserCommands = findPreferenceNotNull<SwitchPreference>("byedpi_proxytest_usercommands")
         val textUserDomains = findPreferenceNotNull<EditTextPreference>("byedpi_proxytest_domains")
         val textUserCommands = findPreferenceNotNull<EditTextPreference>("byedpi_proxytest_commands")
+        val domainLists = findPreferenceNotNull<MultiSelectListPreference>("byedpi_proxytest_domain_lists")
 
-        val setUserDomains = { enable: Boolean -> textUserDomains.isEnabled = enable }
         val setUserCommands = { enable: Boolean -> textUserCommands.isEnabled = enable }
 
-        setUserDomains(switchUserDomains.isChecked)
+        textUserDomains.isEnabled = domainLists.values?.contains("custom") == true
         setUserCommands(switchUserCommands.isChecked)
+
+        if (domainLists.values?.isNotEmpty() == true) {
+            domainLists.summary = domainLists.values.joinToString("\n")
+        }
     }
 }

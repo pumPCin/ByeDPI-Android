@@ -1,6 +1,5 @@
 package io.github.dovecoteescapee.byedpi.utility
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -45,8 +44,6 @@ class SiteCheckUtils(
             "https://$site"
 
         repeat(requestsCount) { attempt ->
-            Log.i("SiteChecker", "Attempt ${attempt + 1}/$requestsCount for $site")
-
             val url = URL(formattedUrl)
             val proxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress(proxyIp, proxyPort))
             val connection = url.openConnection(proxy) as HttpURLConnection
@@ -57,16 +54,12 @@ class SiteCheckUtils(
                 connection.readTimeout = 2000
 
                 val responseCode = connection.responseCode
-                Log.i("SiteChecker", "Response for $site: $responseCode")
-
                 responseCount++
             } catch (e: Exception) {
-                Log.e("SiteChecker", "Error accessing $site: ${e.message}")
             } finally {
                 connection.disconnect()
             }
         }
-
         responseCount
     }
 }

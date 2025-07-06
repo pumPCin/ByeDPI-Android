@@ -1,15 +1,16 @@
 package io.github.dovecoteescapee.byedpi.activities
 
+import android.app.UiModeManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -24,17 +25,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.Mode
-import io.github.dovecoteescapee.byedpi.data.ServiceStatus
-import io.github.dovecoteescapee.byedpi.services.ByeDpiProxyService
+import io.github.dovecoteescapee.byedpi.data.AppStatus
+import io.github.dovecoteescapee.byedpi.services.appStatus
 import io.github.dovecoteescapee.byedpi.services.ServiceManager
 import io.github.dovecoteescapee.byedpi.utility.HistoryUtils
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import io.github.dovecoteescapee.byedpi.utility.SiteCheckUtils
+import androidx.core.content.edit
 import kotlinx.coroutines.*
 import java.io.File
-import androidx.core.content.edit
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 class TestActivity : AppCompatActivity() {
 
@@ -48,9 +47,8 @@ class TestActivity : AppCompatActivity() {
     private lateinit var sites: MutableList<String>
     private lateinit var cmds: List<String>
 
-    private var originalCmdArgs: String = ""
+    private var savedCmd: String = ""
     private var testJob: Job? = null
-    private val proxyLock = Mutex()
 
     private val proxyIp: String = "127.0.0.1"
     private val proxyPort: Int = 10080
@@ -92,11 +90,15 @@ class TestActivity : AppCompatActivity() {
         }
 
         startStopButton.setOnClickListener {
+            startStopButton.isClickable = false
+
             if (isTesting) {
                 stopTesting()
             } else {
                 startTesting()
             }
+
+            startStopButton.postDelayed({ startStopButton.isClickable = true }, 500)
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -108,7 +110,6 @@ class TestActivity : AppCompatActivity() {
             }
         })
 
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
@@ -136,86 +137,82 @@ class TestActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun startProxyService() {
-        proxyLock.withLock {
-            try {
-                ServiceManager.start(this, Mode.Proxy)
-            } catch (e: Exception) {
-                Log.e("TestActivity", "Error start proxy service: ${e.message}")
-            }
-        }
-    }
-
-    private suspend fun stopProxyService() {
-        proxyLock.withLock {
-            try {
-                ServiceManager.stop(this)
-            } catch (e: Exception) {
-                Log.e("TestActivity", "Error stop proxy service: ${e.message}")
-            }
-        }
-    }
-
-    private suspend fun waitForProxyStatus(
-        statusNeeded: ServiceStatus,
-        timeoutMillis: Long = 5000L
-    ): Boolean {
+    private suspend fun waitForProxyStatus(statusNeeded: AppStatus): Boolean {
         val startTime = System.currentTimeMillis()
-        while (System.currentTimeMillis() - startTime < timeoutMillis) {
-            if (isProxyRunning() == (statusNeeded == ServiceStatus.Connected)) {
-                return false
+        while (System.currentTimeMillis() - startTime < 3000) {
+            if (appStatus.first == statusNeeded) {
+                delay(100)
+                return true
             }
             delay(100)
         }
-        return true
+        return false
     }
 
     private suspend fun isProxyRunning(): Boolean = withContext(Dispatchers.IO) {
-        ByeDpiProxyService.getStatus() == ServiceStatus.Connected
+        appStatus.first == AppStatus.Running
+    }
+
+    private fun isAndroidTV(context: Context): Boolean {
+        val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+        return uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+    }
+
+    private fun updateCmdArgs(cmd: String) {
+        prefs.edit { putString("byedpi_cmd_args", cmd) }
     }
 
     private fun startTesting() {
-        isTesting = true
-
-        startStopButton.text = getString(R.string.test_stop)
-        resultsTextView.text = ""
-        progressTextView.text = ""
-
-        originalCmdArgs = prefs.getString("byedpi_cmd_args", "").orEmpty()
-
         sites = loadSites().toMutableList()
         cmds = loadCmds()
 
-        clearLog()
+        if (sites.isEmpty()) {
+            resultsTextView.text = ""
+            appendTextToResults("${getString(R.string.test_settings_domain_empty)}\n")
+            return
+        }
 
-        testJob = lifecycleScope.launch {
+        testJob = lifecycleScope.launch(Dispatchers.IO) {
+            isTesting = true
+            savedCmd = prefs.getString("byedpi_cmd_args", "").orEmpty()
+            clearLog()
+
+            withContext(Dispatchers.Main) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                startStopButton.text = getString(R.string.test_stop)
+                progressTextView.text = ""
+                resultsTextView.text = ""
+            }
+
             val delaySec = prefs.getString("byedpi_proxytest_delay", "1")?.toIntOrNull() ?: 1
             val fullLog = prefs.getBoolean("byedpi_proxytest_fulllog", false)
             val logClickable = prefs.getBoolean("byedpi_proxytest_logclickable", false)
-            val requestsCount =
-                prefs.getString("byedpi_proxytest_requestsсount", "1")
-                    ?.toIntOrNull()
-                    ?.takeIf { it > 0 }
-                    ?: 1
+            val requestsCount = prefs.getString("byedpi_proxytest_requestsсount", "1")?.toIntOrNull()?.takeIf { it > 0 } ?: 1
 
             val successfulCmds = mutableListOf<Triple<String, Int, Int>>()
 
             for ((index, cmd) in cmds.withIndex()) {
                 val cmdIndex = index + 1
-                progressTextView.text = getString(R.string.test_process, cmdIndex, cmds.size)
 
-                val testCmd = "--ip $proxyIp --port $proxyPort $cmd"
-                updateCmdInPreferences(testCmd)
+                withContext(Dispatchers.Main) {
+                    progressTextView.text = getString(R.string.test_process, cmdIndex, cmds.size)
+                }
+
+                updateCmdArgs("--ip $proxyIp --port $proxyPort $cmd")
 
                 if (isProxyRunning()) stopTesting()
-                else startProxyService()
+                else ServiceManager.start(this@TestActivity, Mode.Proxy)
 
-                waitForProxyStatus(ServiceStatus.Connected)
+                withContext(Dispatchers.Main) {
+                    if (logClickable) {
+                        appendLinkToResults("$cmd\n")
+                    } else {
+                        appendTextToResults("$cmd\n")
+                    }
+                }
 
-                if (logClickable) {
-                    appendLinkToResults("$cmd\n")
-                } else {
-                    appendTextToResults("$cmd\n")
+                if (!waitForProxyStatus(AppStatus.Running)) {
+                    stopTesting()
                 }
 
                 val totalRequests = sites.size * requestsCount
@@ -234,41 +231,61 @@ class TestActivity : AppCompatActivity() {
                 val successPercentage = (successfulCount * 100) / totalRequests
 
                 if (successPercentage >= 50) successfulCmds.add(Triple(cmd, successfulCount, totalRequests))
-                appendTextToResults("$successfulCount/$totalRequests ($successPercentage%)\n\n")
 
-                if (isProxyRunning()) stopProxyService()
+                withContext(Dispatchers.Main) {
+                    appendTextToResults("$successfulCount/$totalRequests ($successPercentage%)\n\n")
+                }
+
+                if (isProxyRunning()) ServiceManager.stop(this@TestActivity)
                 else stopTesting()
 
-                waitForProxyStatus(ServiceStatus.Disconnected)
+                if (!waitForProxyStatus(AppStatus.Halted)) {
+                    stopTesting()
+                }
+
                 delay(delaySec * 1000L)
             }
 
             successfulCmds.sortByDescending { it.second }
 
-            progressTextView.text = getString(R.string.test_complete)
-            appendTextToResults("${getString(R.string.test_good_cmds)}\n\n")
+            withContext(Dispatchers.Main) {
+                appendTextToResults("${getString(R.string.test_good_cmds)}\n\n")
 
-            successfulCmds.forEachIndexed { index, (cmd, successCount, total) ->
-                appendTextToResults("${index + 1}. ")
-                appendLinkToResults("$cmd\n")
-                appendTextToResults("$successCount/$total\n\n")
+                successfulCmds.forEachIndexed { index, (cmd, successCount, total) ->
+                    appendTextToResults("${index + 1}. ")
+                    appendLinkToResults("$cmd\n")
+                    appendTextToResults("$successCount/$total\n\n")
+                }
+
+                appendTextToResults(getString(R.string.test_complete_info))
             }
 
-            appendTextToResults(getString(R.string.test_complete_info))
+            withContext(Dispatchers.Main) {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                progressTextView.text = getString(R.string.test_complete)
+            }
+
             stopTesting()
         }
     }
 
     private fun stopTesting() {
-        updateCmdInPreferences(originalCmdArgs)
-
         isTesting = false
-        testJob?.cancel()
-        startStopButton.text = getString(R.string.test_start)
+        
+        updateCmdArgs(savedCmd)
 
         lifecycleScope.launch {
             if (isProxyRunning()) {
-                stopProxyService()
+                ServiceManager.stop(this@TestActivity)
+            }
+
+            testJob?.cancel()
+            testJob = null
+
+            startStopButton.text = getString(R.string.test_start)
+
+            if (isAndroidTV(this@TestActivity)) {
+                recreate()
             }
         }
     }
@@ -323,7 +340,7 @@ class TestActivity : AppCompatActivity() {
     }
 
     private fun addToHistory(command: String) {
-        updateCmdInPreferences(command)
+        updateCmdArgs(command)
         cmdHistoryUtils.addCommand(command)
     }
 
@@ -353,30 +370,38 @@ class TestActivity : AppCompatActivity() {
     }
 
     private fun loadSites(): List<String> {
-        val userDomains = prefs.getBoolean("byedpi_proxytest_userdomains", false)
-        return if (userDomains) {
-            val domains = prefs.getString("byedpi_proxytest_domains", "").orEmpty()
-            domains.lines()
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-        } else {
-            assets.open("proxytest_sites.txt").bufferedReader().useLines { it.toList() }
+        val defaultDomainLists = setOf("youtube", "googlevideo")
+        val selectedDomainLists = prefs.getStringSet("byedpi_proxytest_domain_lists", defaultDomainLists)?: return emptyList()
+
+        val allDomains = mutableListOf<String>()
+
+        for (domainList in selectedDomainLists) {
+            val domains = when (domainList) {
+                "custom" -> {
+                    val customDomains = prefs.getString("byedpi_proxytest_domains", "").orEmpty()
+                    customDomains.lines().map { it.trim() }.filter { it.isNotEmpty() }
+                }
+                else -> {
+                    try {
+                        assets.open("proxytest_$domainList.sites").bufferedReader().useLines { it.toList() }
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
+                }
+            }
+            allDomains.addAll(domains)
         }
+
+        return allDomains.distinct()
     }
 
     private fun loadCmds(): List<String> {
         val userCommands = prefs.getBoolean("byedpi_proxytest_usercommands", false)
         return if (userCommands) {
             val commands = prefs.getString("byedpi_proxytest_commands", "").orEmpty()
-            commands.lines()
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
+            commands.lines().map { it.trim() }.filter { it.isNotEmpty() }
         } else {
-            assets.open("proxytest_cmds.txt").bufferedReader().useLines { it.toList() }
+            assets.open("proxytest_strategies.list").bufferedReader().useLines { it.toList() }
         }
-    }
-
-    private fun updateCmdInPreferences(cmd: String) {
-        prefs.edit { putString("byedpi_cmd_args", cmd) }
     }
 }

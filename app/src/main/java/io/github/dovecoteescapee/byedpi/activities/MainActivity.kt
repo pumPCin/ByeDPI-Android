@@ -169,12 +169,7 @@ class MainActivity : AppCompatActivity() {
         val theme = getPreferences().getString("app_theme", null)
         MainSettingsFragment.setTheme(theme ?: "system")
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
 
@@ -249,8 +244,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateStatus() {
         val (status, mode) = appStatus
-
-        Log.i(TAG, "Updating status: $status, $mode")
 
         val preferences = getPreferences()
         val (ip, port) = preferences.getProxyIpAndPort()
