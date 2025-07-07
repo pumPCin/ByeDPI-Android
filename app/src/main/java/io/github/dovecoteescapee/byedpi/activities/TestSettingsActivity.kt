@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.fragments.ProxyTestSettingsFragment
 
-class TestSettingsActivity : AppCompatActivity() {
+class TestSettingsActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test_settings)

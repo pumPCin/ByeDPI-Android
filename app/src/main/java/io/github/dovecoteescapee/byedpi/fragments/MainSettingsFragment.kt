@@ -50,7 +50,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
                 setTheme(newValue as String)
                 true
             }
-        
+
         val switchCmdSettings = findPreferenceNotNull<SwitchPreference>("byedpi_enable_cmd_settings")
         val uiSettings = findPreferenceNotNull<Preference>("byedpi_ui_settings")
         val cmdSettings = findPreferenceNotNull<Preference>("byedpi_cmd_settings")

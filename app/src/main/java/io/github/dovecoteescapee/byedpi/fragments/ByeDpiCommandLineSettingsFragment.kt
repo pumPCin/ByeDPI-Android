@@ -73,6 +73,7 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
         Preference(requireContext()).apply {
             title = command.text
             summary = buildSummary(command)
+            layoutResource = R.layout.history_item
             setOnPreferenceClickListener {
                 showActionDialog(command)
                 true

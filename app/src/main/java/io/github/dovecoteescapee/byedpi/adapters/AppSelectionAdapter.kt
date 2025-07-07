@@ -13,16 +13,12 @@ import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.AppInfo
 
 class AppSelectionAdapter(
-    private val allApps: List<AppInfo>,
+    allApps: List<AppInfo>,
     private val onAppSelected: (AppInfo, Boolean) -> Unit
 ) : RecyclerView.Adapter<AppSelectionAdapter.ViewHolder>(), Filterable {
 
-    private val filteredApps: MutableList<AppInfo> = allApps
-        .filter { !it.appName.contains("com.") }
-        .toMutableList()
-
     private val originalApps: List<AppInfo> = allApps
-        .filter { !it.appName.contains("com.") }
+    private val filteredApps: MutableList<AppInfo> = allApps.toMutableList()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val appIcon: ImageView = view.findViewById(R.id.appIcon)
@@ -48,25 +44,32 @@ class AppSelectionAdapter(
         }
     }
 
-    override fun getItemCount() = filteredApps.size
+    override fun getItemCount(): Int = filteredApps.size
 
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val query = constraint?.toString()?.lowercase() ?: ""
+                val query = constraint?.toString()?.lowercase().orEmpty()
+
                 val filteredList = if (query.isEmpty()) {
                     originalApps
                 } else {
                     originalApps.filter { it.appName.lowercase().contains(query) }
                 }
+
                 return FilterResults().apply { values = filteredList }
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                val newFilteredApps = (results?.values as? List<AppInfo>) ?: originalApps
-                filteredApps.clear()
-                filteredApps.addAll(newFilteredApps)
-                notifyDataSetChanged()
+                val newList = (results?.values as? List<*>)?.filterIsInstance<AppInfo>()?: originalApps
+                val startPosition = filteredApps.size
+
+                filteredApps.apply {
+                    clear()
+                    addAll(newList)
+                }
+
+                notifyItemRangeChanged(startPosition, filteredApps.size)
             }
         }
     }

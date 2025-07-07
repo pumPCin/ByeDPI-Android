@@ -21,7 +21,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.Mode
@@ -35,7 +34,7 @@ import androidx.core.content.edit
 import kotlinx.coroutines.*
 import java.io.File
 
-class TestActivity : AppCompatActivity() {
+class TestActivity : BaseActivity() {
 
     private lateinit var scrollTextView: ScrollView
     private lateinit var progressTextView: TextView
@@ -56,7 +55,7 @@ class TestActivity : AppCompatActivity() {
     private var isTesting: Boolean
         get() = prefs.getBoolean("is_test_running", false)
         set(value) {
-            prefs.edit { putBoolean("is_test_running", value) }
+            prefs.edit(commit = true) { putBoolean("is_test_running", value) }
         }
 
     private val prefs by lazy { getPreferences() }
@@ -159,7 +158,7 @@ class TestActivity : AppCompatActivity() {
     }
 
     private fun updateCmdArgs(cmd: String) {
-        prefs.edit { putString("byedpi_cmd_args", cmd) }
+        prefs.edit(commit = true) { putString("byedpi_cmd_args", cmd) }
     }
 
     private fun startTesting() {

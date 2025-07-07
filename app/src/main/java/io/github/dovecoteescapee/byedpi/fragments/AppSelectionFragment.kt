@@ -17,6 +17,7 @@ import io.github.dovecoteescapee.byedpi.data.AppInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.core.content.edit
 
 class AppSelectionFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
@@ -117,6 +118,6 @@ class AppSelectionFragment : Fragment() {
             selectedApps.remove(packageName)
         }
 
-        prefs.edit().putStringSet("selected_apps", selectedApps).apply()
+        prefs.edit(commit = true) { putStringSet("selected_apps", selectedApps) }
     }
 }
