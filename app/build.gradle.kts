@@ -10,9 +10,8 @@ android {
     defaultConfig {
         applicationId = "io.github.dovecoteescapee.byedpi"
         minSdk = 21
-        //noinspection OldTargetApi
         targetSdk = 34
-        versionCode = 1650
+        versionCode = 1651
         versionName = "1.6.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -1,5 +1,6 @@
 package io.github.dovecoteescapee.byedpi.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,16 +61,12 @@ class AppSelectionAdapter(
                 return FilterResults().apply { values = filteredList }
             }
 
+            @SuppressLint("NotifyDataSetChanged")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 val newList = (results?.values as? List<*>)?.filterIsInstance<AppInfo>()?: originalApps
-                val startPosition = filteredApps.size
-
-                filteredApps.apply {
-                    clear()
-                    addAll(newList)
-                }
-
-                notifyItemRangeChanged(startPosition, filteredApps.size)
+                filteredApps.clear()
+                filteredApps.addAll(newList)
+                notifyDataSetChanged()
             }
         }
     }

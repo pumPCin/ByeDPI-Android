@@ -14,6 +14,7 @@
         <item name="colorControlHighlight">?attr/colorSurfaceContainer</item>
 
         <item name="alertDialogTheme">@style/CustomAlertDialog</item>
+        <item name="preferenceTheme">@style/CustomPreferenceTheme</item>
     </style>
 
     <style name="ActionBarTheme" parent="Widget.AppCompat.ActionBar.Solid">
@@ -31,5 +32,9 @@
         <item name="android:backgroundTint">?attr/colorSurfaceContainerHigh</item>
         <item name="android:textColorPrimary">?attr/colorOnSurface</item>
         <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="CustomPreferenceTheme" parent="PreferenceThemeOverlay">
+        <item name="android:textSize">14sp</item>
     </style>
 </resources>
