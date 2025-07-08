@@ -14,7 +14,10 @@
         <item name="colorControlHighlight">?attr/colorSurfaceContainer</item>
 
         <item name="alertDialogTheme">@style/CustomAlertDialog</item>
-        <item name="preferenceTheme">@style/CustomPreferenceTheme</item>
+
+        <item name="android:textAppearanceListItem">@style/TextPrimary</item>
+        <item name="android:textAppearanceListItemSecondary">@style/TextSummary</item>
+        <item name="android:textAppearanceListItemSmall">@style/TextSummary</item>
     </style>
 
     <style name="ActionBarTheme" parent="Widget.AppCompat.ActionBar.Solid">
@@ -34,7 +37,11 @@
         <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
     </style>
 
-    <style name="CustomPreferenceTheme" parent="PreferenceThemeOverlay">
+    <style name="TextPrimary" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextSummary" parent="TextAppearance.AppCompat.Subhead">
         <item name="android:textSize">14sp</item>
     </style>
 </resources>

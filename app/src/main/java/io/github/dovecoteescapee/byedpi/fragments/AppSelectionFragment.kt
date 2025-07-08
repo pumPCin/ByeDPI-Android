@@ -88,13 +88,13 @@ class AppSelectionFragment : Fragment() {
             .map {
                 val appName = try {
                     pm.getApplicationLabel(it).toString()
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     it.packageName
                 }
 
                 val appIcon = try {
                     pm.getApplicationIcon(it.packageName)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     pm.defaultActivityIcon
                 }
 
@@ -118,6 +118,6 @@ class AppSelectionFragment : Fragment() {
             selectedApps.remove(packageName)
         }
 
-        prefs.edit(commit = true) { putStringSet("selected_apps", selectedApps) }
+        prefs.edit { putStringSet("selected_apps", selectedApps) }
     }
 }

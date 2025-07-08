@@ -5,7 +5,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import io.github.dovecoteescapee.byedpi.BuildConfig
 import io.github.dovecoteescapee.byedpi.R
@@ -16,6 +15,7 @@ import io.github.dovecoteescapee.byedpi.fragments.MainSettingsFragment
 import io.github.dovecoteescapee.byedpi.utility.HistoryUtils
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import io.github.dovecoteescapee.byedpi.utility.getSelectedApps
+import androidx.core.content.edit
 
 class SettingsActivity : BaseActivity() {
 
@@ -128,20 +128,19 @@ class SettingsActivity : BaseActivity() {
                 }
 
                 val prefs = getPreferences()
-                val editor = prefs.edit()
-
-                editor.clear()
-                import.settings.forEach { (key, value) ->
-                    when (value) {
-                        is Int -> editor.putInt(key, value)
-                        is Boolean -> editor.putBoolean(key, value)
-                        is String -> editor.putString(key, value)
-                        is Float -> editor.putFloat(key, value)
-                        is Long -> editor.putLong(key, value)
+                prefs.edit {
+                    clear()
+                    import.settings.forEach { (key, value) ->
+                        when (value) {
+                            is Int -> putInt(key, value)
+                            is Boolean -> putBoolean(key, value)
+                            is String -> putString(key, value)
+                            is Float -> putFloat(key, value)
+                            is Long -> putLong(key, value)
+                        }
                     }
+                    putStringSet("selected_apps", import.apps.toSet())
                 }
-                editor.putStringSet("selected_apps", import.apps.toSet())
-                editor.apply()
                 HistoryUtils(this).saveHistory(import.history)
 
                 recreate()

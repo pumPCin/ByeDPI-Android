@@ -15,7 +15,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import io.github.dovecoteescapee.byedpi.R
@@ -58,7 +57,7 @@ class MainActivity : BaseActivity() {
         }
 
     private val logsRegister =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { log ->
             lifecycleScope.launch(Dispatchers.IO) {
                 val logs = collectLogs()
 
@@ -69,7 +68,7 @@ class MainActivity : BaseActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    val uri = it.data?.data ?: run {
+                    val uri = log.data?.data ?: run {
                         Log.e(TAG, "No data in result")
                         return@launch
                     }
@@ -244,7 +243,6 @@ class MainActivity : BaseActivity() {
 
     private fun updateStatus() {
         val (status, mode) = appStatus
-
         val preferences = getPreferences()
         val (ip, port) = preferences.getProxyIpAndPort()
 

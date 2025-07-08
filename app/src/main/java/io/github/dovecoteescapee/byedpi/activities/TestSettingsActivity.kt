@@ -2,7 +2,6 @@ package io.github.dovecoteescapee.byedpi.activities
 
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.fragments.ProxyTestSettingsFragment
 

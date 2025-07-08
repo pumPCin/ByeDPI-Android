@@ -1,11 +1,8 @@
 package io.github.dovecoteescapee.byedpi.activities
 
-import android.app.UiModeManager
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -152,11 +149,6 @@ class TestActivity : BaseActivity() {
         appStatus.first == AppStatus.Running
     }
 
-    private fun isAndroidTV(context: Context): Boolean {
-        val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-        return uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
-    }
-
     private fun updateCmdArgs(cmd: String) {
         prefs.edit(commit = true) { putString("byedpi_cmd_args", cmd) }
     }
@@ -274,18 +266,12 @@ class TestActivity : BaseActivity() {
         updateCmdArgs(savedCmd)
 
         lifecycleScope.launch {
-            if (isProxyRunning()) {
-                ServiceManager.stop(this@TestActivity)
-            }
+            if (isProxyRunning()) ServiceManager.stop(this@TestActivity)
 
             testJob?.cancel()
             testJob = null
 
             startStopButton.text = getString(R.string.test_start)
-
-            if (isAndroidTV(this@TestActivity)) {
-                recreate()
-            }
         }
     }
 
@@ -333,7 +319,7 @@ class TestActivity : BaseActivity() {
     }
 
     private fun copyToClipboard(text: String) {
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("command", text)
         clipboard.setPrimaryClip(clip)
     }
@@ -383,7 +369,7 @@ class TestActivity : BaseActivity() {
                 else -> {
                     try {
                         assets.open("proxytest_$domainList.sites").bufferedReader().useLines { it.toList() }
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         emptyList()
                     }
                 }
