@@ -68,7 +68,6 @@
     <string name="general_category">Общие</string>
     <string name="import_settings">Импорт настроек</string>
     <string name="ipv6_setting">IPv6</string>
-    <string name="logs_failed">Ошибка сбора логов</string>
     <string name="mode_setting">Режим</string>
     <string name="notification_title">ByeDPI</string>
     <string name="oob_data">Данные OOB</string>
@@ -81,7 +80,6 @@
     <string name="proxy_stop">ВЫКЛЮЧИТЬ</string>
     <string name="proxy_up">Proxy включен</string>
     <string name="reset_settings">Сброс настроек</string>
-    <string name="save_logs">Сохранить логи</string>
     <string name="search_apps">Поиск приложений</string>
     <string name="settings">Настройки</string>
     <string name="settings_unavailable">Выключите VPN перед изменением настроек</string>
