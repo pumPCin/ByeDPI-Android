@@ -55,31 +55,6 @@ class MainActivity : BaseActivity() {
             }
         }
 
-    private val logsRegister =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { log ->
-            lifecycleScope.launch(Dispatchers.IO) {
-                val logs = collectLogs()
-
-                if (logs == null) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        R.string.logs_failed,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    val uri = log.data?.data ?: run {
-                        return@launch
-                    }
-                    contentResolver.openOutputStream(uri)?.use {
-                        try {
-                            it.write(logs.toByteArray())
-                        } catch (e: IOException) {}
-                    } ?: run {
-                    }
-                }
-            }
-        }
-
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent == null) {
