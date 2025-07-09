@@ -22,6 +22,13 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
     private val historyPreferences = mutableListOf<Preference>()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        val uiScale = resources.displayMetrics.density
+        val threshold = 3f
+
+        val overlay = if (uiScale > threshold) R.style.Theme_ByeDPI_History_NoPaddingLeft
+        else R.style.Theme_ByeDPI_History_PaddingLeft
+
+        requireActivity().theme.applyStyle(overlay, true)
         setPreferencesFromResource(R.xml.byedpi_cmd_settings, rootKey)
 
         cmdHistoryUtils = HistoryUtils(requireContext())

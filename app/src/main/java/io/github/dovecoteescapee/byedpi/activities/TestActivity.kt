@@ -137,7 +137,7 @@ class TestActivity : BaseActivity() {
         val startTime = System.currentTimeMillis()
         while (System.currentTimeMillis() - startTime < 3000) {
             if (appStatus.first == statusNeeded) {
-                delay(100)
+                delay(500)
                 return true
             }
             delay(100)
@@ -227,14 +227,14 @@ class TestActivity : BaseActivity() {
                     appendTextToResults("$successfulCount/$totalRequests ($successPercentage%)\n\n")
                 }
 
+                delay(delaySec * 1000L)
+
                 if (isProxyRunning()) ServiceManager.stop(this@TestActivity)
                 else stopTesting()
 
                 if (!waitForProxyStatus(AppStatus.Halted)) {
                     stopTesting()
                 }
-
-                delay(delaySec * 1000L)
             }
 
             successfulCmds.sortByDescending { it.second }

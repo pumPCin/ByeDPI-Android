@@ -28,7 +28,7 @@ class AppSelectionAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_app, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.app_selection_item, parent, false)
         return ViewHolder(view)
     }
 
