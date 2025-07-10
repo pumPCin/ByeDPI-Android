@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -113,7 +112,7 @@ class MainActivity : BaseActivity() {
 
             binding.statusButton.postDelayed({
                 binding.statusButton.isClickable = true
-            }, 500)
+            }, 1000)
         }
 
         binding.openEditorLink.setOnClickListener {

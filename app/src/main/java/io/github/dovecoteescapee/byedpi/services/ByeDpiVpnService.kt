@@ -16,19 +16,21 @@ import io.github.dovecoteescapee.byedpi.data.*
 import io.github.dovecoteescapee.byedpi.utility.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
+import java.net.InetSocketAddress
+import java.net.Socket
 
 class ByeDpiVpnService : LifecycleVpnService() {
     private val byeDpiProxy = ByeDpiProxy()
     private var proxyJob: Job? = null
     private var tunFd: ParcelFileDescriptor? = null
     private val mutex = Mutex()
-    private var stopping: Boolean = false
 
     companion object {
         private val TAG: String = ByeDpiVpnService::class.java.simpleName
@@ -70,6 +72,21 @@ class ByeDpiVpnService : LifecycleVpnService() {
         lifecycleScope.launch { stop() }
     }
 
+    private suspend fun isProxyRunning(): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val (ip, port) = getPreferences().getProxyIpAndPort()
+
+                Socket().use { socket ->
+                    socket.connect(InetSocketAddress(ip, port.toInt()), 1000)
+                    true
+                }
+            } catch (e: Exception) {
+                false
+            }
+        }
+    }
+
     private suspend fun start() {
         if (status == ServiceStatus.Connected) {
             return
@@ -79,7 +96,14 @@ class ByeDpiVpnService : LifecycleVpnService() {
             startForeground()
             mutex.withLock {
                 startProxy()
-                startTun2Socks()
+                lifecycleScope.launch(Dispatchers.IO) {
+                    delay(500)
+                    if (isProxyRunning()) {
+                        startTun2Socks()
+                    } else {
+                        stopSelf()
+                    }
+                }
             }
             updateStatus(ServiceStatus.Connected)
         } catch (e: Exception) {
@@ -103,13 +127,12 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
     private suspend fun stop() {
         mutex.withLock {
-            stopping = true
             try {
-                stopTun2Socks()
-                stopProxy()
+                withContext(Dispatchers.IO) {
+                    stopTun2Socks()
+                    stopProxy()
+                }
             } catch (e: Exception) {
-            } finally {
-                stopping = false
             }
         }
 
@@ -126,18 +149,16 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         proxyJob = lifecycleScope.launch(Dispatchers.IO) {
             val code = byeDpiProxy.startProxy(preferences)
+            delay(500)
 
-            withContext(Dispatchers.Main) {
-                if (code != 0) {
-                    stopTun2Socks()
-                    updateStatus(ServiceStatus.Failed)
-                } else {
-                    if (!stopping) {
-                        stop()
-                        updateStatus(ServiceStatus.Disconnected)
-                    }
-                }
+            if (code != 0) {
+                updateStatus(ServiceStatus.Failed)
+            } else {
+                updateStatus(ServiceStatus.Disconnected)
             }
+
+            stopTun2Socks()
+            stopSelf()
         }
     }
 

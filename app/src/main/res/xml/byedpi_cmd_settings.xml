@@ -5,7 +5,7 @@
 
     <Preference
         android:key="byedpi_readme"
-        android:title="@string/byedpi_readme"
+        android:title="@string/cmd_documentation"
         android:icon="@drawable/ic_github_36">
         <intent
             android:action="android.intent.action.VIEW"

@@ -94,7 +94,7 @@ class TestActivity : BaseActivity() {
                 startTesting()
             }
 
-            startStopButton.postDelayed({ startStopButton.isClickable = true }, 500)
+            startStopButton.postDelayed({ startStopButton.isClickable = true }, 1000)
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
