@@ -101,6 +101,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
                     if (isProxyRunning()) {
                         startTun2Socks()
                     } else {
+                        updateStatus(ServiceStatus.Failed)
                         stopSelf()
                     }
                 }
