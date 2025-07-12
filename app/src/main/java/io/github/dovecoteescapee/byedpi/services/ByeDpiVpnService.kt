@@ -23,8 +23,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
-import java.net.InetSocketAddress
-import java.net.Socket
 
 class ByeDpiVpnService : LifecycleVpnService() {
     private val byeDpiProxy = ByeDpiProxy()
@@ -72,21 +70,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
         lifecycleScope.launch { stop() }
     }
 
-    private suspend fun isProxyRunning(): Boolean {
-        return withContext(Dispatchers.IO) {
-            try {
-                val (ip, port) = getPreferences().getProxyIpAndPort()
-
-                Socket().use { socket ->
-                    socket.connect(InetSocketAddress(ip, port.toInt()), 1000)
-                    true
-                }
-            } catch (e: Exception) {
-                false
-            }
-        }
-    }
-
     private suspend fun start() {
         if (status == ServiceStatus.Connected) {
             return
@@ -96,15 +79,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
             startForeground()
             mutex.withLock {
                 startProxy()
-                lifecycleScope.launch(Dispatchers.IO) {
-                    delay(500)
-                    if (isProxyRunning()) {
-                        startTun2Socks()
-                    } else {
-                        updateStatus(ServiceStatus.Failed)
-                        stopSelf()
-                    }
-                }
+                startTun2Socks()
             }
             updateStatus(ServiceStatus.Connected)
         } catch (e: Exception) {
