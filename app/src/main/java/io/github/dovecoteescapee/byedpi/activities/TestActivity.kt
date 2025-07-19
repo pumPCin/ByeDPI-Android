@@ -183,6 +183,8 @@ class TestActivity : BaseActivity() {
             val successfulCmds = mutableListOf<Triple<String, Int, Int>>()
 
             for ((index, cmd) in cmds.withIndex()) {
+                if (!isActive) break
+
                 val cmdIndex = index + 1
 
                 withContext(Dispatchers.Main) {
@@ -251,27 +253,31 @@ class TestActivity : BaseActivity() {
                 appendTextToResults(getString(R.string.test_complete_info))
             }
 
-            withContext(Dispatchers.Main) {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                progressTextView.text = getString(R.string.test_complete)
-            }
-
             stopTesting()
         }
     }
 
     private fun stopTesting() {
+        if (!isTesting) {
+            return
+        }
+
         isTesting = false
-        
         updateCmdArgs(savedCmd)
 
-        lifecycleScope.launch {
-            if (isProxyRunning()) ServiceManager.stop(this@TestActivity)
-
+        lifecycleScope.launch(Dispatchers.IO) {
             testJob?.cancel()
             testJob = null
 
-            startStopButton.text = getString(R.string.test_start)
+            if (isProxyRunning()) {
+                ServiceManager.stop(this@TestActivity)
+            }
+
+            withContext(Dispatchers.Main) {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                startStopButton.text = getString(R.string.test_start)
+                progressTextView.text = getString(R.string.test_complete)
+            }
         }
     }
 

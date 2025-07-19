@@ -55,6 +55,10 @@ git clone --recurse-submodules
 
 > P.S.: hev_socks5_tunnel не соберется под Windows, вам нужно будет использовать WSL
 
+### Хеш подписи
+SHA-256: 
+`77:45:10:75:AC:EA:40:64:06:47:5D:74:D4:59:88:3A:49:A6:40:51:FA:F3:2E:42:F7:18:F3:F9:77:7A:8D:FB`
+
 ### Зависимости
 - [ByeDPI](https://github.com/hufrea/byedpi)
 - [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
