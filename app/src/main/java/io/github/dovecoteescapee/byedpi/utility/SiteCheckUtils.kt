@@ -22,8 +22,8 @@ class SiteCheckUtils(
         .readTimeout(4, TimeUnit.SECONDS)
         .writeTimeout(4, TimeUnit.SECONDS)
         .callTimeout(4, TimeUnit.SECONDS)
-        .followSslRedirects(false)
-        .followRedirects(false)
+        .followSslRedirects(true)
+        .followRedirects(true)
         .build()
 
     suspend fun checkSitesAsync(
@@ -59,6 +59,8 @@ class SiteCheckUtils(
             try {
                 val request = Request.Builder().url(formattedUrl).build()
                 client.newCall(request).execute().use { response ->
+                    val declaredLength = response.body.contentLength()
+                    val actualLength = response.body.bytes().size.toLong()
                     val responseCode = response.code
                     responseCount++
                     response.body.close()
