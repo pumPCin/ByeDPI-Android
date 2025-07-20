@@ -63,6 +63,9 @@ class SiteCheckUtils(
                     val actualLength = response.body.bytes().size.toLong()
                     val responseCode = response.code
                     responseCount++
+                    if (declaredLength <= 0 || actualLength >= declaredLength) {
+                        responseCount++
+                    }
                     response.body.close()
                 }
             } catch (e: Exception) {}
