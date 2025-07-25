@@ -131,6 +131,8 @@ class MainActivity : BaseActivity() {
         val theme = getPreferences().getString("app_theme", null)
         MainSettingsFragment.setTheme(theme ?: "system")
 
+        ShortcutUtils.update(this)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
