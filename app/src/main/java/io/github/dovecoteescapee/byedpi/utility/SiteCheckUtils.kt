@@ -52,6 +52,7 @@ class SiteCheckUtils(
         requestsCount: Int
     ): Int = withContext(Dispatchers.IO) {
         var responseCount = 0
+
         val formattedUrl = if (site.startsWith("http://") || site.startsWith("https://")) site
         else "https://$site"
 
@@ -62,7 +63,7 @@ class SiteCheckUtils(
                     val declaredLength = response.body.contentLength()
                     val actualLength = response.body.bytes().size.toLong()
                     val responseCode = response.code
-                    responseCount++
+
                     if (declaredLength <= 0 || actualLength >= declaredLength) {
                         responseCount++
                     }
@@ -70,6 +71,7 @@ class SiteCheckUtils(
                 }
             } catch (e: Exception) {}
         }
+
         responseCount
     }
 }

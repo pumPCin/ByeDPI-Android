@@ -47,6 +47,7 @@
     <string name="cmd_history_delete">Удалить</string>
     <string name="cmd_history_delete_all">Удалить всю историю</string>
     <string name="cmd_history_delete_unpinned">Удалить незакрепленные</string>
+    <string name="cmd_history_edit">Изменить…</string>
     <string name="cmd_history_menu">Выберите действие</string>
     <string name="cmd_history_pin">Закрепить</string>
     <string name="cmd_history_pinned">Закреплено</string>

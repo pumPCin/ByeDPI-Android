@@ -2,13 +2,14 @@ package io.github.dovecoteescapee.byedpi.utility
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
 import io.github.dovecoteescapee.byedpi.data.Command
 import com.google.gson.Gson
+import androidx.core.content.edit
 
 class HistoryUtils(context: Context) {
 
-    private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val context = context.applicationContext
+    private val sharedPreferences: SharedPreferences = context.getPreferences()
     private val historyKey = "byedpi_command_history"
     private val maxHistorySize = 40
 
@@ -52,6 +53,12 @@ class HistoryUtils(context: Context) {
         saveHistory(history)
     }
 
+    fun editCommand(command: String, newText: String) {
+        val history = getHistory().toMutableList()
+        history.find { it.text == command }?.text = newText
+        saveHistory(history)
+    }
+
     fun getHistory(): List<Command> {
         val historyJson = sharedPreferences.getString(historyKey, null)
         return if (historyJson != null) {
@@ -63,7 +70,8 @@ class HistoryUtils(context: Context) {
 
     fun saveHistory(history: List<Command>) {
         val historyJson = Gson().toJson(history)
-        sharedPreferences.edit().putString(historyKey, historyJson).apply()
+        sharedPreferences.edit { putString(historyKey, historyJson) }
+        ShortcutUtils.update(context)
     }
 
     fun clearAllHistory() {

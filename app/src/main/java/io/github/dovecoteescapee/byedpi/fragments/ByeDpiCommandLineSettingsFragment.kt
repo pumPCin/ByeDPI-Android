@@ -132,6 +132,7 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
             getString(R.string.cmd_history_apply),
             if (command.pinned) getString(R.string.cmd_history_unpin) else getString(R.string.cmd_history_pin),
             getString(R.string.cmd_history_rename),
+            getString(R.string.cmd_history_edit),
             getString(R.string.cmd_history_copy),
             getString(R.string.cmd_history_delete)
         )
@@ -143,8 +144,9 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
                     0 -> applyCommand(command.text)
                     1 -> if (command.pinned) unpinCommand(command.text) else pinCommand(command.text)
                     2 -> showRenameDialog(command)
-                    3 -> copyToClipboard(command.text)
-                    4 -> deleteCommand(command.text)
+                    3 -> showEditDialog(command)
+                    4 -> copyToClipboard(command.text)
+                    5 -> deleteCommand(command.text)
                 }
             }
             .show()
@@ -166,8 +168,35 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
             .setView(container)
             .setPositiveButton(getString(android.R.string.ok)) { _, _ ->
                 val newName = input.text.toString()
-                cmdHistoryUtils.renameCommand(command.text, newName)
-                updateHistoryItems()
+                if (newName != command.name) {
+                    cmdHistoryUtils.renameCommand(command.text, newName)
+                    updateHistoryItems()
+                }
+            }
+            .setNegativeButton(getString(android.R.string.cancel), null)
+            .show()
+    }
+
+    private fun showEditDialog(command: Command) {
+        val input = EditText(requireContext()).apply {
+            setText(command.text)
+        }
+
+        val container = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(50, 20, 50, 20)
+            addView(input)
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.cmd_history_edit))
+            .setView(container)
+            .setPositiveButton(getString(android.R.string.ok)) { _, _ ->
+                val newText = input.text.toString()
+                if (newText.isNotBlank() && newText != command.text) {
+                    cmdHistoryUtils.editCommand(command.text, newText)
+                    updateHistoryItems()
+                }
             }
             .setNegativeButton(getString(android.R.string.cancel), null)
             .show()
