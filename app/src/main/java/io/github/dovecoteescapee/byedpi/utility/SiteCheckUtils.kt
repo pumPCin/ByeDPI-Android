@@ -57,6 +57,7 @@ class SiteCheckUtils(
         else "https://$site"
 
         repeat(requestsCount) { attempt ->
+
             try {
                 val request = Request.Builder().url(formattedUrl).build()
                 client.newCall(request).execute().use { response ->
@@ -67,6 +68,7 @@ class SiteCheckUtils(
                     if (declaredLength <= 0 || actualLength >= declaredLength) {
                         responseCount++
                     }
+
                     response.body.close()
                 }
             } catch (e: Exception) {}
