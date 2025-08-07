@@ -27,10 +27,10 @@ fun SharedPreferences.getSelectedApps(): List<String> {
 }
 
 fun SharedPreferences.checkIpAndPortInCmd(): Pair<String?, String?> {
-    val cmdEnable = getBoolean("byedpi_enable_cmd_settings", true)
+    val cmdEnable = getBoolean("byedpi_enable_cmd_settings", false)
     if (!cmdEnable) return Pair(null, null)
 
-    val cmdArgs = getString("byedpi_cmd_args", "-Ku -a3 -An -Kt,h -d1 -s0+s -d3+s -s6+s -d9+s -s12+s -d15+s -s20+s -d25+s -s30+s -d35+s -An")?.let { shellSplit(it) } ?: emptyList()
+    val cmdArgs = getString("byedpi_cmd_args", "")?.let { shellSplit(it) } ?: emptyList()
 
     fun getArgValue(argsList: List<String>, keys: List<String>): String? {
         for (i in argsList.indices) {
@@ -65,7 +65,7 @@ fun SharedPreferences.getProxyIpAndPort(): Pair<String, String> {
     val (cmdIp, cmdPort) = checkIpAndPortInCmd()
 
     val ip = cmdIp ?: getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
-    val port = cmdPort ?: getStringNotNull("byedpi_proxy_port", "10080")
+    val port = cmdPort ?: getStringNotNull("byedpi_proxy_port", "1080")
 
     return Pair(ip, port)
 }

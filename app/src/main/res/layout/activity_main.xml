@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/status_text"
         android:layout_centerHorizontal="true"
-        tools:text="127.0.0.1:10080" />
+        tools:text="127.0.0.1:1080" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/open_editor_link"

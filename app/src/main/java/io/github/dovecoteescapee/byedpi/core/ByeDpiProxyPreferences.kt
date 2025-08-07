@@ -37,7 +37,7 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
             val hasHttp = args.contains("-G") || args.contains("--http-connect")
 
             val ip = preferences.getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
-            val port = preferences.getStringNotNull("byedpi_proxy_port", "10080")
+            val port = preferences.getStringNotNull("byedpi_proxy_port", "1080")
 
             val prefix = buildString {
                 if (!hasIp) append("--ip $ip ")
@@ -85,7 +85,7 @@ class ByeDpiProxyUIPreferences(
     byedpiFakeOffset: Int? = null,
 ) : ByeDpiProxyPreferences {
     val ip: String = ip ?: "127.0.0.1"
-    val port: Int = port ?: 10080
+    val port: Int = port ?: 1080
     val httpConnect: Boolean = httpConnect ?: false
     val maxConnections: Int = maxConnections ?: 512
     val bufferSize: Int = bufferSize ?: 16384
