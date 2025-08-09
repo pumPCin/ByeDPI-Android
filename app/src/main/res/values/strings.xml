@@ -97,7 +97,7 @@
     <string name="test_good_cmds">Преднастройки с вероятностью успеха более 50%</string>
     <string name="test_process">Проверка %1$d/%2$d</string>
     <string name="test_proxy_error">Ошибка Proxy. Тест прерван</string>
-    <string name="test_requestsсount">Количество запросов к домену</string>
+    <string name="test_requests">Количество запросов к домену</string>
     <string name="test_settings_commands">Список преднастроек Command line</string>
     <string name="test_settings_domain_empty">Нет доменов для проверки</string>
     <string name="test_settings_domain_lists">Списки доменов для проверки</string>
