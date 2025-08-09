@@ -101,16 +101,16 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
 
     private fun showHistoryClearDialog() {
         val options = arrayOf(
-            getString(R.string.cmd_history_delete_all),
             getString(R.string.cmd_history_delete_unpinned),
+            getString(R.string.cmd_history_delete_all),
         )
 
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.cmd_history_menu))
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> deleteAllHistory()
-                    1 -> deleteUnpinnedHistory()
+                    0 -> deleteUnpinnedHistory()
+                    1 -> deleteAllHistory()
                 }
             }
             .setNegativeButton(getString(android.R.string.cancel), null)
@@ -195,6 +195,7 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
                 val newText = input.text.toString()
                 if (newText.isNotBlank() && newText != command.text) {
                     cmdHistoryUtils.editCommand(command.text, newText)
+                    if (editTextPreference.text == command.text) applyCommand(newText)
                     updateHistoryItems()
                 }
             }

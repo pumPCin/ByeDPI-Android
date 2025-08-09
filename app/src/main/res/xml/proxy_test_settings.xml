@@ -10,10 +10,17 @@
         app:useSimpleSummaryProvider="true" />
 
     <com.takisoft.preferencex.EditTextPreference
-        android:key="byedpi_proxytest_requestsсount"
-        android:title="@string/test_requestsсount"
+        android:key="byedpi_proxytest_requests"
+        android:title="@string/test_requests"
         android:inputType="number"
         android:defaultValue="10"
+        app:useSimpleSummaryProvider="true" />
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_proxytest_timeout"
+        android:title="@string/test_timeout"
+        android:inputType="number"
+        android:defaultValue="3"
         app:useSimpleSummaryProvider="true" />
 
     <SwitchPreference

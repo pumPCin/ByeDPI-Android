@@ -13,6 +13,12 @@ val PreferenceFragmentCompat.sharedPreferences
 fun Context.getPreferences(): SharedPreferences =
     PreferenceManager.getDefaultSharedPreferences(this)
 
+fun SharedPreferences.getIntStringNotNull(key: String, defValue: Int): Int =
+    getString(key, defValue.toString())?.toIntOrNull() ?: defValue
+
+fun SharedPreferences.getLongStringNotNull(key: String, defValue: Long): Long =
+    getString(key, defValue.toString())?.toLongOrNull() ?: defValue
+
 fun SharedPreferences.getStringNotNull(key: String, defValue: String): String =
     getString(key, defValue) ?: defValue
 

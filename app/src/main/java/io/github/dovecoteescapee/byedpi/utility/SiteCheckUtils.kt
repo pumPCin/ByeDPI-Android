@@ -15,13 +15,13 @@ class SiteCheckUtils(
     private val proxyPort: Int
 ) {
 
-    private fun createClient() = OkHttpClient.Builder()
+    private fun createClient(timeout: Long) = OkHttpClient.Builder()
         .proxy(Proxy(Proxy.Type.SOCKS, InetSocketAddress(proxyIp, proxyPort)))
         .connectionPool(okhttp3.ConnectionPool(0, 1, TimeUnit.NANOSECONDS))
-        .connectTimeout(4, TimeUnit.SECONDS)
-        .readTimeout(4, TimeUnit.SECONDS)
-        .writeTimeout(4, TimeUnit.SECONDS)
-        .callTimeout(4, TimeUnit.SECONDS)
+        .connectTimeout(timeout, TimeUnit.SECONDS)
+        .readTimeout(timeout, TimeUnit.SECONDS)
+        .writeTimeout(timeout, TimeUnit.SECONDS)
+        .callTimeout(timeout, TimeUnit.SECONDS)
         .followSslRedirects(true)
         .followRedirects(true)
         .build()
@@ -29,11 +29,12 @@ class SiteCheckUtils(
     suspend fun checkSitesAsync(
         sites: List<String>,
         requestsCount: Int,
+        requestTimeout: Long,
         fullLog: Boolean,
         onSiteChecked: ((String, Int, Int) -> Unit)? = null
     ): List<Pair<String, Int>> {
         return withContext(Dispatchers.IO) {
-            val client = createClient()
+            val client = createClient(requestTimeout)
             sites.map { site ->
                 async {
                     val successCount = checkSiteAccess(client, site, requestsCount)

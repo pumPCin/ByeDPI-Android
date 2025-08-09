@@ -42,7 +42,6 @@ void sigsegv_handler(int sig) {
     }
 
     g_proxy_running = 0;
-    reset_params();
 }
 
 JNIEXPORT jint JNICALL
@@ -62,7 +61,6 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env
 
     if (setjmp(crash_jmp_buf) != 0) {
         g_proxy_running = 0;
-        reset_params();
         return 0;
     }
 
@@ -75,13 +73,13 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env
         (*env)->ReleaseStringUTFChars(env, arg, arg_str);
     }
 
+    reset_params();
     g_proxy_running = 1;
     optind = optreset = 1;
 
     int result = main(argc, argv);
 
     g_proxy_running = 0;
-    reset_params();
 
     return result;
 }
@@ -95,7 +93,6 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(__attribute_
 
     shutdown(server_fd, SHUT_RDWR);
     g_proxy_running = 0;
-    reset_params();
 
     return 0;
 }
@@ -106,6 +103,8 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniForceClose(__attribute
     if (close(server_fd) == -1) {
         return -1;
     }
+
+    g_proxy_running = 0;
 
     return 0;
 }

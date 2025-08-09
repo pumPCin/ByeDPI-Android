@@ -15,6 +15,25 @@ class ProxyTestSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.proxy_test_settings, rootKey)
+
+        setEditTestPreferenceListenerInt(
+            "byedpi_proxytest_delay",
+            0,
+            10
+        )
+
+        setEditTestPreferenceListenerInt(
+            "byedpi_proxytest_requests",
+            1,
+            20
+        )
+
+        setEditTestPreferenceListenerInt(
+            "byedpi_proxytest_timeout",
+            1,
+            15
+        )
+
         updatePreferences()
     }
 

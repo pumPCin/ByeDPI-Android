@@ -86,6 +86,9 @@
     <string name="settings_unavailable">Выключите VPN перед изменением настроек</string>
     <string name="sni_of_fake_packet">SNI поддельного пакета</string>
     <string name="source_code_link">Исходный код</string>
+    <string name="storage_access">Доступ к файлам</string>
+    <string name="storage_access_allowed_summary">Разрешен</string>
+    <string name="storage_access_summary">Доступ к хранилищу для файлов преднастроек Command line</string>
     <string name="summary_test">Тест работы преднастроек Command line</string>
     <string name="telegram_link">Группа Telegram</string>
     <string name="test_complete">Тест выполнен</string>
@@ -104,6 +107,7 @@
     <string name="test_settings_usercommands">Использовать свой список преднастроек</string>
     <string name="test_start">Начать тест</string>
     <string name="test_stop">Остановить тест</string>
+    <string name="test_timeout">Время ответа домена</string>
     <string name="theme_settings">Тема</string>
     <string name="title_settings">Настройки</string>
     <string name="title_test">Тест преднастроек</string>

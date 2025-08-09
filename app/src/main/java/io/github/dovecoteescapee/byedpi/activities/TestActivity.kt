@@ -27,6 +27,8 @@ import io.github.dovecoteescapee.byedpi.services.ServiceManager
 import io.github.dovecoteescapee.byedpi.utility.HistoryUtils
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import io.github.dovecoteescapee.byedpi.utility.SiteCheckUtils
+import io.github.dovecoteescapee.byedpi.utility.getIntStringNotNull
+import io.github.dovecoteescapee.byedpi.utility.getLongStringNotNull
 import androidx.core.content.edit
 import kotlinx.coroutines.*
 import java.io.File
@@ -175,10 +177,11 @@ class TestActivity : BaseActivity() {
                 resultsTextView.text = ""
             }
 
-            val delaySec = prefs.getString("byedpi_proxytest_delay", "1")?.toIntOrNull() ?: 1
             val fullLog = prefs.getBoolean("byedpi_proxytest_fulllog", false)
             val logClickable = prefs.getBoolean("byedpi_proxytest_logclickable", false)
-            val requestsCount = prefs.getString("byedpi_proxytest_requestsсount", "1")?.toIntOrNull()?.takeIf { it > 0 } ?: 1
+            val delaySec = prefs.getIntStringNotNull("byedpi_proxytest_delay", 1)
+            val requestsCount = prefs.getIntStringNotNull("byedpi_proxytest_requests", 1)
+            val requestTimeout = prefs.getLongStringNotNull("byedpi_proxytest_timeout", 3)
 
             val successfulCmds = mutableListOf<Triple<String, Int, Int>>()
 
@@ -212,6 +215,7 @@ class TestActivity : BaseActivity() {
                 val checkResults = siteChecker.checkSitesAsync(
                     sites = sites,
                     requestsCount = requestsCount,
+                    requestTimeout = requestTimeout,
                     fullLog = fullLog,
                     onSiteChecked = { site, successCount, countRequests ->
                         lifecycleScope.launch(Dispatchers.Main) {
