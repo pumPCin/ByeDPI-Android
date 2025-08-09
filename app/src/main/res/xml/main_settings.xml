@@ -135,12 +135,6 @@
         </Preference>
 
         <Preference
-            android:key="storage_access"
-            android:title="@string/storage_access"
-            android:summary="@string/storage_access_summary">
-        </Preference>
-
-        <Preference
             android:key="version"
             android:title="@string/version"
             app:useSimpleSummaryProvider="true"
