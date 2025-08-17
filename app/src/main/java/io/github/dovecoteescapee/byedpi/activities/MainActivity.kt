@@ -166,6 +166,7 @@ class MainActivity : BaseActivity() {
                 }
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

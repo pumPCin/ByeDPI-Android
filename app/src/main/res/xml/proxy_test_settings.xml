@@ -6,21 +6,21 @@
         android:key="byedpi_proxytest_delay"
         android:title="@string/test_delay"
         android:inputType="number"
-        android:defaultValue="20"
+        android:defaultValue="30"
         app:useSimpleSummaryProvider="true" />
 
     <com.takisoft.preferencex.EditTextPreference
         android:key="byedpi_proxytest_requests"
         android:title="@string/test_requests"
         android:inputType="number"
-        android:defaultValue="10"
+        android:defaultValue="5"
         app:useSimpleSummaryProvider="true" />
 
     <com.takisoft.preferencex.EditTextPreference
         android:key="byedpi_proxytest_timeout"
         android:title="@string/test_timeout"
         android:inputType="number"
-        android:defaultValue="3"
+        android:defaultValue="5"
         app:useSimpleSummaryProvider="true" />
 
     <SwitchPreference

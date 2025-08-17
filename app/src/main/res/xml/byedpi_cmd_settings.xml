@@ -16,7 +16,7 @@
         android:key="byedpi_cmd_args"
         android:title="@string/command_line_arguments"
         android:dialogTitle="@string/command_line_arguments"
-        android:defaultValue="-Ku -a3 -An -Kt,h -d1 -s0+s -d3+s -s6+s -d9+s -s12+s -d15+s -s20+s -d25+s -s30+s -d35+s -An"
+        android:defaultValue="-Ku -a1 -An -o1 -At,r,s -d1"
         android:inputType="textMultiLine"
         app:useSimpleSummaryProvider="true" />
 

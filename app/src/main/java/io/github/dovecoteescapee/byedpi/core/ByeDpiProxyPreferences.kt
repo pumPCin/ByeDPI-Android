@@ -18,7 +18,7 @@ sealed interface ByeDpiProxyPreferences {
 class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreferences {
     constructor(preferences: SharedPreferences) : this(
         cmdToArgs(
-            preferences.getStringNotNull("byedpi_cmd_args", "-Ku -a3 -An -Kt,h -d1 -s0+s -d3+s -s6+s -d9+s -s12+s -d15+s -s20+s -d25+s -s30+s -d35+s -An"),
+            preferences.getStringNotNull("byedpi_cmd_args", "-Ku -a1 -An -o1 -At,r,s -d1"),
             preferences
         )
     )
