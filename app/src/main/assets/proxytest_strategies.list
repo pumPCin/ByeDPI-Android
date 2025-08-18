@@ -26,6 +26,7 @@
 -q1+s -s29+s -o5+s -f-1 -S -a1
 -q1+s -s29+s -s30+s -s14+s -o5+s -f-1 -S -a1
 -s1 -d1 -a1 -Ar,t -f-1 -r1+s -a1
+-s1 -d1 -a1 -Y -Ar -d5 -o1+s -a1 -At -f-1 -r1+s -a1 -As -d1 -o1+s -s-1 -a1
 -s1 -d1 -o1 -a1 -Ar -o3 -a1 -At -f-1 -r1+s -a1
 -s1 -d1 -r1+s -a1 -Ar -o1 -a1 -At -f-1 -r1+s -a1
 -s1 -d1 -Y -a1 -At -f-1 -r1+s -a1
@@ -34,17 +35,16 @@
 -s1 -o1 -a1 -Ar -o2 -a1 -At -f-1 -r1+s -a1
 -s1 -o1 -a1 -Ar -o2 -a1 -At -f-1 -r1+s -a1
 -s1 -o1 -a1 -Ar,t -f-1 -r1+s -a1
+-s1 -o1 -a1 -Y -Ar -s5 -o1+s -a1 -At -f-1 -r1+s -a1 -As -s1 -o1+s -s-1 -a1
 -s1 -o1 -r1+s -a1 -Ar -o2 -a1 -At -f-1 -r1+s -a1
 -s1 -o1 -Y -a1 -At -f-1 -r1+s -a1
 -s1 -q1 -a1 -Ar -s5 -o1+s -a1 -At -f-1 -d1+s -a1 -As -s1 -o1+s -s-1 -a1
 -s1 -q1 -a1 -Ar -s5 -o2 -a1 -At -f-1 -r1+s -a1 -As -s1 -o1+s -s-1 -a1
 -s1 -q1 -a1 -Ar,t -f-1 -r1+s -a1
 -s1 -q1 -a1 -Ar,t -f-1 -S -r1+s -a1
--s1 -q1 -a1 -Y -Ar -a1 -s5 -o1+s -At -f-1 -r1+s -a1 -As -s1 -o1+s -s-1 -a1
 -s1 -q1 -a1 -Y -Ar -a1 -s5 -o2 -At -f-1 -r1+s -a1 -As -s1 -o1+s -s-1 -a1
 -s1 -q1 -a1 -Y -At -a1 -S -f-1 -r1+s -a1 -As -d1+s -O1 -s29+s -a1
 -s1 -q1 -r1+s -a1 -Ar -o1 -a1 -At -f-1 -r1+s -a1
--s1 -q1 -Y -a1 -Ar -s5 -o1+s -a1 -At -f-1 -r1+s -a1 -As -s1 -o1+s -s-1 -a1
 -s1 -q1 -Y -a1 -Ar,t -f-1 -r1+s -a1
 -s1 -q1 -Y -a1 -At -f-1 -r1+s -a1
 -s1 -q1 -Y -a1 -At -S -f-1 -r1+s -a1
