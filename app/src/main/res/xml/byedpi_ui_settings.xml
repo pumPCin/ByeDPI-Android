@@ -142,7 +142,7 @@
         <CheckBoxPreference
             android:key="byedpi_desync_udp"
             android:title="@string/desync_udp"
-            android:defaultValue="false" />
+            android:defaultValue="true" />
 
     </androidx.preference.PreferenceCategory>
 

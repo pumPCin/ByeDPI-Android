@@ -93,7 +93,7 @@ class ByeDpiProxyUIPreferences(
     val noDomain: Boolean = noDomain ?: false
     val desyncHttp: Boolean = desyncHttp ?: true
     val desyncHttps: Boolean = desyncHttps ?: true
-    val desyncUdp: Boolean = desyncUdp ?: false
+    val desyncUdp: Boolean = desyncUdp ?: true
     val desyncMethod: DesyncMethod = desyncMethod ?: DesyncMethod.OOB
     val splitPosition: Int = splitPosition ?: 1
     val splitAtHost: Boolean = splitAtHost ?: false
@@ -123,7 +123,7 @@ class ByeDpiProxyUIPreferences(
         noDomain = preferences.getBoolean("byedpi_no_domain", false),
         desyncHttp = preferences.getBoolean("byedpi_desync_http", true),
         desyncHttps = preferences.getBoolean("byedpi_desync_https", true),
-        desyncUdp = preferences.getBoolean("byedpi_desync_udp", false),
+        desyncUdp = preferences.getBoolean("byedpi_desync_udp", true),
         desyncMethod = preferences.getString("byedpi_desync_method", null)?.let { DesyncMethod.fromName(it) },
         splitPosition = preferences.getString("byedpi_split_position", null)?.toIntOrNull(),
         splitAtHost = preferences.getBoolean("byedpi_split_at_host", false),
