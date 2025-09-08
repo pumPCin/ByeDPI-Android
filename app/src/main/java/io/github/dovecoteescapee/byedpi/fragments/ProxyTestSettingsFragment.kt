@@ -38,6 +38,10 @@ class ProxyTestSettingsFragment : PreferenceFragmentCompat() {
             "byedpi_proxytest_sni"
         )
 
+        setEditTestPreferenceListenerDomain(
+            "byedpi_proxytest_sni"
+        )
+
         updatePreferences()
     }
 
