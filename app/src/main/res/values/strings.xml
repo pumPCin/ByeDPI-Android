@@ -104,7 +104,8 @@
     <string name="test_settings_domains">Список доменов</string>
     <string name="test_settings_fulllog">Подробный лог с выводом ответа хостов</string>
     <string name="test_settings_logclickable">В тесте сделать преднастройки кликабельными</string>
-    <string name="test_settings_usercommands">Использовать свой список преднастроек</string>
+    <string name="test_settings_sni">SNI</string>
+    <string name="test_settings_usercommands">Свой список преднастроек</string>
     <string name="test_start">Начать тест</string>
     <string name="test_stop">Остановить тест</string>
     <string name="test_timeout">Время ответа домена</string>

@@ -13,14 +13,21 @@
         android:key="byedpi_proxytest_requests"
         android:title="@string/test_requests"
         android:inputType="number"
-        android:defaultValue="5"
+        android:defaultValue="7"
         app:useSimpleSummaryProvider="true" />
 
     <com.takisoft.preferencex.EditTextPreference
         android:key="byedpi_proxytest_timeout"
         android:title="@string/test_timeout"
         android:inputType="number"
-        android:defaultValue="5"
+        android:defaultValue="10"
+        app:useSimpleSummaryProvider="true" />
+
+    <com.takisoft.preferencex.EditTextPreference
+        android:key="byedpi_proxytest_sni"
+        android:title="@string/test_settings_sni"
+        android:inputType="text"
+        android:defaultValue="google.com"
         app:useSimpleSummaryProvider="true" />
 
     <SwitchPreference

@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 
 class ByeDpiVpnService : LifecycleVpnService() {
@@ -138,7 +137,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         }
     }
 
-    private suspend fun stopProxy() {
+    private fun stopProxy() {
         if (status == ServiceStatus.Disconnected) {
             return
         }
@@ -146,15 +145,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
         try {
             byeDpiProxy.stopProxy()
             proxyJob?.cancel()
-
-            val completed = withTimeoutOrNull(1000) {
-                proxyJob?.join()
-            }
-
-            if (completed == null) {
-                byeDpiProxy.jniForceClose()
-            }
-
             proxyJob = null
         } catch (e: Exception) {}
     }

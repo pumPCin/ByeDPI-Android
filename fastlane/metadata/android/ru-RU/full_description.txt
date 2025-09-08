@@ -1,4 +1,4 @@
-<p><i>ByeDPI</i> запускает локальный SOCKS5 прокси <a href='https://github.com/hufrea/byedpi' target='_blank' rel='nofollow noopener'>ByeDPI</a> для обхода DPI и перенаправляет весь трафик через него.</p>
+﻿<p><i>ByeDPI</i> запускает локальный SOCKS5 прокси <a href='https://github.com/hufrea/byedpi' target='_blank' rel='nofollow noopener'>ByeDPI</a> для обхода DPI и перенаправляет весь трафик через него.</p>
 <p>Для стабильной работы может потребоваться изменить настройки. Подробнее о различных настройках можно прочитать в <a href='https://github.com/hufrea/byedpi/blob/main/README.md' target='_blank' rel='nofollow noopener'>документации ByeDPI</a>.</p>
 <p>Приложение использует VPN-режим на Android для перенаправления трафика, но не передает ничего на удаленный сервер. Оно не шифрует трафик и не скрывает ваш IP-адрес.</p>
 <p>

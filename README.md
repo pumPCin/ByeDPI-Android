@@ -14,7 +14,7 @@
 
 Приложение является форком [ByeByeDPI Android](https://github.com/romanvht/ByeDPIAndroid) 
 
-Оригинальное приложение [ByeDPI Android](https://github.com/dovecoteescapee/ByeDPIAndroid)
+Оригинальное приложение [ByeDPIAndroid](https://github.com/dovecoteescapee/ByeDPIAndroid)
 
 ---
 
@@ -30,7 +30,7 @@
 * Рекомендуется подключится один раз к VPN, чтобы принять запрос.
 * После этого, при загрузке устройства, приложение автоматически запустит сервис в зависимости от настроек (VPN/Proxy)
 * Если у вас Android TV/BOX, и при подключении пропадает соединение по Ethernet, активируйте режим белого списка и укажите нужные приложения, которые должны работать через VPN (например, YouTube)
-* Комплексная инструкция от комьюнити [ByeByeDPI-Manual](https://github.com/BDManual/ByeByeDPI-Manual)
+* Комплексная инструкция от комьюнити [ByeDPI-Manual](https://github.com/BDManual/ByeDPI-Manual)
 
 ### Как использовать ByeDPI вместе с AdGuard?
 * Запустите ByeDPI в режиме прокси.

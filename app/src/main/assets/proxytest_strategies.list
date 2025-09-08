@@ -9,22 +9,22 @@
 -d1 -s3+s -a1
 -d1 -s4 -d8 -s1+s -d5+s -s10+s -d20+s -a1
 -d1+s -o2 -s5 -r5 -a1
--d1+s -s50+s -a1 -As -f20 -r2+s -a1 -At -d2 -s1+s -s5+s -s10+s -s15+s -s25+s -s35+s -s50+s -s60+s -a1 -An -n vk.com -d2:5:2+h -f-3 -r2+sm -o2 -o50+s -r2+s -f-4 -a1
+-d1+s -s50+s -a1 -As -f20 -r2+s -a1 -At -d2 -s1+s -s5+s -s10+s -s15+s -s25+s -s35+s -s50+s -s60+s -a1 -An -n {sni} -d2:5:2+h -f-3 -r2+sm -o2 -o50+s -r2+s -f-4 -a1
 -d6+s -q4+hm -o2 -a1
 -d7 -s2 -a1
 -d9+s -q20+s -s25+s -t5 -a1 -At,r,s -r1+h -a1
--n vk.com -Qr -d1:3 -f-1 -a1
--n vk.com -Qr -d5+sm -f3+sm -o2 -t4 -a1
--n vk.com -Qr -f-1 -r1+s -a1
--n vk.com -Qr -f209 -s1+sm -R1-3 -a1
--n vk.com -Qr -f6+nr -d2 -d11 -f9+hm -o3 -t7 -a1
+-n {sni} -Qr -d1:3 -f-1 -a1
+-n {sni} -Qr -d5+sm -f3+sm -o2 -t4 -a1
+-n {sni} -Qr -f-1 -r1+s -a1
+-n {sni} -Qr -f209 -s1+sm -R1-3 -a1
+-n {sni} -Qr -f6+nr -d2 -d11 -f9+hm -o3 -t7 -a1
 -o1 -a1 -Ar -q1 -a1 -At -f-1 -r1+s -a1
 -o1 -a1 -At,r,s -d1 -a1
 -o1 -a1 -At,r,s -f-1 -a1 -Ar,s -o1 -a1 -At -r1+s -f-1 -t6 -a1
--o1 -a1 -At,r,s -f-1 -a1 -At,r,s -d1:11+sm -S -a1 -At,r,s -n vk.com -Qr -f1 -d1:11+sm -s1:11+sm -S -a1
+-o1 -a1 -At,r,s -f-1 -a1 -At,r,s -d1:11+sm -S -a1 -At,r,s -n {sni} -Qr -f1 -d1:11+sm -s1:11+sm -S -a1
 -o1 -d1 -a1 -At,r,s -s1 -d1 -s5+s -s10+s -s15+s -s20+s -r1+s -S -a1 -As -s1 -d1 -s5+s -s10+s -s15+s -s20+s -S -a1
 -o1 -d1 -r1+s -S -s1+s -d3+s -a1
--o1 -r-5+se -a1 -At,r,s -d1 -n vk.com -Qr -f-1 -a1
+-o1 -r-5+se -a1 -At,r,s -d1 -n {sni} -Qr -f-1 -a1
 -o1 -s4 -s6 -a1
 -o1+s -d3+s -a1
 -q1 -a1 -Ar -o1 -a1 -At -f-1 -r1+s -a1
