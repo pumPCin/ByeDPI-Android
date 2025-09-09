@@ -1,5 +1,8 @@
 package io.github.dovecoteescapee.byedpi.fragments
 
+import android.content.SharedPreferences
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,16 +20,21 @@ import io.github.dovecoteescapee.byedpi.data.AppInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.core.content.edit
 
 class AppSelectionFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var searchView: SearchView
     private lateinit var progressBar: ProgressBar
     private lateinit var adapter: AppSelectionAdapter
+    private lateinit var prefs: SharedPreferences
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val view = inflater.inflate(R.layout.app_selection_layout, container, false)
+        prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         recyclerView = view.findViewById(R.id.recyclerView)
         searchView = view.findViewById(R.id.searchView)
@@ -68,9 +76,8 @@ class AppSelectionFragment : Fragment() {
             val apps = withContext(Dispatchers.IO) {
                 getInstalledApps()
             }
-            adapter = AppSelectionAdapter(apps) { app, isChecked ->
-                updateSelectedApps(app.packageName, isChecked)
-            }
+
+            adapter = AppSelectionAdapter(requireContext(), apps)
             recyclerView.adapter = adapter
             progressBar.visibility = View.GONE
             searchView.visibility = View.VISIBLE
@@ -80,44 +87,36 @@ class AppSelectionFragment : Fragment() {
     private fun getInstalledApps(): List<AppInfo> {
         val pm = requireContext().packageManager
         val installedApps = pm.getInstalledApplications(0)
-        val selectedApps = PreferenceManager.getDefaultSharedPreferences(requireContext())
-            .getStringSet("selected_apps", setOf()) ?: setOf()
+        val selectedApps = prefs.getStringSet("selected_apps", setOf()) ?: setOf()
 
         return installedApps
             .filter { it.packageName != requireContext().packageName }
-            .map {
-                val appName = try {
-                    pm.getApplicationLabel(it).toString()
-                } catch (_: Exception) {
-                    it.packageName
-                }
-
-                val appIcon = try {
-                    pm.getApplicationIcon(it.packageName)
-                } catch (_: Exception) {
-                    pm.defaultActivityIcon
-                }
-
-                AppInfo(
-                    appName,
-                    it.packageName,
-                    appIcon,
-                    selectedApps.contains(it.packageName)
-                )
-            }
+            .map { createAppInfo(it, pm, selectedApps) }
             .sortedWith(compareBy({ !it.isSelected }, { it.appName.lowercase() }))
     }
 
-    private fun updateSelectedApps(packageName: String, isSelected: Boolean) {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val selectedApps = prefs.getStringSet("selected_apps", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
-
-        if (isSelected) {
-            selectedApps.add(packageName)
-        } else {
-            selectedApps.remove(packageName)
+    private fun createAppInfo(
+        appInfo: ApplicationInfo,
+        pm: PackageManager,
+        selectedApps: Set<String>
+    ): AppInfo {
+        val appName = try {
+            pm.getApplicationLabel(appInfo).toString()
+        } catch (_: Exception) {
+            appInfo.packageName
         }
 
-        prefs.edit { putStringSet("selected_apps", selectedApps) }
+        val appIcon = try {
+            pm.getApplicationIcon(appInfo.packageName)
+        } catch (_: Exception) {
+            pm.defaultActivityIcon
+        }
+
+        return AppInfo(
+            appName,
+            appInfo.packageName,
+            appIcon,
+            selectedApps.contains(appInfo.packageName)
+        )
     }
 }

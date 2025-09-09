@@ -1,6 +1,7 @@
 package io.github.dovecoteescapee.byedpi.adapters
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,15 +10,18 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.edit
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.AppInfo
 
 class AppSelectionAdapter(
-    allApps: List<AppInfo>,
-    private val onAppSelected: (AppInfo, Boolean) -> Unit
+    context: Context,
+    allApps: List<AppInfo>
 ) : RecyclerView.Adapter<AppSelectionAdapter.ViewHolder>(), Filterable {
 
+    private val context = context.applicationContext
     private val originalApps: List<AppInfo> = allApps
     private val filteredApps: MutableList<AppInfo> = allApps.toMutableList()
 
@@ -41,33 +45,48 @@ class AppSelectionAdapter(
         holder.itemView.setOnClickListener {
             app.isSelected = !app.isSelected
             holder.appCheckBox.isChecked = app.isSelected
-            onAppSelected(app, app.isSelected)
+            updateSelectedApps()
         }
     }
 
-    override fun getItemCount(): Int = filteredApps.size
+    override fun getItemCount(): Int {
+        return filteredApps.size
+    }
 
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val query = constraint?.toString()?.lowercase().orEmpty()
+                var filteredList = originalApps
 
-                val filteredList = if (query.isEmpty()) {
-                    originalApps
-                } else {
-                    originalApps.filter { it.appName.lowercase().contains(query) }
+                if (query.isNotEmpty()) {
+                    filteredList = originalApps.filter {
+                        it.appName.lowercase().contains(query)
+                    }
                 }
 
-                return FilterResults().apply { values = filteredList }
+                return FilterResults().apply {
+                    values = filteredList
+                }
             }
 
             @SuppressLint("NotifyDataSetChanged")
-            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                val newList = (results?.values as? List<*>)?.filterIsInstance<AppInfo>()?: originalApps
+            override fun publishResults(constraint: CharSequence, results: FilterResults) {
+                val newList = (results.values as List<*>).filterIsInstance<AppInfo>()
                 filteredApps.clear()
                 filteredApps.addAll(newList)
                 notifyDataSetChanged()
             }
         }
+    }
+
+    private fun getAllSelectedPackages(): Set<String> {
+        return originalApps.filter { it.isSelected }.map { it.packageName }.toSet()
+    }
+
+    private fun updateSelectedApps() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val selectedApps = getAllSelectedPackages()
+        prefs.edit { putStringSet("selected_apps", selectedApps) }
     }
 }
