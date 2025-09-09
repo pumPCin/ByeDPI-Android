@@ -160,15 +160,18 @@ class ByeDpiVpnService : LifecycleVpnService() {
         val dns = sharedPreferences.getStringNotNull("dns_ip", "8.8.8.8")
         val ipv6 = sharedPreferences.getBoolean("ipv6_enable", false)
 
-        val tun2socksConfig = """
-        | misc:
-        |   task-stack-size: 81920
-        | socks5:
-        |   mtu: 8500
-        |   address: $ip
-        |   port: $port
-        |   udp: udp
-        """.trimMargin("| ")
+        val tun2socksConfig = buildString {
+            appendLine("tunnel:")
+            appendLine("  mtu: 8500")
+
+            appendLine("misc:")
+            appendLine("  task-stack-size: 81920")
+
+            appendLine("socks5:")
+            appendLine("  address: $ip")
+            appendLine("  port: $port")
+            appendLine("  udp: udp")
+        }
 
         val configPath = try {
             File.createTempFile("config", "tmp", cacheDir).apply {
@@ -264,6 +267,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         if (dns.isNotBlank()) {
             builder.addDnsServer(dns)
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             builder.setMetered(false)
         }
