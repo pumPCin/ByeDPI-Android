@@ -75,7 +75,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             }
 
         findPreferenceNotNull<Preference>("version").summary = BuildConfig.VERSION_NAME
-        findPreferenceNotNull<Preference>("byedpi_version").summary = "0.17.2"
+        findPreferenceNotNull<Preference>("byedpi_version").summary = "0.17.3"
 
         updatePreferences()
     }
