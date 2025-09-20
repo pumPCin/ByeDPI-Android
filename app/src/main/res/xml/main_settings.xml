@@ -158,9 +158,10 @@
             tools:summary="1.0.0" />
 
         <Preference
-            android:key="version"
+            android:key="byedpi_version"
             android:title="@string/byedpi_version"
-            android:summary="0.17.2" />
+            app:useSimpleSummaryProvider="true"
+            android:summary="0.0.1" />
 
     </androidx.preference.PreferenceCategory>
 
