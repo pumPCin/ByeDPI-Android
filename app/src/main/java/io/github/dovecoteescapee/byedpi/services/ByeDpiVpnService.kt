@@ -166,7 +166,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
             byeDpiProxy.stopProxy()
             proxyJob?.cancel()
 
-            val completed = withTimeoutOrNull(1000) {
+            val completed = withTimeoutOrNull(2000) {
                 proxyJob?.join()
                 true
             }

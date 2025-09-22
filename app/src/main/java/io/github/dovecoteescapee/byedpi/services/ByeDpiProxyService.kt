@@ -150,7 +150,7 @@ class ByeDpiProxyService : LifecycleService() {
             proxy.stopProxy()
             proxyJob?.cancel()
 
-            val completed = withTimeoutOrNull(1000) {
+            val completed = withTimeoutOrNull(2000) {
                 proxyJob?.join()
                 true
             }
