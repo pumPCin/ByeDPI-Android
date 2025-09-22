@@ -139,7 +139,6 @@ class ByeDpiProxyService : LifecycleService() {
             }
 
             if (completed == null) {
-                Log.w(TAG, "proxy not finish in time, cancelling...")
                 proxy.jniForceClose()
             }
 

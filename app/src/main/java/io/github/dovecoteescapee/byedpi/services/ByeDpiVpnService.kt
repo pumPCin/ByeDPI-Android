@@ -153,7 +153,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
             }
 
             if (completed == null) {
-                Log.w(TAG, "proxy not finish in time, cancelling...")
                 byeDpiProxy.jniForceClose()
             }
 
@@ -169,7 +168,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         val sharedPreferences = getPreferences()
         val (ip, port) = sharedPreferences.getProxyIpAndPort()
 
-        val dns = sharedPreferences.getStringNotNull("dns_ip", "8.8.8.8")
+        val dns = sharedPreferences.getStringNotNull("dns_ip", "8.8.4.4")
         val ipv6 = sharedPreferences.getBoolean("ipv6_enable", false)
 
         val tun2socksConfig = buildString {

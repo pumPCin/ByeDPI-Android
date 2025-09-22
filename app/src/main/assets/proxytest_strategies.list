@@ -16,6 +16,7 @@
 -n {sni} -Qr -d1:3 -f-1 -a1
 -n {sni} -Qr -d5+sm -f3+sm -o2 -t4 -a1
 -n {sni} -Qr -f-1 -r1+s -a1
+-n {sni} -Qr -f-204 -s1:5+sm -a1 -As -d1 -s3+s -s5+s -q7 -a1 -As -o2 -f-43 -a1 -As -r5 -Mh -s1:5+s -s3:7+sm -a1
 -n {sni} -Qr -f209 -s1+sm -R1-3 -a1
 -n {sni} -Qr -f6+nr -d2 -d11 -f9+hm -o3 -t7 -a1
 -o1 -a1 -Ar -q1 -a1 -At -f-1 -r1+s -a1
