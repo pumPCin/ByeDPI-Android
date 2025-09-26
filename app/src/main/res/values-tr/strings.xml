@@ -126,7 +126,7 @@
     <string name="test_good_cmds">%50 başarıya ulaşan komutlar</string>
     <string name="test_complete">Test tamamlandı</string>
     <string name="test_complete_info">Kullanmak veya kopyalamk için bir komuta basılı tut</string>
-    <string name="test_settings_sni">SNI</string>
+    <string name="test_settings_sni">SNI sahte paketleri</string>
     <string name="test_settings_fulllog">Ana bilgisayar yanıt çıktısı</string>
     <string name="test_settings_logclickable">Tüm stratejiler tıklanabilir</string>
     <string name="test_settings_domain_lists">Test için alan adı listeleri</string>
