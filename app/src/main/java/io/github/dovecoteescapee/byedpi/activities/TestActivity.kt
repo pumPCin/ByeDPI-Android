@@ -189,6 +189,7 @@ class TestActivity : BaseActivity() {
             for ((index, cmd) in cmds.withIndex()) {
                 if (!isActive) break
 
+                delay(delaySec * 1000L)
                 val cmdIndex = index + 1
 
                 withContext(Dispatchers.Main) {
@@ -233,8 +234,6 @@ class TestActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
                     appendTextToResults("$successfulCount/$totalRequests ($successPercentage%)\n\n")
                 }
-
-                delay(delaySec * 1000L)
 
                 if (isProxyRunning()) ServiceManager.stop(this@TestActivity)
                 else stopTesting()
