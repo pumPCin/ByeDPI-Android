@@ -17,12 +17,15 @@ class HistoryUtils(context: Context) {
         if (command.isBlank()) return
 
         val history = getHistory().toMutableList()
+        val unpinned = history.filter { !it.pinned }
         val search = history.find { it.text == command }
 
         if (search == null) {
             history.add(0, Command(command))
             if (history.size > maxHistorySize) {
-                history.removeAt(maxHistorySize)
+                if (unpinned.isNotEmpty()) {
+                    history.remove(unpinned.last())
+                }
             }
         }
 
