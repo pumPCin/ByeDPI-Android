@@ -1,6 +1,7 @@
 package io.github.dovecoteescapee.byedpi.services
 
 import android.app.Notification
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.os.Build
@@ -29,6 +30,7 @@ class ByeDpiProxyService : LifecycleService() {
     companion object {
         private val TAG: String = ByeDpiProxyService::class.java.simpleName
         private const val FOREGROUND_SERVICE_ID: Int = 2
+        private const val PAUSE_NOTIFICATION_ID: Int = 3
         private const val NOTIFICATION_CHANNEL_ID: String = "ByeDPI Proxy"
 
         private var status: ServiceStatus = ServiceStatus.Disconnected
@@ -51,6 +53,14 @@ class ByeDpiProxyService : LifecycleService() {
                 START_STICKY
             }
 
+            PAUSE_ACTION -> {
+                lifecycleScope.launch {
+                    stop()
+                    createNotificationPause()
+                }
+                START_NOT_STICKY
+            }
+
             STOP_ACTION -> {
                 lifecycleScope.launch { stop() }
                 START_NOT_STICKY
@@ -65,6 +75,9 @@ class ByeDpiProxyService : LifecycleService() {
 
     private suspend fun start() {
         Log.i(TAG, "Starting")
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(PAUSE_NOTIFICATION_ID)
 
         if (status == ServiceStatus.Connected) {
             Log.w(TAG, "Proxy already connected")
@@ -207,4 +220,17 @@ class ByeDpiProxyService : LifecycleService() {
             R.string.proxy_notification_content,
             ByeDpiProxyService::class.java,
         )
+
+    private fun createNotificationPause(){
+        val notification = createPauseNotification(
+            this,
+            NOTIFICATION_CHANNEL_ID,
+            R.string.notification_title,
+            R.string.service_paused_text,
+            ByeDpiVpnService::class.java,
+        )
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(PAUSE_NOTIFICATION_ID, notification)
+    }
 }

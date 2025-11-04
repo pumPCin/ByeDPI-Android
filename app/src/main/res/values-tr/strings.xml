@@ -11,6 +11,10 @@
     <string name="proxy_down">Bağlantı Kesildi (Proxy)</string>
     <string name="proxy_start">Başlat</string>
     <string name="proxy_stop">Durdur</string>
+    <string name="service_start_btn">Başlat</string>
+    <string name="service_pause_btn">Duraklat</string>
+    <string name="service_stop_btn">Durdur</string>
+    <string name="service_paused_text">Hizmet duraklatıldı</string>
     <string name="open_editor">Editörü aç</string>
     <string name="settings">Ayarlar</string>
     <string name="vpn_permission_denied">VPN açma yetkisi yok.</string>

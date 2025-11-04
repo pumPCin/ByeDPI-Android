@@ -1,6 +1,7 @@
 package io.github.dovecoteescapee.byedpi.services
 
 import android.app.Notification
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -34,6 +35,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
     companion object {
         private val TAG: String = ByeDpiVpnService::class.java.simpleName
         private const val FOREGROUND_SERVICE_ID: Int = 1
+        private const val PAUSE_NOTIFICATION_ID: Int = 3
         private const val NOTIFICATION_CHANNEL_ID: String = "ByeDPIVpn"
 
         private var status: ServiceStatus = ServiceStatus.Disconnected
@@ -56,6 +58,14 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 START_STICKY
             }
 
+            PAUSE_ACTION -> {
+                lifecycleScope.launch {
+                    stop()
+                    createNotificationPause()
+                }
+                START_NOT_STICKY
+            }
+
             STOP_ACTION -> {
                 lifecycleScope.launch { stop() }
                 START_NOT_STICKY
@@ -75,6 +85,9 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
     private suspend fun start() {
         Log.i(TAG, "Starting")
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(PAUSE_NOTIFICATION_ID)
 
         if (status == ServiceStatus.Connected) {
             Log.w(TAG, "VPN already connected")
@@ -294,6 +307,19 @@ class ByeDpiVpnService : LifecycleVpnService() {
             R.string.vpn_notification_content,
             ByeDpiVpnService::class.java,
         )
+
+    private fun createNotificationPause(){
+        val notification = createPauseNotification(
+            this,
+            NOTIFICATION_CHANNEL_ID,
+            R.string.notification_title,
+            R.string.service_paused_text,
+            ByeDpiVpnService::class.java,
+        )
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(PAUSE_NOTIFICATION_ID, notification)
+    }
 
     private fun createBuilder(dns: String, ipv6: Boolean): Builder {
         Log.d(TAG, "DNS: $dns")

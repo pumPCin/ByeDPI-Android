@@ -11,6 +11,10 @@
     <string name="proxy_down">Disconnected (Proxy)</string>
     <string name="proxy_start">Start</string>
     <string name="proxy_stop">Stop</string>
+    <string name="service_start_btn">Start</string>
+    <string name="service_pause_btn">Pause</string>
+    <string name="service_stop_btn">Stop</string>
+    <string name="service_paused_text">Service paused</string>
     <string name="open_editor">Open editor</string>
     <string name="settings">Settings</string>
     <string name="vpn_permission_denied">No permission to activate VPN</string>

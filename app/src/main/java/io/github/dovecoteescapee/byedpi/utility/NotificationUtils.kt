@@ -11,6 +11,8 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.activities.MainActivity
+import io.github.dovecoteescapee.byedpi.data.PAUSE_ACTION
+import io.github.dovecoteescapee.byedpi.data.START_ACTION
 import io.github.dovecoteescapee.byedpi.data.STOP_ACTION
 
 fun registerNotificationChannel(context: Context, id: String, @StringRes name: Int) {
@@ -42,7 +44,15 @@ fun createConnectionNotification(
         .setSilent(true)
             .setContentTitle(context.getString(title))
             .setContentText(context.getString(content))
-            .addAction(0, "Stop",
+            .addAction(0, context.getString(R.string.service_pause_btn),
+                PendingIntent.getService(
+                    context,
+                    0,
+                    Intent(context, service).setAction(PAUSE_ACTION),
+                    PendingIntent.FLAG_IMMUTABLE,
+                )
+            )
+            .addAction(0, context.getString(R.string.service_stop_btn),
                 PendingIntent.getService(
                     context,
                     0,
@@ -58,4 +68,34 @@ fun createConnectionNotification(
                     PendingIntent.FLAG_IMMUTABLE,
                 )
             )
+        .build()
+
+fun createPauseNotification(
+    context: Context,
+    channelId: String,
+    @StringRes title: Int,
+    @StringRes content: Int,
+    service: Class<*>,
+): Notification =
+    NotificationCompat.Builder(context, channelId)
+        .setSmallIcon(R.drawable.ic_notification)
+        .setSilent(true)
+        .setContentTitle(context.getString(title))
+        .setContentText(context.getString(content))
+        .addAction(0, context.getString(R.string.service_start_btn),
+            PendingIntent.getService(
+                context,
+                0,
+                Intent(context, service).setAction(START_ACTION),
+                PendingIntent.FLAG_IMMUTABLE,
+            )
+        )
+        .setContentIntent(
+            PendingIntent.getActivity(
+                context,
+                0,
+                Intent(context, MainActivity::class.java),
+                PendingIntent.FLAG_IMMUTABLE,
+            )
+        )
         .build()

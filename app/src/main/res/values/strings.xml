@@ -11,6 +11,10 @@
     <string name="proxy_down">Отключено (Proxy)</string>
     <string name="proxy_start">Старт</string>
     <string name="proxy_stop">Стоп</string>
+    <string name="service_start_btn">Старт</string>
+    <string name="service_pause_btn">Пауза</string>
+    <string name="service_stop_btn">Стоп</string>
+    <string name="service_paused_text">Приостановлен</string>
     <string name="open_editor">Открыть редактор</string>
     <string name="settings">Настройки</string>
     <string name="vpn_permission_denied">Нет разрешения на активацию VPN</string>
