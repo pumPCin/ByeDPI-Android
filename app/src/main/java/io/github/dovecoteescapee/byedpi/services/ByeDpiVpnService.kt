@@ -84,6 +84,9 @@ class ByeDpiVpnService : LifecycleVpnService() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(PAUSE_NOTIFICATION_ID)
 
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(PAUSE_NOTIFICATION_ID)
+
         if (status == ServiceStatus.Connected) {
             return
         }
