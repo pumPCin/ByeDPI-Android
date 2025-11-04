@@ -190,6 +190,7 @@ class TestActivity : BaseActivity() {
                 if (!isActive) break
 
                 delay(delaySec * 1000L)
+
                 val cmdIndex = index + 1
 
                 withContext(Dispatchers.Main) {
@@ -213,6 +214,8 @@ class TestActivity : BaseActivity() {
                     stopTesting()
                 }
 
+                delay(500)
+
                 val totalRequests = sites.size * requestsCount
                 val checkResults = siteChecker.checkSitesAsync(
                     sites = sites,
@@ -234,6 +237,8 @@ class TestActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
                     appendTextToResults("$successfulCount/$totalRequests ($successPercentage%)\n\n")
                 }
+
+                delay(500)
 
                 if (isProxyRunning()) ServiceManager.stop(this@TestActivity)
                 else stopTesting()
