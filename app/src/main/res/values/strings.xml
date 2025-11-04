@@ -82,6 +82,10 @@
     <string name="proxy_up">Proxy включен</string>
     <string name="reset_settings">Сброс настроек</string>
     <string name="search_apps">Поиск приложений</string>
+    <string name="service_pause_btn">Остановить</string>
+    <string name="service_paused_text">остановлен</string>
+    <string name="service_start_btn">Включить</string>
+    <string name="service_stop_btn">Выключить</string>
     <string name="settings">Настройки</string>
     <string name="settings_unavailable">Выключите VPN перед изменением настроек</string>
     <string name="sni_of_fake_packet">SNI поддельного пакета</string>
