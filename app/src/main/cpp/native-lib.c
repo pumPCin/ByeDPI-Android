@@ -37,7 +37,7 @@ void reset_params(void) {
 void sigsegv_handler(int sig) {
     LOG(LOG_S, "SIGSEGV caught in native code, signal: %d", sig);
 
-    if (sig == 11) {
+    if (sig == SIGSEGV) {
         longjmp(crash_jmp_buf, 1);
     } else {
         shutdown(server_fd, SHUT_RDWR);
@@ -69,23 +69,41 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env
     }
 
     int argc = (*env)->GetArrayLength(env, args);
-    char *argv[argc];
-    for (int i = 0; i < argc; i++) {
-        jstring arg = (jstring) (*env)->GetObjectArrayElement(env, args, i);
-        const char *arg_str = (*env)->GetStringUTFChars(env, arg, 0);
-        argv[i] = strdup(arg_str);
-        (*env)->ReleaseStringUTFChars(env, arg, arg_str);
+    char **argv = calloc(argc, sizeof(char *));
+
+    if (!argv) {
+        LOG(LOG_S, "failed to allocate memory for argv");
+        return -1;
     }
 
+    for (int i = 0; i < argc; i++) {
+        jstring arg = (jstring) (*env)->GetObjectArrayElement(env, args, i);
+
+        if (!arg) {
+            argv[i] = NULL;
+            continue;
+        }
+
+        const char *arg_str = (*env)->GetStringUTFChars(env, arg, 0);
+        argv[i] = arg_str ? strdup(arg_str) : NULL;
+
+        if (arg_str) (*env)->ReleaseStringUTFChars(env, arg, arg_str);
+
+        (*env)->DeleteLocalRef(env, arg);
+    }
+    
     LOG(LOG_S, "starting proxy with %d args", argc);
     reset_params();
     g_proxy_running = 1;
-    optind = optreset = 1;
+    optind = 1;
 
     int result = main(argc, argv);
 
     LOG(LOG_S, "proxy return code %d", result);
     g_proxy_running = 0;
+
+    for (int i = 0; i < argc; i++) free(argv[i]);
+    free(argv);
 
     return result;
 }
@@ -119,5 +137,3 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniForceClose(__attribute
 
     return 0;
 }
-
-
