@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include <signal.h>
 #include <setjmp.h>
+#include <stdlib.h>
 
 #include "byedpi/error.h"
 #include "main.h"
