@@ -189,8 +189,6 @@ class TestActivity : BaseActivity() {
             for ((index, cmd) in cmds.withIndex()) {
                 if (!isActive) break
 
-                delay(delaySec * 1000L)
-
                 val cmdIndex = index + 1
 
                 withContext(Dispatchers.Main) {
@@ -202,6 +200,14 @@ class TestActivity : BaseActivity() {
                 if (isProxyRunning()) stopTesting()
                 else ServiceManager.start(this@TestActivity, Mode.Proxy)
 
+                if (!waitForProxyStatus(AppStatus.Running)) {
+                    stopTesting()
+                }
+
+                if (cmdIndex == 1) {
+                    delay(3000L)
+                }
+
                 withContext(Dispatchers.Main) {
                     if (logClickable) {
                         appendLinkToResults("$cmd\n")
@@ -210,11 +216,7 @@ class TestActivity : BaseActivity() {
                     }
                 }
 
-                if (!waitForProxyStatus(AppStatus.Running)) {
-                    stopTesting()
-                }
-
-                delay(500)
+                delay(delaySec * 500L)
 
                 val totalRequests = sites.size * requestsCount
                 val checkResults = siteChecker.checkSitesAsync(
@@ -234,11 +236,11 @@ class TestActivity : BaseActivity() {
 
                 if (successPercentage >= 50) successfulCmds.add(Triple(cmd, successfulCount, totalRequests))
 
+                delay(delaySec * 500L)
+
                 withContext(Dispatchers.Main) {
                     appendTextToResults("$successfulCount/$totalRequests ($successPercentage%)\n\n")
                 }
-
-                delay(500)
 
                 if (isProxyRunning()) ServiceManager.stop(this@TestActivity)
                 else stopTesting()
