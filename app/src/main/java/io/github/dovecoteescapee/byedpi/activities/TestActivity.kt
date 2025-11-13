@@ -248,6 +248,8 @@ class TestActivity : BaseActivity() {
                 if (!waitForProxyStatus(AppStatus.Halted)) {
                     stopTesting()
                 }
+
+                delay(1000L)
             }
 
             successfulCmds.sortByDescending { it.second }
