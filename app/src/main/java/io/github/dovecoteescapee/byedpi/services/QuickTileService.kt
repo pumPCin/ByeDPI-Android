@@ -4,7 +4,6 @@ import android.net.VpnService
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import android.util.Log
 import androidx.annotation.RequiresApi
 import io.github.dovecoteescapee.byedpi.data.*
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
@@ -21,12 +20,10 @@ class QuickTileService : TileService() {
 
     override fun onTileAdded() {
         super.onTileAdded()
-        Log.i(TAG, "Tile added")
     }
 
     override fun onTileRemoved() {
         super.onTileRemoved()
-        Log.i(TAG, "Tile removed")
     }
 
     override fun onStartListening() {
@@ -64,8 +61,6 @@ class QuickTileService : TileService() {
                 setState(Tile.STATE_INACTIVE)
             }
         }
-
-        Log.i(TAG, "Toggle tile")
     }
 
     private fun updateStatus() {

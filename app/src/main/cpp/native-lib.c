@@ -36,8 +36,6 @@ void reset_params(void) {
 }
 
 void sigsegv_handler(int sig) {
-    LOG(LOG_S, "SIGSEGV caught in native code, signal: %d", sig);
-
     if (sig == SIGSEGV) {
         longjmp(crash_jmp_buf, 1);
     } else {
@@ -50,7 +48,6 @@ void sigsegv_handler(int sig) {
 JNIEXPORT jint JNICALL
 Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __attribute__((unused)) jobject thiz, jobjectArray args) {
     if (g_proxy_running) {
-        LOG(LOG_S, "proxy already running");
         return -1;
     }
 
@@ -64,7 +61,6 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env
     sigaction(SIGBUS, &sa, NULL);
 
     if (setjmp(crash_jmp_buf) != 0) {
-        LOG(LOG_S, "crash proxy, continuing...");
         g_proxy_running = 0;
         return 0;
     }
@@ -73,7 +69,6 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env
     char **argv = calloc(argc, sizeof(char *));
 
     if (!argv) {
-        LOG(LOG_S, "failed to allocate memory for argv");
         return -1;
     }
 
@@ -93,14 +88,12 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env
         (*env)->DeleteLocalRef(env, arg);
     }
     
-    LOG(LOG_S, "starting proxy with %d args", argc);
     reset_params();
     g_proxy_running = 1;
     optind = 1;
 
     int result = main(argc, argv);
 
-    LOG(LOG_S, "proxy return code %d", result);
     g_proxy_running = 0;
 
     for (int i = 0; i < argc; i++) free(argv[i]);
@@ -111,10 +104,8 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env
 
 JNIEXPORT jint JNICALL
 Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
-    LOG(LOG_S, "send shutdown to proxy");
 
     if (!g_proxy_running) {
-        LOG(LOG_S, "proxy is not running");
         return -1;
     }
 
@@ -126,14 +117,11 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(__attribute_
 
 JNIEXPORT jint JNICALL
 Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniForceClose(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
-    LOG(LOG_S, "closing server socket (fd: %d)", server_fd);
 
     if (close(server_fd) == -1) {
-        LOG(LOG_S, "failed to close server socket (fd: %d)", server_fd);
         return -1;
     }
 
-    LOG(LOG_S, "proxy socket force close");
     g_proxy_running = 0;
 
     return 0;
