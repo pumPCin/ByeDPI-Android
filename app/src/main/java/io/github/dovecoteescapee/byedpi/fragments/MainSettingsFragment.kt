@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -26,26 +25,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         private val TAG: String = MainSettingsFragment::class.java.simpleName
         private const val STORAGE_PERMISSION_REQUEST = 1001
 
-        fun setLang(lang: String) {
-            val appLocale = localeByName(lang) ?: throw IllegalStateException("Invalid value for language: $lang")
-
-            if (AppCompatDelegate.getApplicationLocales().toLanguageTags() != appLocale.toLanguageTags()) {
-                AppCompatDelegate.setApplicationLocales(appLocale)
-            }
-        }
-
-        private fun localeByName(lang: String): LocaleListCompat? = when (lang) {
-            "system" -> LocaleListCompat.getEmptyLocaleList()
-            "ru" -> LocaleListCompat.forLanguageTags("ru")
-            "en" -> LocaleListCompat.forLanguageTags("en")
-            "tr" -> LocaleListCompat.forLanguageTags("tr")
-            "kk" -> LocaleListCompat.forLanguageTags("kk")
-            else -> {
-                Log.w(TAG, "Invalid value for language: $lang")
-                null
-            }
-        }
-
         fun setTheme(name: String) {
             val appTheme = themeByName(name) ?: throw IllegalStateException("Invalid value for app_theme: $name")
 
@@ -59,7 +38,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             "light" -> AppCompatDelegate.MODE_NIGHT_NO
             "dark" -> AppCompatDelegate.MODE_NIGHT_YES
             else -> {
-                Log.w(TAG, "Invalid value for app_theme: $name")
                 null
             }
         }
@@ -76,12 +54,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         setEditTextPreferenceListener("byedpi_proxy_ip") { checkIp(it) }
         setEditTestPreferenceListenerPort("byedpi_proxy_port")
         setEditTextPreferenceListener("dns_ip") { it.isBlank() || checkNotLocalIp(it) }
-
-        findPreferenceNotNull<ListPreference>("language")
-            .setOnPreferenceChangeListener { _, newValue ->
-                setLang(newValue as String)
-                true
-            }
 
         findPreferenceNotNull<ListPreference>("app_theme")
             .setOnPreferenceChangeListener { _, newValue ->
@@ -203,7 +175,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
                     else -> {
                         applistType.isVisible = true
                         selectedApps.isVisible = false
-                        Log.w(TAG, "Unexpected applistType value: ${applistType.value}")
                     }
                 }
             }

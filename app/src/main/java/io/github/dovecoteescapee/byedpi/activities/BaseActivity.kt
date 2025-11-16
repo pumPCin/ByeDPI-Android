@@ -13,9 +13,6 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val prefs = getPreferences()
 
-        val lang = prefs.getStringNotNull("language", "system")
-        MainSettingsFragment.setLang(lang)
-
         val theme = prefs.getStringNotNull("app_theme", "system")
         MainSettingsFragment.setTheme(theme)
 

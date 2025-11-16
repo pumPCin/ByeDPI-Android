@@ -10,14 +10,15 @@ val abis = setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
 android {
     namespace = "io.github.dovecoteescapee.byedpi"
     compileSdk = 36
+    ndkVersion = "28.2.13676358"
 
     defaultConfig {
-        applicationId = "io.github.romanvht.byedpi"
+        applicationId = "io.github.dovecoteescapee.byedpi"
         minSdk = 21
         //noinspection OldTargetApi
         targetSdk = 34
-        versionCode = 1670
-        versionName = "1.6.7"
+        versionCode = 1695
+        versionName = "1.6.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -34,6 +35,7 @@ android {
         release {
             buildConfigField("String", "VERSION_NAME",  "\"${defaultConfig.versionName}\"")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
         }
         debug {
@@ -42,13 +44,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlin {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 

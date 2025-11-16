@@ -1,19 +1,10 @@
-<div align="center">
-  <p>
-    <img src="https://github.com/romanvht/ByeDPIAndroid/raw/master/.github/images/app.svg" alt="Логотип ByeDPI" width="200" />
-  </p>
-  <h1>ByeByeDPI Android</h1>
-  <p>
-    Русский |
-    <a href="README-en.md">English</a> |
-    <a href="README-tr.md">Türkçe</a>
-  </p>
-  <p>
-    <a href="https://github.com/romanvht/ByeByeDPI/releases/latest"><img src="https://img.shields.io/github/v/release/romanvht/ByeByeDPI" alt="Latest Release" /></a>
-    <a href="https://github.com/romanvht/ByeByeDPI/releases"><img src="https://img.shields.io/github/downloads/romanvht/ByeByeDPI/total" alt="Downloads" /></a>
-    <a href="https://github.com/romanvht/ByeByeDPI/blob/master/LICENSE"><img src="https://img.shields.io/github/license/romanvht/ByeByeDPI" alt="License" /></a>
-  </p>
+# ByeDPI Android 
+
+<div style="text-align: center;">
+  <img alt="Логотип ByeDPI" src="https://github.com/dovecoteescapee/ByeDPIAndroid/blob/master/.github/images/logo.svg" width="100%" height="200px">
 </div>
+
+---
 
 Приложение для Android, которое локально запускает ByeDPI и перенаправляет весь трафик через него.
 
@@ -21,7 +12,9 @@
 
 Приложение не является VPN. Оно использует VPN-режим на Android для перенаправления трафика, но не передает ничего на удаленный сервер. Оно не шифрует трафик и не скрывает ваш IP-адрес.
 
-Приложения является форком [ByeDPIAndroid](https://github.com/dovecoteescapee/ByeDPIAndroid)
+Приложение является форком [ByeByeDPI Android](https://github.com/romanvht/ByeDPIAndroid) 
+
+Оригинальное приложение [ByeDPIAndroid](https://github.com/dovecoteescapee/ByeDPIAndroid)
 
 ---
 
@@ -37,11 +30,11 @@
 * Рекомендуется подключится один раз к VPN, чтобы принять запрос.
 * После этого, при загрузке устройства, приложение автоматически запустит сервис в зависимости от настроек (VPN/Proxy)
 * Если у вас Android TV/BOX, и при подключении пропадает соединение по Ethernet, активируйте режим белого списка и укажите нужные приложения, которые должны работать через VPN (например, YouTube)
-* Комплексная инструкция от комьюнити [ByeByeDPI-Manual](https://github.com/BDManual/ByeByeDPI-Manual)
+* Комплексная инструкция от комьюнити [ByeDPI-Manual](https://github.com/BDManual/ByeDPI-Manual)
 
-### Как использовать ByeByeDPI вместе с AdGuard?
-* Запустите ByeByeDPI в режиме прокси.
-* Добавьте ByeByeDPI в исключения AdGuard на вкладке "Управление приложениями".
+### Как использовать ByeDPI вместе с AdGuard?
+* Запустите ByeDPI в режиме прокси.
+* Добавьте ByeDPI в исключения AdGuard на вкладке "Управление приложениями".
 * В настройках AdGuard укажите прокси:
 ```plaintext
 Тип прокси: SOCKS5
@@ -61,10 +54,6 @@ git clone --recurse-submodules
 3. APK будет в `app/build/outputs/apk/release/`
 
 > P.S.: hev_socks5_tunnel не соберется под Windows, вам нужно будет использовать WSL
-
-### Хеш подписи
-SHA-256: 
-`77:45:10:75:AC:EA:40:64:06:47:5D:74:D4:59:88:3A:49:A6:40:51:FA:F3:2E:42:F7:18:F3:F9:77:7A:8D:FB`
 
 ### Зависимости
 - [ByeDPI](https://github.com/hufrea/byedpi)
