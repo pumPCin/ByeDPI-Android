@@ -11,7 +11,6 @@
 
 extern int server_fd;
 static int g_proxy_running = 0;
-static jmp_buf crash_jmp_buf;
 
 struct params default_params = {
         .await_int = 10,
@@ -35,38 +34,11 @@ void reset_params(void) {
     params = default_params;
 }
 
-void sigsegv_handler(int sig) {
-    LOG(LOG_S, "SIGSEGV caught in native code, signal: %d", sig);
-
-    if (sig == SIGSEGV) {
-        longjmp(crash_jmp_buf, 1);
-    } else {
-        shutdown(server_fd, SHUT_RDWR);
-    }
-
-    g_proxy_running = 0;
-}
-
 JNIEXPORT jint JNICALL
 Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __attribute__((unused)) jobject thiz, jobjectArray args) {
     if (g_proxy_running) {
         LOG(LOG_S, "proxy already running");
         return -1;
-    }
-
-    struct sigaction sa;
-    sa.sa_handler = sigsegv_handler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-
-    sigaction(SIGSEGV, &sa, NULL);
-    sigaction(SIGABRT, &sa, NULL);
-    sigaction(SIGBUS, &sa, NULL);
-
-    if (setjmp(crash_jmp_buf) != 0) {
-        LOG(LOG_S, "crash proxy, continuing...");
-        g_proxy_running = 0;
-        return 0;
     }
 
     int argc = (*env)->GetArrayLength(env, args);

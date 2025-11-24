@@ -49,9 +49,6 @@ class TestActivity : BaseActivity() {
     private var savedCmd: String = ""
     private var testJob: Job? = null
 
-    private val proxyIp: String = "127.0.0.1"
-    private val proxyPort: Int = 10080
-
     private var isTesting: Boolean
         get() = prefs.getBoolean("is_test_running", false)
         set(value) {
@@ -64,7 +61,10 @@ class TestActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_proxy_test)
 
-        siteChecker = SiteCheckUtils(proxyIp, proxyPort)
+        val ip = prefs.getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
+        val port = prefs.getIntStringNotNull("byedpi_proxy_port", 1080)
+
+        siteChecker = SiteCheckUtils(ip, port)
         cmdHistoryUtils = HistoryUtils(this)
         scrollTextView = findViewById(R.id.scrollView)
         startStopButton = findViewById(R.id.startStopButton)
@@ -195,17 +195,13 @@ class TestActivity : BaseActivity() {
                     progressTextView.text = getString(R.string.test_process, cmdIndex, cmds.size)
                 }
 
-                updateCmdArgs("--ip $proxyIp --port $proxyPort $cmd")
+                updateCmdArgs(cmd)
 
                 if (isProxyRunning()) stopTesting()
                 else ServiceManager.start(this@TestActivity, Mode.Proxy)
 
                 if (!waitForProxyStatus(AppStatus.Running)) {
                     stopTesting()
-                }
-
-                if (cmdIndex == 1) {
-                    delay(3000L)
                 }
 
                 withContext(Dispatchers.Main) {

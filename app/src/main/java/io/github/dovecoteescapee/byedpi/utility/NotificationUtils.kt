@@ -11,6 +11,7 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.activities.MainActivity
+import io.github.dovecoteescapee.byedpi.activities.ToggleActivity
 import io.github.dovecoteescapee.byedpi.data.PAUSE_ACTION
 import io.github.dovecoteescapee.byedpi.data.START_ACTION
 import io.github.dovecoteescapee.byedpi.data.STOP_ACTION
@@ -82,12 +83,16 @@ fun createPauseNotification(
         .setSilent(true)
         .setContentTitle(context.getString(title))
         .setContentText(context.getString(content))
-        .addAction(0, context.getString(R.string.service_start_btn),
-            PendingIntent.getService(
+        .addAction(
+            0,
+            context.getString(R.string.service_start_btn),
+            PendingIntent.getActivity(
                 context,
                 0,
-                Intent(context, service).setAction(START_ACTION),
-                PendingIntent.FLAG_IMMUTABLE,
+                Intent(context, ToggleActivity::class.java).apply {
+                    putExtra("only_start", true)
+                },
+                PendingIntent.FLAG_IMMUTABLE
             )
         )
         .setContentIntent(
