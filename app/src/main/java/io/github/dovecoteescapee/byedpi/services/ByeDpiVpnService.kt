@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.ParcelFileDescriptor
-import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.activities.MainActivity
@@ -72,25 +71,20 @@ class ByeDpiVpnService : LifecycleVpnService() {
             }
 
             else -> {
-                Log.w(TAG, "Unknown action: $action")
                 START_NOT_STICKY
             }
         }
     }
 
     override fun onRevoke() {
-        Log.i(TAG, "VPN revoked")
         lifecycleScope.launch { stop() }
     }
 
     private suspend fun start() {
-        Log.i(TAG, "Starting")
-
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(PAUSE_NOTIFICATION_ID)
 
         if (status == ServiceStatus.Connected) {
-            Log.w(TAG, "VPN already connected")
             return
         }
 
@@ -102,7 +96,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
             }
             updateStatus(ServiceStatus.Connected)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to start VPN", e)
             updateStatus(ServiceStatus.Failed)
             stop()
         }
@@ -122,8 +115,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
     }
 
     private suspend fun stop() {
-        Log.i(TAG, "Stopping")
-
         mutex.withLock {
             try {
                 withContext(Dispatchers.IO) {
@@ -131,7 +122,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
                     stopTun2Socks()
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to stop VPN", e)
             }
         }
 
@@ -140,10 +130,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
     }
 
     private fun startProxy() {
-        Log.i(TAG, "Starting proxy")
-
         if (proxyJob != null) {
-            Log.w(TAG, "Proxy fields not null")
             throw IllegalStateException("Proxy fields not null")
         }
 
@@ -154,7 +141,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
             delay(500)
 
             if (code != 0) {
-                Log.e(TAG, "Proxy stopped with code $code")
                 updateStatus(ServiceStatus.Failed)
             } else {
                 updateStatus(ServiceStatus.Disconnected)
@@ -163,15 +149,10 @@ class ByeDpiVpnService : LifecycleVpnService() {
             stopTun2Socks()
             stopSelf()
         }
-
-        Log.i(TAG, "Proxy started")
     }
 
     private suspend fun stopProxy() {
-        Log.i(TAG, "Stopping proxy")
-
         if (status == ServiceStatus.Disconnected) {
-            Log.w(TAG, "Proxy already disconnected")
             return
         }
 
@@ -185,21 +166,14 @@ class ByeDpiVpnService : LifecycleVpnService() {
             }
 
             if (completed == null) {
-                Log.w(TAG, "proxy not finish in time, cancelling...")
                 byeDpiProxy.jniForceClose()
             }
 
             proxyJob = null
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to close proxyJob", e)
-        }
-
-        Log.i(TAG, "Proxy stopped")
+        } catch (e: Exception) {}
     }
 
     private fun startTun2Socks() {
-        Log.i(TAG, "Starting tun2socks")
-
         if (tunFd != null) {
             throw IllegalStateException("VPN field not null")
         }
@@ -207,7 +181,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         val sharedPreferences = getPreferences()
         val (ip, port) = sharedPreferences.getProxyIpAndPort()
 
-        val dns = sharedPreferences.getStringNotNull("dns_ip", "8.8.8.8")
+        val dns = sharedPreferences.getStringNotNull("dns_ip", "8.8.4.4")
         val ipv6 = sharedPreferences.getBoolean("ipv6_enable", false)
 
         val tun2socksConfig = buildString {
@@ -228,7 +202,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 writeText(tun2socksConfig)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to create config file", e)
             throw e
         }
 
@@ -238,41 +211,28 @@ class ByeDpiVpnService : LifecycleVpnService() {
         this.tunFd = fd
 
         TProxyService.TProxyStartService(configPath.absolutePath, fd.fd)
-
-        Log.i(TAG, "Tun2Socks started. ip: $ip port: $port")
     }
 
     private fun stopTun2Socks() {
-        Log.i(TAG, "Stopping tun2socks")
-
         try {
             TProxyService.TProxyStopService()
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to stop TProxyService", e)
-        }
+        } catch (e: Exception) {}
 
         try {
             File(cacheDir, "config.tmp").delete()
         } catch (e: SecurityException) {
-            Log.e(TAG, "Failed to delete config file", e)
         }
 
         try {
             tunFd?.close()
             tunFd = null
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to close tunFd", e)
-        }
-
-        Log.i(TAG, "Tun2socks stopped")
+        } catch (e: Exception) {}
     }
 
     private fun getByeDpiPreferences(): ByeDpiProxyPreferences =
         ByeDpiProxyPreferences.fromSharedPreferences(getPreferences())
 
     private fun updateStatus(newStatus: ServiceStatus) {
-        Log.d(TAG, "VPN status changed from $status to $newStatus")
-
         status = newStatus
 
         setStatus(
@@ -322,7 +282,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
     }
 
     private fun createBuilder(dns: String, ipv6: Boolean): Builder {
-        Log.d(TAG, "DNS: $dns")
         val builder = Builder()
         builder.setSession("ByeDPI")
         builder.setConfigureIntent(
@@ -359,9 +318,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 for (packageName in listedApps) {
                     try {
                         builder.addDisallowedApplication(packageName)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Не удалось добавить приложение $packageName в черный список", e)
-                    }
+                    } catch (e: Exception) {}
                 }
 
                 builder.addDisallowedApplication(applicationContext.packageName)
@@ -371,9 +328,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 for (packageName in listedApps) {
                     try {
                         builder.addAllowedApplication(packageName)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Не удалось добавить приложение $packageName в белый список", e)
-                    }
+                    } catch (e: Exception) {}
                 }
             }
 

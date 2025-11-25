@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
 import android.os.Build
-import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import io.github.dovecoteescapee.byedpi.R
@@ -67,20 +66,16 @@ class ByeDpiProxyService : LifecycleService() {
             }
 
             else -> {
-                Log.w(TAG, "Unknown action: $action")
                 START_NOT_STICKY
             }
         }
     }
 
     private suspend fun start() {
-        Log.i(TAG, "Starting")
-
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(PAUSE_NOTIFICATION_ID)
 
         if (status == ServiceStatus.Connected) {
-            Log.w(TAG, "Proxy already connected")
             return
         }
 
@@ -91,7 +86,6 @@ class ByeDpiProxyService : LifecycleService() {
             }
             updateStatus(ServiceStatus.Connected)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to start proxy", e)
             updateStatus(ServiceStatus.Failed)
             stop()
         }
@@ -111,8 +105,6 @@ class ByeDpiProxyService : LifecycleService() {
     }
 
     private suspend fun stop() {
-        Log.i(TAG, "Stopping")
-
         mutex.withLock {
             withContext(Dispatchers.IO) {
                 stopProxy()
@@ -124,10 +116,7 @@ class ByeDpiProxyService : LifecycleService() {
     }
 
     private fun startProxy() {
-        Log.i(TAG, "Starting proxy")
-
         if (proxyJob != null) {
-            Log.w(TAG, "Proxy fields not null")
             throw IllegalStateException("Proxy fields not null")
         }
 
@@ -139,7 +128,6 @@ class ByeDpiProxyService : LifecycleService() {
             delay(500)
 
             if (code != 0) {
-                Log.e(TAG, "Proxy stopped with code $code")
                 updateStatus(ServiceStatus.Failed)
             } else {
                 updateStatus(ServiceStatus.Disconnected)
@@ -147,15 +135,10 @@ class ByeDpiProxyService : LifecycleService() {
 
             stopSelf()
         }
-
-        Log.i(TAG, "Proxy started")
     }
 
     private suspend fun stopProxy() {
-        Log.i(TAG, "Stopping proxy")
-
         if (status == ServiceStatus.Disconnected) {
-            Log.w(TAG, "Proxy already disconnected")
             return
         }
 
@@ -169,24 +152,17 @@ class ByeDpiProxyService : LifecycleService() {
             }
 
             if (completed == null) {
-                Log.w(TAG, "proxy not finish in time, cancelling...")
                 proxy.jniForceClose()
             }
 
             proxyJob = null
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to close proxyJob", e)
-        }
-
-        Log.i(TAG, "Proxy stopped")
+        } catch (e: Exception) {}
     }
 
     private fun getByeDpiPreferences(): ByeDpiProxyPreferences =
         ByeDpiProxyPreferences.fromSharedPreferences(getPreferences())
 
     private fun updateStatus(newStatus: ServiceStatus) {
-        Log.d(TAG, "Proxy status changed from $status to $newStatus")
-
         status = newStatus
 
         setStatus(
