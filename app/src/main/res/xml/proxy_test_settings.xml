@@ -20,7 +20,7 @@
         android:key="byedpi_proxytest_timeout"
         android:title="@string/test_timeout"
         android:inputType="number"
-        android:defaultValue="3"
+        android:defaultValue="5"
         app:useSimpleSummaryProvider="true" />
 
     <com.takisoft.preferencex.EditTextPreference

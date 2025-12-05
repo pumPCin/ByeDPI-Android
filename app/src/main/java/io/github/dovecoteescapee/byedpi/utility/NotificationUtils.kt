@@ -11,9 +11,8 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.activities.MainActivity
-import io.github.dovecoteescapee.byedpi.activities.ToggleActivity
 import io.github.dovecoteescapee.byedpi.data.PAUSE_ACTION
-import io.github.dovecoteescapee.byedpi.data.START_ACTION
+import io.github.dovecoteescapee.byedpi.data.RESUME_ACTION
 import io.github.dovecoteescapee.byedpi.data.STOP_ACTION
 
 fun registerNotificationChannel(context: Context, id: String, @StringRes name: Int) {
@@ -43,32 +42,32 @@ fun createConnectionNotification(
     NotificationCompat.Builder(context, channelId)
         .setSmallIcon(R.drawable.ic_notification)
         .setSilent(true)
-            .setContentTitle(context.getString(title))
-            .setContentText(context.getString(content))
-            .addAction(0, context.getString(R.string.service_pause_btn),
-                PendingIntent.getService(
-                    context,
-                    0,
-                    Intent(context, service).setAction(PAUSE_ACTION),
-                    PendingIntent.FLAG_IMMUTABLE,
-                )
+        .setContentTitle(context.getString(title))
+        .setContentText(context.getString(content))
+        .addAction(0, context.getString(R.string.service_pause_btn),
+            PendingIntent.getService(
+                context,
+                0,
+                Intent(context, service).setAction(PAUSE_ACTION),
+                PendingIntent.FLAG_IMMUTABLE,
             )
-            .addAction(0, context.getString(R.string.service_stop_btn),
-                PendingIntent.getService(
-                    context,
-                    0,
-                    Intent(context, service).setAction(STOP_ACTION),
-                    PendingIntent.FLAG_IMMUTABLE,
-                )
+        )
+        .addAction(0, context.getString(R.string.service_stop_btn),
+            PendingIntent.getService(
+                context,
+                0,
+                Intent(context, service).setAction(STOP_ACTION),
+                PendingIntent.FLAG_IMMUTABLE,
             )
-            .setContentIntent(
-                PendingIntent.getActivity(
-                    context,
-                    0,
-                    Intent(context, MainActivity::class.java),
-                    PendingIntent.FLAG_IMMUTABLE,
-                )
+        )
+        .setContentIntent(
+            PendingIntent.getActivity(
+                context,
+                0,
+                Intent(context, MainActivity::class.java),
+                PendingIntent.FLAG_IMMUTABLE,
             )
+        )
         .build()
 
 fun createPauseNotification(
@@ -83,16 +82,12 @@ fun createPauseNotification(
         .setSilent(true)
         .setContentTitle(context.getString(title))
         .setContentText(context.getString(content))
-        .addAction(
-            0,
-            context.getString(R.string.service_start_btn),
-            PendingIntent.getActivity(
+        .addAction(0, context.getString(R.string.service_start_btn),
+            PendingIntent.getService(
                 context,
                 0,
-                Intent(context, ToggleActivity::class.java).apply {
-                    putExtra("only_start", true)
-                },
-                PendingIntent.FLAG_IMMUTABLE
+                Intent(context, service).setAction(RESUME_ACTION),
+                PendingIntent.FLAG_IMMUTABLE,
             )
         )
         .setContentIntent(
