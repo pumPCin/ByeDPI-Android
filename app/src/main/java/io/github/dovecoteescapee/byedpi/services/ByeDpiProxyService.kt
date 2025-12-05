@@ -48,7 +48,23 @@ class ByeDpiProxyService : LifecycleService() {
         super.onStartCommand(intent, flags, startId)
         return when (val action = intent?.action) {
             START_ACTION -> {
-                lifecycleScope.launch { start() }
+                lifecycleScope.launch {
+                    start()
+                }
+                START_STICKY
+            }
+
+            STOP_ACTION -> {
+                lifecycleScope.launch {
+                    stop()
+                }
+                START_NOT_STICKY
+            }
+
+            RESUME_ACTION -> {
+                lifecycleScope.launch {
+                    start()
+                }
                 START_STICKY
             }
 
@@ -57,11 +73,6 @@ class ByeDpiProxyService : LifecycleService() {
                     stop()
                     createNotificationPause()
                 }
-                START_NOT_STICKY
-            }
-
-            STOP_ACTION -> {
-                lifecycleScope.launch { stop() }
                 START_NOT_STICKY
             }
 
@@ -197,13 +208,13 @@ class ByeDpiProxyService : LifecycleService() {
             ByeDpiProxyService::class.java,
         )
 
-    private fun createNotificationPause(){
+    private fun createNotificationPause() {
         val notification = createPauseNotification(
             this,
             NOTIFICATION_CHANNEL_ID,
             R.string.notification_title,
             R.string.service_paused_text,
-            ByeDpiVpnService::class.java,
+            ByeDpiProxyService::class.java,
         )
 
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
