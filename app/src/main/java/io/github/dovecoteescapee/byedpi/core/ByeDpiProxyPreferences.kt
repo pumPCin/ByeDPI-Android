@@ -1,7 +1,6 @@
 package io.github.dovecoteescapee.byedpi.core
 
 import android.content.SharedPreferences
-import android.util.Log
 import io.github.dovecoteescapee.byedpi.utility.checkIpAndPortInCmd
 import io.github.dovecoteescapee.byedpi.utility.getStringNotNull
 import io.github.dovecoteescapee.byedpi.utility.shellSplit
@@ -19,7 +18,7 @@ sealed interface ByeDpiProxyPreferences {
 class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreferences {
     constructor(preferences: SharedPreferences) : this(
         cmdToArgs(
-            preferences.getStringNotNull("byedpi_cmd_args", "-Ku -a1 -An -o1 -At,r,s -d1"),
+            preferences.getStringNotNull("byedpi_cmd_args", "-d1 -s1+s -d1+s -s3+s -d6+s -s12+s -d14+s -s20+s -d24+s -s30+s -a1"),
             preferences
         )
     )
@@ -29,7 +28,6 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
             val firstArgIndex = cmd.indexOf("-")
             val args = (if (firstArgIndex > 0) cmd.substring(firstArgIndex) else cmd).trim()
 
-            Log.d("ProxyPref", "CMD: $args")
 
             val (cmdIp, cmdPort) = preferences.checkIpAndPortInCmd()
             val hasIp = cmdIp != null
@@ -46,8 +44,6 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
                 if (!hasPort) append("--port $port ")
                 if (enableHttp && !hasHttp) append("--http-connect ")
             }
-
-            Log.d("ProxyPref", "Added from settings: $prefix")
 
             if (prefix.isNotEmpty()) {
                 return arrayOf("ciadpi") + shellSplit("$prefix$args")
@@ -329,8 +325,6 @@ class ByeDpiProxyUIPreferences(
 
                 args.add("-An")
             }
-
-            Log.d("ProxyPref", "UI to cmd: ${args.joinToString(" ")}")
             return args.toTypedArray()
         }
 }

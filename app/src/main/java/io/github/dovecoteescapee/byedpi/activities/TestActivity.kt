@@ -62,7 +62,7 @@ class TestActivity : BaseActivity() {
         setContentView(R.layout.activity_proxy_test)
 
         val ip = prefs.getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
-        val port = prefs.getIntStringNotNull("byedpi_proxy_port", 1080)
+        val port = prefs.getIntStringNotNull("byedpi_proxy_port", 10080)
 
         siteChecker = SiteCheckUtils(ip, port)
         cmdHistoryUtils = HistoryUtils(this)
@@ -178,11 +178,11 @@ class TestActivity : BaseActivity() {
                 resultsTextView.text = ""
             }
 
-            val fullLog = prefs.getBoolean("byedpi_proxytest_fulllog", false)
-            val logClickable = prefs.getBoolean("byedpi_proxytest_logclickable", false)
-            val delaySec = prefs.getIntStringNotNull("byedpi_proxytest_delay", 1)
-            val requestsCount = prefs.getIntStringNotNull("byedpi_proxytest_requests", 1)
-            val requestTimeout = prefs.getLongStringNotNull("byedpi_proxytest_timeout", 5)
+            val fullLog = prefs.getBoolean("byedpi_proxytest_fulllog", true)
+            val logClickable = prefs.getBoolean("byedpi_proxytest_logclickable", true)
+            val delaySec = prefs.getIntStringNotNull("byedpi_proxytest_delay", 30)
+            val requestsCount = prefs.getIntStringNotNull("byedpi_proxytest_requests", 7)
+            val requestTimeout = prefs.getLongStringNotNull("byedpi_proxytest_timeout", 10)
 
             val successfulCmds = mutableListOf<Triple<String, Int, Int>>()
 
