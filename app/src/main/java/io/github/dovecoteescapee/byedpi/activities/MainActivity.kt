@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -40,7 +39,6 @@ class MainActivity : BaseActivity() {
                     .inputStream.bufferedReader()
                     .use { it.readText() }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to collect logs", e)
                 null
             }
     }
@@ -55,48 +53,15 @@ class MainActivity : BaseActivity() {
             }
         }
 
-    private val logsRegister =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { log ->
-            lifecycleScope.launch(Dispatchers.IO) {
-                val logs = collectLogs()
-
-                if (logs == null) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        R.string.logs_failed,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    val uri = log.data?.data ?: run {
-                        Log.e(TAG, "No data in result")
-                        return@launch
-                    }
-                    contentResolver.openOutputStream(uri)?.use {
-                        try {
-                            it.write(logs.toByteArray())
-                        } catch (e: IOException) {
-                            Log.e(TAG, "Failed to save logs", e)
-                        }
-                    } ?: run {
-                        Log.e(TAG, "Failed to open output stream")
-                    }
-                }
-            }
-        }
-
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d(TAG, "Received intent: ${intent?.action}")
-
             if (intent == null) {
-                Log.w(TAG, "Received null intent")
                 return
             }
 
             val senderOrd = intent.getIntExtra(SENDER, -1)
             val sender = Sender.entries.getOrNull(senderOrd)
             if (sender == null) {
-                Log.w(TAG, "Received intent with unknown sender: $senderOrd")
                 return
             }
 
@@ -112,8 +77,6 @@ class MainActivity : BaseActivity() {
                     ).show()
                     updateStatus()
                 }
-
-                else -> Log.w(TAG, "Unknown action: $action")
             }
         }
     }
@@ -204,18 +167,6 @@ class MainActivity : BaseActivity() {
                 true
             }
 
-            R.id.action_save_logs -> {
-                val intent =
-                    Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_TITLE, "byedpi.log")
-                    }
-
-                logsRegister.launch(intent)
-                true
-            }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -241,9 +192,6 @@ class MainActivity : BaseActivity() {
 
     private fun updateStatus() {
         val (status, mode) = appStatus
-
-        Log.i(TAG, "Updating status: $status, $mode")
-
         val preferences = getPreferences()
         val (ip, port) = preferences.getProxyIpAndPort()
 

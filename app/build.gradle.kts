@@ -10,14 +10,15 @@ val abis = setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
 android {
     namespace = "io.github.dovecoteescapee.byedpi"
     compileSdk = 36
+    ndkVersion = "28.2.13676358"
 
     defaultConfig {
-        applicationId = "io.github.romanvht.byedpi"
-        minSdk = 21
+        applicationId = "io.github.dovecoteescapee.byedpi"
+        minSdk = 23
         //noinspection OldTargetApi
         targetSdk = 34
-        versionCode = 1680
-        versionName = "1.6.8"
+        versionCode = 1698
+        versionName = "1.6.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -34,6 +35,7 @@ android {
         release {
             buildConfigField("String", "VERSION_NAME",  "\"${defaultConfig.versionName}\"")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
         }
         debug {
@@ -42,13 +44,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlin {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
@@ -86,12 +88,12 @@ dependencies {
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.4")
-    implementation("androidx.lifecycle:lifecycle-service:2.9.4")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-service:2.10.0")
     implementation("com.google.android.material:material:1.13.0")
     implementation("com.google.code.gson:gson:2.13.2")
     implementation("com.takisoft.preferencex:preferencex:1.1.0")
-    implementation("com.squareup.okhttp3:okhttp:5.3.0")
+    implementation("com.squareup.okhttp3:okhttp:5.3.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
