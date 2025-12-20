@@ -21,7 +21,8 @@
     <string name="settings_unavailable">Disconnect first to access settings</string>
     <string name="title_settings">Settings</string>
     <string name="save_logs">Save logs</string>
-    <string name="reset_settings">Reset</string>
+    <string name="close_app">Force close</string>
+    <string name="reset_settings">Reset settings</string>
     <string name="export_settings">Export settings</string>
     <string name="import_settings">Import settings</string>
     <string name="logs_failed">Failed to collect logs</string>

@@ -50,6 +50,11 @@ class ByeDpiVpnService : LifecycleVpnService() {
         )
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        tunFd?.close()
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         return when (val action = intent?.action) {
@@ -272,9 +277,10 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         try {
             tunFd?.close()
-            tunFd = null
         } catch (e: Exception) {
             Log.e(TAG, "Failed to close tunFd", e)
+        } finally {
+            tunFd = null
         }
 
         Log.i(TAG, "Tun2socks stopped")
