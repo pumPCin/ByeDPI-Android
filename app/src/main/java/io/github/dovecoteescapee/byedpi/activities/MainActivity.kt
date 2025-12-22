@@ -174,14 +174,6 @@ class MainActivity : BaseActivity() {
                 android.os.Process.killProcess(android.os.Process.myPid())
                 exitProcess(0)
             }
-
-            R.id.action_close_app -> {
-                ServiceManager.stop(this)
-                finishAffinity()
-                android.os.Process.killProcess(android.os.Process.myPid())
-                exitProcess(0)
-            }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
