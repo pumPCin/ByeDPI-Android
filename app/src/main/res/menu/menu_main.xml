@@ -11,4 +11,10 @@
         android:icon="@drawable/baseline_settings_24"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_close_app"
+        android:orderInCategory="3"
+        android:title="@string/close_app"
+        app:showAsAction="never" />
+
 </menu>

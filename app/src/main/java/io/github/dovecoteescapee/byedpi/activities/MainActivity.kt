@@ -25,6 +25,7 @@ import io.github.dovecoteescapee.byedpi.utility.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
+import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -165,6 +166,13 @@ class MainActivity : BaseActivity() {
                     Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
                 }
                 true
+            }
+
+            R.id.action_close_app -> {
+                ServiceManager.stop(this)
+                finishAffinity()
+                android.os.Process.killProcess(android.os.Process.myPid())
+                exitProcess(0)
             }
 
             else -> super.onOptionsItemSelected(item)

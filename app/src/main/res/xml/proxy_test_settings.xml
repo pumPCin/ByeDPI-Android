@@ -13,7 +13,7 @@
         android:key="byedpi_proxytest_requests"
         android:title="@string/test_requests"
         android:inputType="number"
-        android:defaultValue="7"
+        android:defaultValue="5"
         app:useSimpleSummaryProvider="true" />
 
     <com.takisoft.preferencex.EditTextPreference

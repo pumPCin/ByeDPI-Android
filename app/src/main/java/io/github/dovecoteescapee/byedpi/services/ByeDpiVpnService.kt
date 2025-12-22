@@ -49,6 +49,11 @@ class ByeDpiVpnService : LifecycleVpnService() {
         )
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        tunFd?.close()
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         return when (val action = intent?.action) {
