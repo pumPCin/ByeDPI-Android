@@ -6,7 +6,6 @@ import android.net.VpnService
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.core.content.edit
 import io.github.dovecoteescapee.byedpi.data.AppStatus
 import io.github.dovecoteescapee.byedpi.data.Mode
@@ -35,23 +34,16 @@ class ToggleActivity : Activity() {
         val onlyStop = intent.getBooleanExtra("only_stop", false)
 
         when {
-            onlyUpdate -> {
-                Log.i(TAG, "Only update strategy")
-            }
             onlyStart -> {
                 val (status) = appStatus
                 if (status == AppStatus.Halted) {
                     startService()
-                } else {
-                    Log.i(TAG, "Service already running")
                 }
             }
             onlyStop -> {
                 val (status) = appStatus
                 if (status == AppStatus.Running) {
                     stopService()
-                } else {
-                    Log.i(TAG, "Service already stopped")
                 }
             }
             else -> {
@@ -70,12 +62,10 @@ class ToggleActivity : Activity() {
         }
 
         ServiceManager.start(this, mode)
-        Log.i(TAG, "Toggle service start")
     }
 
     private fun stopService() {
         ServiceManager.stop(this)
-        Log.i(TAG, "Toggle service stop")
     }
 
     private fun toggleService(restart: Boolean) {
@@ -88,7 +78,6 @@ class ToggleActivity : Activity() {
                 if (restart) {
                     stopService()
                     waitForServiceStop { success ->
-                        Log.i(TAG, "Service stop: $success")
                         startService()
                     }
                 } else {
@@ -102,7 +91,6 @@ class ToggleActivity : Activity() {
         val current = prefs.getString("byedpi_cmd_args", null)
         if (strategy != null && strategy != current) {
             prefs.edit(commit = true) { putString("byedpi_cmd_args", strategy) }
-            Log.i(TAG, "Strategy updated to: $strategy")
             return true
         }
         return false
@@ -118,11 +106,9 @@ class ToggleActivity : Activity() {
 
             when {
                 status == AppStatus.Halted -> {
-                    Log.i(TAG, "Service stopped")
                     onComplete(true)
                 }
                 elapsed >= 3000L -> {
-                    Log.w(TAG, "Timeout waiting for service to stop")
                     onComplete(false)
                 }
                 else -> handler.postDelayed({ check() }, 100L)

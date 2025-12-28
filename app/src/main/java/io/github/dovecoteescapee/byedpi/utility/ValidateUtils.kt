@@ -2,7 +2,6 @@ package io.github.dovecoteescapee.byedpi.utility
 
 import android.net.InetAddresses
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceFragmentCompat
@@ -83,11 +82,6 @@ fun PreferenceFragmentCompat.setEditTextPreferenceListener(
                 }
 
                 else -> {
-                    Log.w(
-                        TAG,
-                        "Invalid type for ${preference.key}: " +
-                                "$newValue has type ${newValue::class.java}"
-                    )
                     false
                 }
             }

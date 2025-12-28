@@ -1,6 +1,5 @@
 package io.github.dovecoteescapee.byedpi.utility
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -59,7 +58,6 @@ class SiteCheckUtils(
         else "https://$site"
 
         repeat(requestsCount) { attempt ->
-            Log.i("SiteChecker", "Attempt ${attempt + 1}/$requestsCount for $site")
 
             try {
                 val request = Request.Builder().url(formattedUrl).build()
@@ -69,17 +67,12 @@ class SiteCheckUtils(
                     val responseCode = response.code
 
                     if (declaredLength <= 0 || actualLength >= declaredLength) {
-                        Log.i("SiteChecker", "Response for $site: $responseCode, Declared: $declaredLength, Actual: $actualLength")
                         responseCount++
-                    } else {
-                        Log.w("SiteChecker", "Block detected for $site, Declared: $declaredLength, Actual: $actualLength")
                     }
 
                     response.body.close()
                 }
-            } catch (e: Exception) {
-                Log.e("SiteChecker", "Error accessing $site: ${e.message}")
-            }
+            } catch (e: Exception) {}
         }
 
         responseCount
