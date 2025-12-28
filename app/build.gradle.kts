@@ -28,6 +28,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        viewBinding = true
     }
 
     buildTypes {
@@ -57,10 +58,6 @@ android {
             path = file("src/main/cpp/CMakeLists.txt")
             version = "3.22.1"
         }
-    }
-
-    buildFeatures {
-        viewBinding = true
     }
 
     // https://android.izzysoft.de/articles/named/iod-scan-apkchecks?lang=en#blobs
