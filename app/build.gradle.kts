@@ -16,7 +16,7 @@ android {
         applicationId = "io.github.dovecoteescapee.byedpi"
         minSdk = 23
         //noinspection OldTargetApi
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1700
         versionName = "1.7.0"
 
