@@ -21,7 +21,7 @@
     <string name="settings_unavailable">Сначала отключитесь, чтобы зайти в настройки</string>
     <string name="title_settings">Настройки</string>
     <string name="save_logs">Сохранить логи</string>
-    <string name="close_app">Остановить процесс</string>
+    <string name="close_app">Остановить</string>
     <string name="reset_settings">Сбросить настройки</string>
     <string name="export_settings">Экспорт настроек</string>
     <string name="import_settings">Импорт настроек</string>

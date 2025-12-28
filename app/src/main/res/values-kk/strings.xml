@@ -21,7 +21,7 @@
     <string name="settings_unavailable">Баптауға өту үшін ең алдымен сөндірңіз</string>
     <string name="title_settings">Баптаулар</string>
     <string name="save_logs">Логтарды сақтау</string>
-    <string name="close_app">Қолданбаны тоқтату</string>
+    <string name="close_app">Тоқтату</string>
     <string name="reset_settings">Қалпына келтіру</string>
     <string name="export_settings">Баптауларды экспорттау</string>
     <string name="import_settings">Баптауларды импорттау</string>

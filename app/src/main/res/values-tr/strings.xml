@@ -20,8 +20,8 @@
     <string name="vpn_permission_denied">VPN açma yetkisi yok.</string>
     <string name="settings_unavailable">Ayarları açmak için bağlantıyı kesin</string>
     <string name="title_settings">Ayarlar</string>
-    <string name="save_logs">Olay günlüklerini kaydet</string>
-    <string name="close_app">Uygulamayı durdur</string>
+    <string name="save_logs">Günlükleri kaydet</string>
+    <string name="close_app">Durdurmak</string>
     <string name="reset_settings">Ayarları sıfırla</string>
     <string name="export_settings">Ayarları Dışa Aktar</string>
     <string name="import_settings">Ayarları İçe Aktar</string>
