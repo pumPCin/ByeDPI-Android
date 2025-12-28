@@ -28,7 +28,7 @@ class ToggleActivity : Activity() {
 
         prefs = getPreferences()
         val strategy = intent.getStringExtra("strategy")
-        val current = prefs.getString("byedpi_cmd_args", null)
+        val updated = updateStrategy(strategy)
 
         val onlyUpdate = intent.getBooleanExtra("only_update", false)
         val onlyStart = intent.getBooleanExtra("only_start", false)
@@ -36,10 +36,7 @@ class ToggleActivity : Activity() {
 
         when {
             onlyUpdate -> {
-                if (strategy != null && strategy != current) {
-                    prefs.edit(commit = true) { putString("byedpi_cmd_args", strategy) }
-                    Log.i(TAG, "Strategy updated to: $strategy")
-                }
+                Log.i(TAG, "Only update strategy")
             }
             onlyStart -> {
                 val (status) = appStatus
@@ -58,13 +55,7 @@ class ToggleActivity : Activity() {
                 }
             }
             else -> {
-                if (strategy != null && strategy != current) {
-                    prefs.edit(commit = true) { putString("byedpi_cmd_args", strategy) }
-                    Log.i(TAG, "Strategy updated to: $strategy")
-                    toggleService(strategy)
-                } else {
-                    toggleService(null)
-                }
+                toggleService(updated)
             }
         }
 
@@ -87,14 +78,14 @@ class ToggleActivity : Activity() {
         Log.i(TAG, "Toggle service stop")
     }
 
-    private fun toggleService(strategy: String?) {
+    private fun toggleService(restart: Boolean) {
         val (status) = appStatus
         when (status) {
             AppStatus.Halted -> {
                 startService()
             }
             AppStatus.Running -> {
-                if (strategy != null) {
+                if (restart) {
                     stopService()
                     waitForServiceStop { success ->
                         Log.i(TAG, "Service stop: $success")
@@ -105,6 +96,16 @@ class ToggleActivity : Activity() {
                 }
             }
         }
+    }
+
+    private fun updateStrategy(strategy: String?): Boolean {
+        val current = prefs.getString("byedpi_cmd_args", null)
+        if (strategy != null && strategy != current) {
+            prefs.edit(commit = true) { putString("byedpi_cmd_args", strategy) }
+            Log.i(TAG, "Strategy updated to: $strategy")
+            return true
+        }
+        return false
     }
 
     private fun waitForServiceStop(onComplete: (Boolean) -> Unit) {
