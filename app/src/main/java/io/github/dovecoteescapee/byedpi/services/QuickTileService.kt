@@ -4,11 +4,16 @@ import android.net.VpnService
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import android.util.Log
 import androidx.annotation.RequiresApi
 import io.github.dovecoteescapee.byedpi.data.*
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
 import io.github.dovecoteescapee.byedpi.utility.mode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.N)
 class QuickTileService : TileService() {
@@ -18,25 +23,33 @@ class QuickTileService : TileService() {
     }
 
     private var appTile: Tile? = null
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private var statusJob: Job? = null
 
     override fun onTileAdded() {
         super.onTileAdded()
-        Log.i(TAG, "Tile added")
     }
 
     override fun onTileRemoved() {
         super.onTileRemoved()
-        Log.i(TAG, "Tile removed")
     }
 
     override fun onStartListening() {
         super.onStartListening()
         appTile = qsTile
-        updateStatus()
+        updateStatus(appStatusFlow.value.first)
+        statusJob?.cancel()
+        statusJob = serviceScope.launch {
+            appStatusFlow.collect { (status) ->
+                updateStatus(status)
+            }
+        }
     }
 
     override fun onStopListening() {
         super.onStopListening()
+        statusJob?.cancel()
+        statusJob = null
         appTile = null
     }
 
@@ -46,7 +59,7 @@ class QuickTileService : TileService() {
     }
 
     private fun handleClick() {
-        val (status) = appStatus
+        val (status) = appStatusFlow.value
 
         when (status) {
             AppStatus.Halted -> {
@@ -64,13 +77,9 @@ class QuickTileService : TileService() {
                 setState(Tile.STATE_INACTIVE)
             }
         }
-
-        Log.i(TAG, "Toggle tile")
     }
 
-    private fun updateStatus() {
-        val (status) = appStatus
-
+    private fun updateStatus(status: AppStatus) {
         if (status == AppStatus.Running) {
             setState(Tile.STATE_ACTIVE)
         } else {
@@ -83,5 +92,10 @@ class QuickTileService : TileService() {
             state = newState
             updateTile()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceScope.cancel()
     }
 }
