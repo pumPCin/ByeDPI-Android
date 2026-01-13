@@ -18,6 +18,12 @@
         <item name="android:textAppearanceListItem">@style/TextPrimary</item>
         <item name="android:textAppearanceListItemSecondary">@style/TextSummary</item>
         <item name="android:textAppearanceListItemSmall">@style/TextSummary</item>
+
+        <item name="switchPreferenceStyle">@style/App.Preference.SwitchPreference</item>
+    </style>
+
+    <style name="App.Preference.SwitchPreference" parent="Preference.SwitchPreference.Material">
+        <item name="android:widgetLayout">@layout/material_switch</item>
     </style>
 
     <style name="Theme.ByeDPI.History.PaddingLeft" parent="Theme.ByeDPI">
