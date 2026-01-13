@@ -1,5 +1,10 @@
 package io.github.dovecoteescapee.byedpi.services
 
+import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.VpnService
 import android.os.Build
 import android.service.quicksettings.Tile
@@ -18,6 +23,30 @@ class QuickTileService : TileService() {
     }
 
     private var appTile: Tile? = null
+
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d(TAG, "Tile broadcast received")
+            updateStatus()
+        }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+
+        val intentFilter = IntentFilter().apply {
+            addAction(STARTED_BROADCAST)
+            addAction(STOPPED_BROADCAST)
+            addAction(FAILED_BROADCAST)
+        }
+
+        @SuppressLint("UnspecifiedRegisterReceiverFlag")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(receiver, intentFilter)
+        }
+    }
 
     override fun onTileAdded() {
         super.onTileAdded()
