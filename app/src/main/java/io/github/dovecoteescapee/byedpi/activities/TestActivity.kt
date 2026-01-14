@@ -84,20 +84,21 @@ class TestActivity : BaseActivity() {
         lifecycleScope.launch {
             val previousResults = loadResults()
 
-            if (isTesting) {
-                progressTextView.text = getString(R.string.test_proxy_error)
-                disclaimerTextView.text = getString(R.string.test_crash)
-                disclaimerTextView.visibility = View.VISIBLE
-                isTesting = false
-            }
-
             if (previousResults.isNotEmpty()) {
                 progressTextView.text = getString(R.string.test_complete)
                 disclaimerTextView.visibility = View.GONE
 
                 strategies.clear()
                 strategies.addAll(previousResults)
+
                 strategyAdapter.updateStrategies(strategies)
+            }
+
+            if (isTesting) {
+                progressTextView.text = getString(R.string.test_proxy_error)
+                disclaimerTextView.text = getString(R.string.test_crash)
+                disclaimerTextView.visibility = View.VISIBLE
+                isTesting = false
             }
         }
 
