@@ -125,6 +125,23 @@
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory
+        android:title="@string/permission_category">
+
+        <Preference
+            android:key="battery_optimization"
+            android:title="@string/battery_optimization"
+            android:summary="@string/battery_optimization_summary">
+        </Preference>
+
+        <Preference
+            android:key="storage_access"
+            android:title="@string/storage_access"
+            android:summary="@string/storage_access_summary">
+        </Preference>
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
         android:title="@string/about_category">
 
         <Preference
@@ -143,12 +160,6 @@
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/romanvht/ByeDPIAndroid" />
-        </Preference>
-
-        <Preference
-            android:key="storage_access"
-            android:title="@string/storage_access"
-            android:summary="@string/storage_access_summary">
         </Preference>
 
         <Preference

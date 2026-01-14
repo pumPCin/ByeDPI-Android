@@ -27,12 +27,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.IOException
 import kotlin.system.exitProcess
+import androidx.core.content.edit
 
 class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
 
     companion object {
         private val TAG: String = MainActivity::class.java.simpleName
+        private const val BATTERY_OPTIMIZATION_REQUESTED = "battery_optimization_requested"
 
         private fun collectLogs(): String? =
             try {
@@ -165,8 +167,11 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+        } else {
+            requestBatteryOptimization()
         }
 
         if (getPreferences().getBoolean("auto_connect", false) && appStatus.first != AppStatus.Running) {
@@ -184,6 +189,18 @@ class MainActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(receiver)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 1) {
+            requestBatteryOptimization()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -285,6 +302,16 @@ class MainActivity : BaseActivity() {
                     }
                 }
             }
+        }
+    }
+
+    private fun requestBatteryOptimization() {
+        val preferences = getPreferences()
+        val alreadyRequested = preferences.getBoolean(BATTERY_OPTIMIZATION_REQUESTED, false)
+
+        if (!alreadyRequested && !BatteryUtils.isOptimizationDisabled(this)) {
+            BatteryUtils.requestBatteryOptimization(this)
+            preferences.edit { putBoolean(BATTERY_OPTIMIZATION_REQUESTED, true) }
         }
     }
 }

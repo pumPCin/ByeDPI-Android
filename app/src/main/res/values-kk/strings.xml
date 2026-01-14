@@ -142,4 +142,8 @@
     <string name="test_delay">Тексерулер арасындағы күту уақыты</string>
     <string name="test_requests">Доменге сұраныстар саны</string>
     <string name="test_timeout">Домен жауабының таймауты</string>
+    <string name="battery_optimization">Батареяны оңтайландыру</string>
+    <string name="battery_optimization_summary">Тұрақтылықты жақсарту үшін қосыңыз</string>
+    <string name="battery_optimization_disabled_summary">Ажыратылған</string>
+    <string name="permission_category">Рұқсаттар</string>
 </resources>

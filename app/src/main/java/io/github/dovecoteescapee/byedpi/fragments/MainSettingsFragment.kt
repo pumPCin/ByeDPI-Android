@@ -96,6 +96,12 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
 
+        findPreferenceNotNull<Preference>("battery_optimization")
+            .setOnPreferenceClickListener {
+                BatteryUtils.requestBatteryOptimization(requireContext())
+                true
+            }
+
         findPreferenceNotNull<Preference>("storage_access")
             .setOnPreferenceClickListener {
                 requestStoragePermission()
@@ -169,6 +175,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
 
         val applistType = findPreferenceNotNull<ListPreference>("applist_type")
         val selectedApps = findPreferenceNotNull<Preference>("selected_apps")
+        val batteryOptimization = findPreferenceNotNull<Preference>("battery_optimization")
         val storageAccess = findPreferenceNotNull<Preference>("storage_access")
 
         val uiSettings = findPreferenceNotNull<Preference>("byedpi_ui_settings")
@@ -214,6 +221,12 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
                 applistType.isVisible = false
                 selectedApps.isVisible = false
             }
+        }
+
+        if (BatteryUtils.isOptimizationDisabled(requireContext())) {
+            batteryOptimization.summary = getString(R.string.battery_optimization_disabled_summary)
+        } else {
+            batteryOptimization.summary = getString(R.string.battery_optimization_summary)
         }
 
         if (hasStoragePermission()) {

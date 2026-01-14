@@ -142,4 +142,8 @@
     <string name="test_delay">Delay between commands</string>
     <string name="test_requests">Number of domain requests</string>
     <string name="test_timeout">Domain response timeout</string>
+    <string name="battery_optimization">Battery optimization</string>
+    <string name="battery_optimization_summary">Turn it on to improve stability</string>
+    <string name="battery_optimization_disabled_summary">Disabled</string>
+    <string name="permission_category">Permissions</string>
 </resources>

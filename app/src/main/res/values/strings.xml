@@ -142,4 +142,8 @@
     <string name="test_delay">Ожидание между проверками</string>
     <string name="test_requests">Количество запросов к домену</string>
     <string name="test_timeout">Таймаут ответа домена</string>
+    <string name="battery_optimization">Оптимизация батареи</string>
+    <string name="battery_optimization_summary">Включите для улучшения стабильности</string>
+    <string name="battery_optimization_disabled_summary">Отключена</string>
+    <string name="permission_category">Разрешения</string>
 </resources>
