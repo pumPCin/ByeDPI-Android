@@ -37,7 +37,6 @@ This application is a fork of [ByeDPIAndroid](https://github.com/dovecoteescapee
 * To enable auto-start, activate the option in settings.
 * It is recommended to connect to the VPN once to accept the request.
 * After that, upon device startup, the application will automatically launch the service based on settings (VPN/Proxy).
-* If you are using an Android TV/BOX and your Ethernet connection drops when connecting, enable whitelist mode and specify the apps that should work through the VPN (e.g., YouTube).
 * Comprehensive instruction from the community [ByeByeDPI-Manual (En)](https://github.com/BDManual/ByeByeDPI-Manual)
 
 ### How to use ByeByeDPI with AdGuard?

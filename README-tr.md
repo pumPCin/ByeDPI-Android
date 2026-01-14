@@ -37,7 +37,6 @@ Bu uygulama, [ByeDPIAndroid](https://github.com/dovecoteescapee/ByeDPIAndroid) u
 * Otomatik başlatmayı etkinleştirmek için ayarlarda seçeneği aktifleştirin.
 * İlk başta VPN'e bağlanarak isteği kabul etmeniz önerilir.
 * Bundan sonra, cihaz başlatıldığında, uygulama ayarlara göre (VPN/Proxy) hizmeti otomatik olarak başlatacaktır.
-* Android TV/BOX kullanıyorsanız ve Ethernet bağlantınız VPN'e bağlanırken kopuyorsa, beyaz liste modunu etkinleştirip VPN üzerinden çalışması gereken uygulamaları belirleyin (örneğin, Discord).
 * Topluluktan kapsamlı talimatlar [ByeByeDPI-Manual (İngilizce)](https://github.com/BDManual/ByeByeDPI-Manual)
 
 ### Türkiye İle İlgili
