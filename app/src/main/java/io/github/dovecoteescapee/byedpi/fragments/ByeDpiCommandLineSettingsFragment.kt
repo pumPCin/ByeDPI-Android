@@ -4,8 +4,11 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.preference.*
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.utility.findPreferenceNotNull
@@ -70,9 +73,34 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun createPreference(command: Command) =
-        Preference(requireContext()).apply {
+        object : Preference(requireContext()) {
+            override fun onBindViewHolder(holder: PreferenceViewHolder) {
+                super.onBindViewHolder(holder)
+
+                val nameView = holder.itemView.findViewById<TextView>(R.id.command_name)
+                val summaryView = holder.itemView.findViewById<TextView>(android.R.id.summary)
+                val pinIcon = holder.itemView.findViewById<ImageView>(R.id.pin_icon)
+                val commandName = command.name
+
+                if (!commandName.isNullOrBlank()) {
+                    nameView.visibility = View.VISIBLE
+                    nameView.text = command.name
+                } else {
+                    nameView.visibility = View.GONE
+                }
+
+                val summaryText = buildSummary(command)
+                if (summaryText.isNotBlank()) {
+                    summaryView.visibility = View.VISIBLE
+                    summaryView.text = summaryText
+                } else {
+                    summaryView.visibility = View.GONE
+                }
+
+                pinIcon.visibility = if (command.pinned) View.VISIBLE else View.GONE
+            }
+        }.apply {
             title = command.text
-            summary = buildSummary(command)
             layoutResource = R.layout.history_item
             setOnPreferenceClickListener {
                 showActionDialog(command)
@@ -81,25 +109,14 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
         }
 
     private fun buildSummary(command: Command): String {
-        val summary = StringBuilder()
-
-        if (command.name != null) {
-            summary.append(command.name)
-        }
-
-        if (command.pinned) {
-            if (summary.isNotEmpty()) summary.append(" • ")
-            summary.append(getString(R.string.cmd_history_pinned))
-        }
+        val parts = mutableListOf<String>()
 
         if (command.text == editTextPreference.text) {
-            if (summary.isNotEmpty()) summary.append(" • ")
-            summary.append(getString(R.string.cmd_history_applied))
+            parts.add(getString(R.string.cmd_history_applied))
         }
 
-        return summary.toString()
+        return parts.joinToString(" • ")
     }
-
 
     private fun showHistoryClearDialog() {
         val options = arrayOf(
