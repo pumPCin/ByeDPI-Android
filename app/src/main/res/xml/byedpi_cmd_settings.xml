@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:tag="byedpi_cmd_settings">
 
-    <com.takisoft.preferencex.EditTextPreference
+    <EditTextPreference
         android:key="byedpi_cmd_args"
         android:title="@string/command_line_arguments"
         android:dialogTitle="@string/command_line_arguments"
