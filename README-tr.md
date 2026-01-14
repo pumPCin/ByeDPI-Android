@@ -77,4 +77,11 @@ SHA-256:
 
 ### Katkıda Bulunanlar
 Bu kişiler projenin geliştirilmesine katkıda bulundular:
-<!-- CONTRIBUTORS -->
+- **gdlbo** (@gdlbo)
+- **mxtherfxcker** (@mxtherfxcker)
+- **Vadim Totok** (@VadimTotok)
+- **topminipie** (@topminipie)
+- **nyaexx** (@nyaexx)
+- **KG7x** (@KG7x)
+- **Viktor45** (@Viktor45)
+- **zra123** (@zra123)

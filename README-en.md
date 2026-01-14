@@ -72,4 +72,11 @@ SHA-256:
 
 ### Contributors
 These people have contributed to the development of the project:
-<!-- CONTRIBUTORS -->
+- **gdlbo** (@gdlbo)
+- **mxtherfxcker** (@mxtherfxcker)
+- **Vadim Totok** (@VadimTotok)
+- **topminipie** (@topminipie)
+- **nyaexx** (@nyaexx)
+- **KG7x** (@KG7x)
+- **Viktor45** (@Viktor45)
+- **zra123** (@zra123)
