@@ -142,6 +142,7 @@
     <string name="test_settings_commands">Стратегиялар тізімі</string>
     <string name="test_delay">Тексерулер арасындағы күту уақыты</string>
     <string name="test_requests">Доменге сұраныстар саны</string>
+    <string name="test_requests_limit">Параллель сұраныстардың ең көп саны</string>
     <string name="test_timeout">Домен жауабының таймауты</string>
     <string name="test_show_details">Мәліметтерді көрсету</string>
     <string name="test_hide_details">Мәліметтерді жасыру</string>
@@ -151,4 +152,8 @@
     <string name="battery_optimization_disabled_summary">Ажыратылған</string>
     <string name="permission_category">Рұқсаттар</string>
     <string name="documentation_link">Құжаттама</string>
+    <string name="proxytest_delay_desc">Үлкен мән тұрақтылықты арттыра алады</string>
+    <string name="proxytest_requests_desc">Үлкен мән дәлдікті арттырады, бірақ тұрақтылықты төмендетуі мүмкін</string>
+    <string name="proxytest_limit_desc">Үлкен мән тесттің жылдамдығын арттырады, бірақ тұрақтылықты төмендетуі мүмкін</string>
+    <string name="proxytest_timeout_desc">Үлкен мән тесттің жылдамдығын азайтады, бірақ тұрақтылықты арттырады</string>
 </resources>

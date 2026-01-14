@@ -142,6 +142,7 @@
     <string name="test_settings_commands">Список стратегий</string>
     <string name="test_delay">Ожидание между проверками</string>
     <string name="test_requests">Количество запросов к домену</string>
+    <string name="test_requests_limit">Максимум парралельных запросов</string>
     <string name="test_timeout">Таймаут ответа домена</string>
     <string name="test_show_details">Показать детали</string>
     <string name="test_hide_details">Скрыть детали</string>
@@ -151,4 +152,8 @@
     <string name="battery_optimization_disabled_summary">Отключена</string>
     <string name="permission_category">Разрешения</string>
     <string name="documentation_link">Документация</string>
+    <string name="proxytest_delay_desc">Увеличение значения может повысить стабильность</string>
+    <string name="proxytest_requests_desc">Увеличение значения повышает точность, но может снизить стабильность</string>
+    <string name="proxytest_limit_desc">Увеличение значения ускоряет тест, но может снизить стабильность</string>
+    <string name="proxytest_timeout_desc">Увеличение значения замедляет тест, но повышает стабильность и точность</string>
 </resources>

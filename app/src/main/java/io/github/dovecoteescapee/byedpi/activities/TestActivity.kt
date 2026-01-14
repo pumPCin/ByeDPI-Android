@@ -197,6 +197,7 @@ class TestActivity : BaseActivity() {
             val delaySec = prefs.getIntStringNotNull("byedpi_proxytest_delay", 1)
             val requestsCount = prefs.getIntStringNotNull("byedpi_proxytest_requests", 1)
             val requestTimeout = prefs.getLongStringNotNull("byedpi_proxytest_timeout", 5)
+            val requestLimit = prefs.getIntStringNotNull("byedpi_proxytest_limit", 20)
 
             for (strategyIndex in strategies.indices) {
                 if (!isActive) break
@@ -231,7 +232,7 @@ class TestActivity : BaseActivity() {
                     sites = sites,
                     requestsCount = requestsCount,
                     requestTimeout = requestTimeout,
-                    concurrentRequests = 20,
+                    concurrentRequests = requestLimit,
                     fullLog = true,
                     onSiteChecked = { site, successCount, countRequests ->
                         lifecycleScope.launch(Dispatchers.Main) {

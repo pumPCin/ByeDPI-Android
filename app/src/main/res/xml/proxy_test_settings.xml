@@ -19,6 +19,14 @@
         app:iconSpaceReserved="false" />
 
     <EditTextPreference
+        android:key="byedpi_proxytest_limit"
+        android:title="@string/test_requests_limit"
+        android:inputType="number"
+        android:defaultValue="20"
+        app:useSimpleSummaryProvider="true"
+        app:iconSpaceReserved="false" />
+
+    <EditTextPreference
         android:key="byedpi_proxytest_timeout"
         android:title="@string/test_timeout"
         android:inputType="number"
