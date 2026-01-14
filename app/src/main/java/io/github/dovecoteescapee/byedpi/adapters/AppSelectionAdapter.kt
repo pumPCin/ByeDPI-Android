@@ -35,6 +35,7 @@ class AppSelectionAdapter(
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val appIcon: ImageView = view.findViewById(R.id.appIcon)
         val appName: TextView = view.findViewById(R.id.appName)
+        val appPackageName: TextView = view.findViewById(R.id.appPackageName)
         val appCheckBox: CheckBox = view.findViewById(R.id.appCheckBox)
         var iconLoadJob: Job? = null
     }
@@ -48,7 +49,15 @@ class AppSelectionAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val app = filteredApps[position]
 
-        holder.appName.text = app.appName
+        if (app.appName == app.packageName) {
+            holder.appName.text = app.packageName
+            holder.appPackageName.visibility = View.GONE
+        } else {
+            holder.appName.text = app.appName
+            holder.appPackageName.text = app.packageName
+            holder.appPackageName.visibility = View.VISIBLE
+        }
+
         holder.appCheckBox.isChecked = app.isSelected
 
         holder.iconLoadJob?.cancel()
@@ -96,7 +105,8 @@ class AppSelectionAdapter(
 
                 if (query.isNotEmpty()) {
                     filteredList = originalApps.filter {
-                        it.appName.lowercase().contains(query)
+                        it.appName.lowercase().contains(query) ||
+                                it.packageName.lowercase().contains(query)
                     }
                 }
 
