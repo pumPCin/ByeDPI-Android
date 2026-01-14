@@ -30,14 +30,6 @@
         android:defaultValue="google.com"
         app:useSimpleSummaryProvider="true" />
 
-    <SwitchPreference
-        android:key="byedpi_proxytest_fulllog"
-        android:title="@string/test_settings_fulllog" />
-
-    <SwitchPreference
-        android:key="byedpi_proxytest_logclickable"
-        android:title="@string/test_settings_logclickable" />
-
     <MultiSelectListPreference
         android:key="byedpi_proxytest_domain_lists"
         android:title="@string/test_settings_domain_lists"

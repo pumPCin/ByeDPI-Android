@@ -143,6 +143,9 @@
     <string name="test_delay">Komutlar arasındaki gecikme</string>
     <string name="test_requests">Domain isteklerinin sayısı</string>
     <string name="test_timeout">Etki alanı yanıt zaman aşımı</string>
+    <string name="test_show_details">Detayları göster</string>
+    <string name="test_hide_details">Detayları gizle</string>
+    <string name="test_expand">Genişlet</string>
     <string name="battery_optimization">Pil optimizasyonu</string>
     <string name="battery_optimization_summary">Kararlılığı artırmak için etkinleştirin</string>
     <string name="battery_optimization_disabled_summary">Devre dışı bırakıldı</string>

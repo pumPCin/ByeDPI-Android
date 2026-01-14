@@ -1,27 +1,24 @@
 package io.github.dovecoteescapee.byedpi.activities
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Intent
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
-import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import io.github.dovecoteescapee.byedpi.R
+import io.github.dovecoteescapee.byedpi.adapters.StrategyResultAdapter
 import io.github.dovecoteescapee.byedpi.data.Mode
 import io.github.dovecoteescapee.byedpi.data.AppStatus
+import io.github.dovecoteescapee.byedpi.data.SiteResult
+import io.github.dovecoteescapee.byedpi.data.StrategyResult
 import io.github.dovecoteescapee.byedpi.services.appStatus
 import io.github.dovecoteescapee.byedpi.services.ServiceManager
 import io.github.dovecoteescapee.byedpi.utility.HistoryUtils
@@ -31,15 +28,18 @@ import io.github.dovecoteescapee.byedpi.utility.getIntStringNotNull
 import io.github.dovecoteescapee.byedpi.utility.getLongStringNotNull
 import androidx.core.content.edit
 import io.github.dovecoteescapee.byedpi.utility.getStringNotNull
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import java.io.File
 
 class TestActivity : BaseActivity() {
 
-    private lateinit var scrollTextView: ScrollView
+    private lateinit var strategiesRecyclerView: RecyclerView
     private lateinit var progressTextView: TextView
-    private lateinit var resultsTextView: TextView
+    private lateinit var disclaimerTextView: TextView
     private lateinit var startStopButton: Button
+    private lateinit var strategyAdapter: StrategyResultAdapter
 
     private lateinit var siteChecker: SiteCheckUtils
     private lateinit var cmdHistoryUtils: HistoryUtils
@@ -48,6 +48,8 @@ class TestActivity : BaseActivity() {
 
     private var savedCmd: String = ""
     private var testJob: Job? = null
+    private val strategies = mutableListOf<StrategyResult>()
+    private val gson = Gson()
 
     private var isTesting: Boolean
         get() = prefs.getBoolean("is_test_running", false)
@@ -66,24 +68,35 @@ class TestActivity : BaseActivity() {
 
         siteChecker = SiteCheckUtils(ip, port)
         cmdHistoryUtils = HistoryUtils(this)
-        scrollTextView = findViewById(R.id.scrollView)
-        startStopButton = findViewById(R.id.startStopButton)
-        resultsTextView = findViewById(R.id.resultsTextView)
-        progressTextView = findViewById(R.id.progressTextView)
 
-        resultsTextView.movementMethod = LinkMovementMethod.getInstance()
+        strategiesRecyclerView = findViewById(R.id.strategiesRecyclerView)
+        startStopButton = findViewById(R.id.startStopButton)
+        progressTextView = findViewById(R.id.progressTextView)
+        disclaimerTextView = findViewById(R.id.disclaimerTextView)
+
+        strategyAdapter = StrategyResultAdapter(this) { command ->
+            addToHistory(command)
+        }
+        strategiesRecyclerView.layoutManager = LinearLayoutManager(this)
+        strategiesRecyclerView.adapter = strategyAdapter
 
         if (isTesting) {
             progressTextView.text = getString(R.string.test_proxy_error)
-            resultsTextView.text = getString(R.string.test_crash)
+            disclaimerTextView.text = getString(R.string.test_crash)
+            disclaimerTextView.visibility = View.VISIBLE
             isTesting = false
         } else {
             lifecycleScope.launch {
-                val previousLogs = loadLog()
-                if (previousLogs.isNotEmpty()) {
+                val previousResults = loadResults()
+                if (previousResults.isNotEmpty()) {
                     progressTextView.text = getString(R.string.test_complete)
-                    resultsTextView.text = ""
-                    displayLog(previousLogs)
+                    disclaimerTextView.visibility = View.GONE
+
+                    strategies.clear()
+                    strategies.addAll(previousResults)
+                    strategyAdapter.updateStrategies(strategies)
+                } else {
+                    disclaimerTextView.visibility = View.VISIBLE
                 }
             }
         }
@@ -161,41 +174,41 @@ class TestActivity : BaseActivity() {
         cmds = loadCmds()
 
         if (sites.isEmpty()) {
-            resultsTextView.text = ""
-            appendTextToResults("${getString(R.string.test_settings_domain_empty)}\n")
+            Toast.makeText(this, R.string.test_settings_domain_empty, Toast.LENGTH_LONG).show()
             return
         }
 
         testJob = lifecycleScope.launch(Dispatchers.IO) {
             isTesting = true
             savedCmd = prefs.getString("byedpi_cmd_args", "").orEmpty()
-            clearLog()
+
+            strategies.clear()
+            strategies.addAll(cmds.map { StrategyResult(command = it) })
 
             withContext(Dispatchers.Main) {
+                disclaimerTextView.visibility = View.GONE
+
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 startStopButton.text = getString(R.string.test_stop)
                 progressTextView.text = ""
-                resultsTextView.text = ""
+                strategyAdapter.updateStrategies(strategies, sortByPercentage = false)
             }
 
-            val fullLog = prefs.getBoolean("byedpi_proxytest_fulllog", false)
-            val logClickable = prefs.getBoolean("byedpi_proxytest_logclickable", false)
             val delaySec = prefs.getIntStringNotNull("byedpi_proxytest_delay", 1)
             val requestsCount = prefs.getIntStringNotNull("byedpi_proxytest_requests", 1)
             val requestTimeout = prefs.getLongStringNotNull("byedpi_proxytest_timeout", 5)
 
-            val successfulCmds = mutableListOf<Triple<String, Int, Int>>()
-
-            for ((index, cmd) in cmds.withIndex()) {
+            for (strategyIndex in strategies.indices) {
                 if (!isActive) break
 
-                val cmdIndex = index + 1
+                val strategy = strategies[strategyIndex]
+                val cmdIndex = strategyIndex + 1
 
                 withContext(Dispatchers.Main) {
                     progressTextView.text = getString(R.string.test_process, cmdIndex, cmds.size)
                 }
 
-                updateCmdArgs(cmd)
+                updateCmdArgs(strategy.command)
 
                 if (isProxyRunning()) stopTesting()
                 else ServiceManager.start(this@TestActivity, Mode.Proxy)
@@ -204,39 +217,38 @@ class TestActivity : BaseActivity() {
                     stopTesting()
                 }
 
-                withContext(Dispatchers.Main) {
-                    if (logClickable) {
-                        appendLinkToResults("$cmd\n")
-                    } else {
-                        appendTextToResults("$cmd\n")
-                    }
-                }
-
                 delay(delaySec * 500L)
 
                 val totalRequests = sites.size * requestsCount
-                val checkResults = siteChecker.checkSitesAsync(
+                strategy.maxProgress = totalRequests
+                strategy.totalRequests = totalRequests
+
+                withContext(Dispatchers.Main) {
+                    strategyAdapter.notifyItemChanged(strategyIndex)
+                }
+
+                siteChecker.checkSitesAsync(
                     sites = sites,
                     requestsCount = requestsCount,
                     requestTimeout = requestTimeout,
                     concurrentRequests = 20,
-                    fullLog = fullLog,
+                    fullLog = true,
                     onSiteChecked = { site, successCount, countRequests ->
                         lifecycleScope.launch(Dispatchers.Main) {
-                            appendTextToResults("$site - $successCount/$countRequests\n")
+                            strategy.currentProgress += countRequests
+                            strategy.successCount += successCount
+                            strategy.siteResults.add(SiteResult(site, successCount, countRequests))
+
+                            strategyAdapter.notifyItemChanged(strategyIndex, "progress")
                         }
                     }
                 )
 
-                val successfulCount = checkResults.sumOf { it.second }
-                val successPercentage = (successfulCount * 100) / totalRequests
-
-                if (successPercentage >= 50) successfulCmds.add(Triple(cmd, successfulCount, totalRequests))
-
-                delay(delaySec * 500L)
+                strategy.isCompleted = true
 
                 withContext(Dispatchers.Main) {
-                    appendTextToResults("$successfulCount/$totalRequests ($successPercentage%)\n\n")
+                    strategyAdapter.updateStrategies(strategies, sortByPercentage = true)
+                    saveResults(strategies)
                 }
 
                 if (isProxyRunning()) ServiceManager.stop(this@TestActivity)
@@ -246,21 +258,7 @@ class TestActivity : BaseActivity() {
                     stopTesting()
                 }
 
-                delay(1000L)
-            }
-
-            successfulCmds.sortByDescending { it.second }
-
-            withContext(Dispatchers.Main) {
-                appendTextToResults("${getString(R.string.test_good_cmds)}\n\n")
-
-                successfulCmds.forEachIndexed { index, (cmd, successCount, total) ->
-                    appendTextToResults("${index + 1}. ")
-                    appendLinkToResults("$cmd\n")
-                    appendTextToResults("$successCount/$total\n\n")
-                }
-
-                appendTextToResults(getString(R.string.test_complete_info))
+                delay(delaySec * 500L)
             }
 
             stopTesting()
@@ -287,92 +285,43 @@ class TestActivity : BaseActivity() {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 startStopButton.text = getString(R.string.test_start)
                 progressTextView.text = getString(R.string.test_complete)
+
+                strategyAdapter.updateStrategies(strategies, sortByPercentage = true)
+                saveResults(strategies)
             }
         }
-    }
-
-    private fun appendTextToResults(text: String) {
-        resultsTextView.append(text)
-        if (isTesting) saveLog(text)
-        scrollToBottom()
-    }
-
-    private fun appendLinkToResults(text: String) {
-        val spannableString = SpannableString(text)
-        val menuItems = arrayOf(
-            getString(R.string.cmd_history_apply),
-            getString(R.string.cmd_history_copy)
-        )
-
-        spannableString.setSpan(
-            object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    AlertDialog.Builder(this@TestActivity)
-                        .setTitle(getString(R.string.cmd_history_menu))
-                        .setItems(menuItems) { _, which ->
-                            when (which) {
-                                0 -> addToHistory(text.trim())
-                                1 -> copyToClipboard(text.trim())
-                            }
-                        }
-                        .show()
-                }
-            },
-            0,
-            text.length,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-
-        resultsTextView.append(spannableString)
-        if (isTesting) saveLog("{$text}")
-        scrollToBottom()
-    }
-
-    private fun scrollToBottom() {
-        scrollTextView.post {
-            scrollTextView.fullScroll(ScrollView.FOCUS_DOWN)
-        }
-    }
-
-    private fun copyToClipboard(text: String) {
-        val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("command", text)
-        clipboard.setPrimaryClip(clip)
     }
 
     private fun addToHistory(command: String) {
         updateCmdArgs(command)
         cmdHistoryUtils.addCommand(command)
+        Toast.makeText(this, R.string.cmd_history_applied, Toast.LENGTH_SHORT).show()
     }
 
-    private fun displayLog(log: String) {
-        log.split("{", "}").forEachIndexed { index, part ->
-            if (index % 2 == 0) {
-                appendTextToResults(part)
-            } else {
-                appendLinkToResults(part)
+    private fun saveResults(results: List<StrategyResult>) {
+        val file = File(filesDir, "proxy_test_results.json")
+        val json = gson.toJson(results)
+        file.writeText(json)
+    }
+
+    private fun loadResults(): List<StrategyResult> {
+        val file = File(filesDir, "proxy_test_results.json")
+        return if (file.exists()) {
+            try {
+                val json = file.readText()
+                val type = object : TypeToken<List<StrategyResult>>() {}.type
+                gson.fromJson<List<StrategyResult>>(json, type) ?: emptyList()
+            } catch (e: Exception) {
+                emptyList()
             }
+        } else {
+            emptyList()
         }
-    }
-
-    private fun saveLog(text: String) {
-        val file = File(filesDir, "proxy_test.log")
-        file.appendText(text)
-    }
-
-    private fun loadLog(): String {
-        val file = File(filesDir, "proxy_test.log")
-        return if (file.exists()) file.readText() else ""
-    }
-
-    private fun clearLog() {
-        val file = File(filesDir, "proxy_test.log")
-        file.writeText("")
     }
 
     private fun loadSites(): List<String> {
         val defaultDomainLists = setOf("youtube", "googlevideo")
-        val selectedDomainLists = prefs.getStringSet("byedpi_proxytest_domain_lists", defaultDomainLists)?: return emptyList()
+        val selectedDomainLists = prefs.getStringSet("byedpi_proxytest_domain_lists", defaultDomainLists) ?: return emptyList()
 
         val allDomains = mutableListOf<String>()
 
