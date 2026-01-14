@@ -15,6 +15,11 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.data.AppInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AppSelectionAdapter(
     context: Context,
@@ -22,25 +27,52 @@ class AppSelectionAdapter(
 ) : RecyclerView.Adapter<AppSelectionAdapter.ViewHolder>(), Filterable {
 
     private val context = context.applicationContext
+    private val pm = context.packageManager
     private val originalApps: List<AppInfo> = allApps
     private val filteredApps: MutableList<AppInfo> = allApps.toMutableList()
+    private val adapterScope = CoroutineScope(Dispatchers.Main + Job())
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val appIcon: ImageView = view.findViewById(R.id.appIcon)
         val appName: TextView = view.findViewById(R.id.appName)
         val appCheckBox: CheckBox = view.findViewById(R.id.appCheckBox)
+        var iconLoadJob: Job? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.app_selection_item, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.app_selection_item, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val app = filteredApps[position]
-        holder.appIcon.setImageDrawable(app.icon)
+
         holder.appName.text = app.appName
         holder.appCheckBox.isChecked = app.isSelected
+
+        holder.iconLoadJob?.cancel()
+
+        if (app.icon != null) {
+            holder.appIcon.setImageDrawable(app.icon)
+        } else {
+            holder.appIcon.setImageDrawable(pm.defaultActivityIcon)
+
+            holder.iconLoadJob = adapterScope.launch {
+                val icon = withContext(Dispatchers.IO) {
+                    try {
+                        pm.getApplicationIcon(app.packageName)
+                    } catch (_: Exception) {
+                        null
+                    }
+                }
+
+                if (icon != null) {
+                    app.icon = icon
+                    holder.appIcon.setImageDrawable(icon)
+                }
+            }
+        }
 
         holder.itemView.setOnClickListener {
             app.isSelected = !app.isSelected
@@ -49,8 +81,11 @@ class AppSelectionAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return filteredApps.size
+    override fun getItemCount(): Int = filteredApps.size
+
+    override fun onViewRecycled(holder: ViewHolder) {
+        super.onViewRecycled(holder)
+        holder.iconLoadJob?.cancel()
     }
 
     override fun getFilter(): Filter {

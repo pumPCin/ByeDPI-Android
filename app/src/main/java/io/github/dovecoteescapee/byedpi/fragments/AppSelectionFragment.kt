@@ -18,6 +18,8 @@ import io.github.dovecoteescapee.byedpi.R
 import io.github.dovecoteescapee.byedpi.adapters.AppSelectionAdapter
 import io.github.dovecoteescapee.byedpi.data.AppInfo
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -42,7 +44,6 @@ class AppSelectionFragment : Fragment() {
 
         setupRecyclerView()
         setupSearchView()
-
         loadApps()
 
         return view
@@ -71,10 +72,11 @@ class AppSelectionFragment : Fragment() {
 
     private fun loadApps() {
         progressBar.visibility = View.VISIBLE
+        searchView.visibility = View.GONE
 
         lifecycleScope.launch {
             val apps = withContext(Dispatchers.IO) {
-                getInstalledApps()
+                getInstalledAppsAsync()
             }
 
             adapter = AppSelectionAdapter(requireContext(), apps)
@@ -84,14 +86,19 @@ class AppSelectionFragment : Fragment() {
         }
     }
 
-    private fun getInstalledApps(): List<AppInfo> {
+    private suspend fun getInstalledAppsAsync(): List<AppInfo> {
         val pm = requireContext().packageManager
         val installedApps = pm.getInstalledApplications(0)
         val selectedApps = prefs.getStringSet("selected_apps", setOf()) ?: setOf()
 
         return installedApps
             .filter { it.packageName != requireContext().packageName }
-            .map { createAppInfo(it, pm, selectedApps) }
+            .map { appInfo ->
+                lifecycleScope.async(Dispatchers.IO) {
+                    createAppInfo(appInfo, pm, selectedApps)
+                }
+            }
+            .awaitAll()
             .sortedWith(compareBy({ !it.isSelected }, { it.appName.lowercase() }))
     }
 
@@ -106,17 +113,11 @@ class AppSelectionFragment : Fragment() {
             appInfo.packageName
         }
 
-        val appIcon = try {
-            pm.getApplicationIcon(appInfo.packageName)
-        } catch (_: Exception) {
-            pm.defaultActivityIcon
-        }
-
         return AppInfo(
             appName,
             appInfo.packageName,
-            appIcon,
-            selectedApps.contains(appInfo.packageName)
+            selectedApps.contains(appInfo.packageName),
+            icon = null
         )
     }
 }

@@ -219,6 +219,7 @@ class TestActivity : BaseActivity() {
                     sites = sites,
                     requestsCount = requestsCount,
                     requestTimeout = requestTimeout,
+                    concurrentRequests = 20,
                     fullLog = fullLog,
                     onSiteChecked = { site, successCount, countRequests ->
                         lifecycleScope.launch(Dispatchers.Main) {
