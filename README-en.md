@@ -70,3 +70,7 @@ SHA-256:
 ### Dependencies
 - [ByeDPI](https://github.com/hufrea/byedpi)
 - [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
+
+### Contributors
+These people have contributed to the development of the project:
+<!-- CONTRIBUTORS -->

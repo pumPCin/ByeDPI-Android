@@ -75,3 +75,7 @@ SHA-256:
 ### Bağımlılıklar
 - [ByeDPI](https://github.com/hufrea/byedpi)
 - [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
+
+### Katkıda Bulunanlar
+Bu kişiler projenin geliştirilmesine katkıda bulundular:
+<!-- CONTRIBUTORS -->

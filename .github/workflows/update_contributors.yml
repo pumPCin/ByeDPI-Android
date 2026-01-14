@@ -1,0 +1,26 @@
+name: Update READMEs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'CONTRIBUTORS.md'
+      - 'README*.md'
+
+jobs:
+  update-readmes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run update
+        run: bash scripts/update_readmes.sh
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add README*.md
+          git commit -m "Update READMEs with latest CONTRIBUTORS" || echo "No changes to commit"
+          git push
