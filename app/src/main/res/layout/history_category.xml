@@ -16,8 +16,8 @@
         android:id="@android:id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="?attr/history_pref_icon_space"
-        android:paddingEnd="24dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:textColor="?android:attr/colorAccent"
         android:textStyle="bold"
         android:paddingBottom="4dp" />
@@ -26,8 +26,8 @@
         android:id="@android:id/summary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="?attr/history_pref_icon_space"
-        android:paddingEnd="24dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:textColor="?android:attr/textColorSecondary"
         android:textSize="12sp" />
 

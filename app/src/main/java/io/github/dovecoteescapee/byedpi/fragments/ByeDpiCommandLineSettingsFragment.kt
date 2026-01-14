@@ -22,13 +22,6 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
     private val historyPreferences = mutableListOf<Preference>()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        val uiScale = resources.displayMetrics.density
-        val threshold = 3.1f
-
-        val overlay = if (uiScale > threshold) R.style.Theme_ByeDPI_History_NoPaddingLeft
-        else R.style.Theme_ByeDPI_History_PaddingLeft
-
-        requireActivity().theme.applyStyle(overlay, true)
         setPreferencesFromResource(R.xml.byedpi_cmd_settings, rootKey)
 
         cmdHistoryUtils = HistoryUtils(requireContext())
@@ -89,15 +82,24 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
 
     private fun buildSummary(command: Command): String {
         val summary = StringBuilder()
+
         if (command.name != null) {
             summary.append(command.name)
         }
+
         if (command.pinned) {
-            if (summary.isNotEmpty()) summary.append(" - ")
-            summary.append(context?.getString(R.string.cmd_history_pinned))
+            if (summary.isNotEmpty()) summary.append(" • ")
+            summary.append(getString(R.string.cmd_history_pinned))
         }
+
+        if (command.text == editTextPreference.text) {
+            if (summary.isNotEmpty()) summary.append(" • ")
+            summary.append(getString(R.string.cmd_history_applied))
+        }
+
         return summary.toString()
     }
+
 
     private fun showHistoryClearDialog() {
         val options = arrayOf(
@@ -205,6 +207,7 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
 
     private fun applyCommand(command: String) {
         editTextPreference.text = command
+        updateHistoryItems()
     }
 
     private fun pinCommand(command: String) {

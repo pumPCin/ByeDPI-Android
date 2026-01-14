@@ -109,6 +109,7 @@
     <string name="cmd_history_pin">Sabitle</string>
     <string name="cmd_history_unpin">Sabitlemeyi kaldır</string>
     <string name="cmd_history_pinned">Sabitlendi</string>
+    <string name="cmd_history_applied">Uygulandı</string>
     <string name="cmd_history_delete">Sil</string>
     <string name="telegram_link">Telegram grubu</string>
     <string name="title_test">Proxy testi (Beta)</string>
@@ -146,4 +147,5 @@
     <string name="battery_optimization_summary">Kararlılığı artırmak için etkinleştirin</string>
     <string name="battery_optimization_disabled_summary">Devre dışı bırakıldı</string>
     <string name="permission_category">İzinler</string>
+    <string name="documentation_link">Dokümantasyon</string>
 </resources>

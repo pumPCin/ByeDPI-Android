@@ -79,6 +79,8 @@
         <item>GoogleVideo</item>
         <item>Discord</item>
         <item>Cloudflare</item>
+        <item>Социальные</item>
+        <item>Общий</item>
         <item>Свой список</item>
     </array>
     <array name="domain_lists_values">
@@ -86,6 +88,8 @@
         <item>googlevideo</item>
         <item>discord</item>
         <item>cloudflare</item>
+        <item>social</item>
+        <item>general</item>
         <item>custom</item>
     </array>
     <array name="domain_lists_default">

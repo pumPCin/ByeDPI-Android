@@ -3,15 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:tag="byedpi_ui_settings">
 
-    <Preference
-        android:key="byedpi_readme"
-        android:title="@string/byedpi_readme_link"
-        android:icon="@drawable/ic_github_36">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:data="@string/byedpi_docs" />
-    </Preference>
-
     <androidx.preference.PreferenceCategory
         android:title="@string/byedpi_proxy">
 

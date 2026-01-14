@@ -10,12 +10,4 @@
 
         <item name="android:statusBarColor">#000000</item>
     </style>
-
-    <style name="Theme.ByeDPI.History.PaddingLeft" parent="Theme.ByeDPI">
-        <item name="history_pref_icon_space">72dp</item>
-    </style>
-
-    <style name="Theme.ByeDPI.History.NoPaddingLeft" parent="Theme.ByeDPI">
-        <item name="history_pref_icon_space">16dp</item>
-    </style>
 </resources>

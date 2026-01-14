@@ -109,6 +109,7 @@
     <string name="cmd_history_pin">Бекіту</string>
     <string name="cmd_history_unpin">Бекітуді алып тастау</string>
     <string name="cmd_history_pinned">Бекітілді</string>
+    <string name="cmd_history_applied">Қолданылды</string>
     <string name="cmd_history_delete">Өшіру</string>
     <string name="telegram_link">Telegram группа</string>
     <string name="title_test">Стратегияларды таңдау (Beta)</string>
@@ -146,4 +147,5 @@
     <string name="battery_optimization_summary">Тұрақтылықты жақсарту үшін қосыңыз</string>
     <string name="battery_optimization_disabled_summary">Ажыратылған</string>
     <string name="permission_category">Рұқсаттар</string>
+    <string name="documentation_link">Құжаттама</string>
 </resources>

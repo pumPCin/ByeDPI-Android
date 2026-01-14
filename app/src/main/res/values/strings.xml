@@ -109,6 +109,7 @@
     <string name="cmd_history_pin">Закрепить</string>
     <string name="cmd_history_unpin">Открепить</string>
     <string name="cmd_history_pinned">Закреплено</string>
+    <string name="cmd_history_applied">Применено</string>
     <string name="cmd_history_delete">Удалить</string>
     <string name="telegram_link">Группа Telegram</string>
     <string name="title_test">Подбор стратегий (Beta)</string>
@@ -146,4 +147,5 @@
     <string name="battery_optimization_summary">Включите для улучшения стабильности</string>
     <string name="battery_optimization_disabled_summary">Отключена</string>
     <string name="permission_category">Разрешения</string>
+    <string name="documentation_link">Документация</string>
 </resources>

@@ -163,6 +163,15 @@
         </Preference>
 
         <Preference
+            android:key="documentation"
+            android:title="@string/documentation_link"
+            android:icon="@drawable/ic_documentation">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/BDManual/ByeByeDPI-Manual" />
+        </Preference>
+
+        <Preference
             android:key="version"
             android:title="@string/version"
             app:useSimpleSummaryProvider="true"
