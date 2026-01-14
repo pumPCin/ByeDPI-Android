@@ -141,9 +141,9 @@
     <string name="test_settings_usercommands">Özel komut listesi kullan</string>
     <string name="test_settings_commands">Komut listesi</string>
     <string name="test_delay">Komutlar arasındaki gecikme</string>
-    <string name="test_requests">Domain isteklerinin sayısı</string>
+    <string name="test_requests">Alan adı istek sayısı</string>
     <string name="test_requests_limit">Maksimum paralel istek sayısı</string>
-    <string name="test_timeout">Alan adı istek sayısı</string>
+    <string name="test_timeout">Alan adı yanıt zaman aşımı</string>
     <string name="test_show_details">Detayları göster</string>
     <string name="test_hide_details">Detayları gizle</string>
     <string name="test_expand">Genişlet</string>
