@@ -152,7 +152,7 @@
     <string name="battery_optimization_disabled_summary">Отключена</string>
     <string name="permission_category">Разрешения</string>
     <string name="documentation_link">Документация</string>
-    <string name="proxytest_delay_desc">Увеличение значения может повысить стабильность</string>
+    <string name="proxytest_delay_desc">Увеличение значения повышает стабильность</string>
     <string name="proxytest_requests_desc">Увеличение значения повышает точность, но может снизить стабильность</string>
     <string name="proxytest_limit_desc">Увеличение значения ускоряет тест, но может снизить стабильность</string>
     <string name="proxytest_timeout_desc">Увеличение значения замедляет тест, но повышает стабильность и точность</string>
