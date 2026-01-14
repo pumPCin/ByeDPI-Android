@@ -7,6 +7,7 @@ on:
     paths:
       - 'CONTRIBUTORS.md'
       - 'README*.md'
+  workflow_dispatch:
 
 jobs:
   update-readmes:
