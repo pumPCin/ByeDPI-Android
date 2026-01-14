@@ -1,18 +1,10 @@
 package io.github.dovecoteescapee.byedpi.fragments
 
-import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import androidx.core.net.toUri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
 import androidx.preference.*
 import io.github.dovecoteescapee.byedpi.BuildConfig
@@ -24,7 +16,6 @@ import io.github.dovecoteescapee.byedpi.utility.*
 class MainSettingsFragment : PreferenceFragmentCompat() {
     companion object {
         private val TAG: String = MainSettingsFragment::class.java.simpleName
-        private const val STORAGE_PERMISSION_REQUEST = 1001
 
         fun setLang(lang: String) {
             val appLocale = localeByName(lang) ?: throw IllegalStateException("Invalid value for language: $lang")
@@ -104,7 +95,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
 
         findPreferenceNotNull<Preference>("storage_access")
             .setOnPreferenceClickListener {
-                requestStoragePermission()
+                StorageUtils.requestStoragePermission(this)
                 true
             }
 
@@ -123,47 +114,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
     override fun onPause() {
         super.onPause()
         sharedPreferences?.unregisterOnSharedPreferenceChangeListener(preferenceListener)
-    }
-
-    private fun hasStoragePermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Environment.isExternalStorageManager()
-        } else {
-            val readPermission = ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
-
-            val writePermission = ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
-
-            readPermission && writePermission
-        }
-    }
-
-    private fun requestStoragePermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            try {
-                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-                    data = "package:${requireContext().packageName}".toUri()
-                }
-                startActivity(intent)
-            } catch (e: Exception) {
-                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
-                startActivity(intent)
-            }
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ),
-                STORAGE_PERMISSION_REQUEST
-            )
-        }
     }
 
     private fun updatePreferences() {
@@ -229,7 +179,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             batteryOptimization.summary = getString(R.string.battery_optimization_summary)
         }
 
-        if (hasStoragePermission()) {
+        if (StorageUtils.hasStoragePermission(requireContext())) {
             storageAccess.summary = getString(R.string.storage_access_allowed_summary)
         } else {
             storageAccess.summary = getString(R.string.storage_access_summary)
