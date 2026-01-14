@@ -77,27 +77,27 @@ class TestActivity : BaseActivity() {
         strategyAdapter = StrategyResultAdapter(this) { command ->
             addToHistory(command)
         }
+
         strategiesRecyclerView.layoutManager = LinearLayoutManager(this)
         strategiesRecyclerView.adapter = strategyAdapter
 
-        if (isTesting) {
-            progressTextView.text = getString(R.string.test_proxy_error)
-            disclaimerTextView.text = getString(R.string.test_crash)
-            disclaimerTextView.visibility = View.VISIBLE
-            isTesting = false
-        } else {
-            lifecycleScope.launch {
-                val previousResults = loadResults()
-                if (previousResults.isNotEmpty()) {
-                    progressTextView.text = getString(R.string.test_complete)
-                    disclaimerTextView.visibility = View.GONE
+        lifecycleScope.launch {
+            val previousResults = loadResults()
 
-                    strategies.clear()
-                    strategies.addAll(previousResults)
-                    strategyAdapter.updateStrategies(strategies)
-                } else {
-                    disclaimerTextView.visibility = View.VISIBLE
-                }
+            if (isTesting) {
+                progressTextView.text = getString(R.string.test_proxy_error)
+                disclaimerTextView.text = getString(R.string.test_crash)
+                disclaimerTextView.visibility = View.VISIBLE
+                isTesting = false
+            }
+
+            if (previousResults.isNotEmpty()) {
+                progressTextView.text = getString(R.string.test_complete)
+                disclaimerTextView.visibility = View.GONE
+
+                strategies.clear()
+                strategies.addAll(previousResults)
+                strategyAdapter.updateStrategies(strategies)
             }
         }
 
