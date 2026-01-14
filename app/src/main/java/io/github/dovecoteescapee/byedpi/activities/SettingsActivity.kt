@@ -3,18 +3,13 @@ package io.github.dovecoteescapee.byedpi.activities
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import com.google.gson.Gson
-import io.github.dovecoteescapee.byedpi.BuildConfig
 import io.github.dovecoteescapee.byedpi.R
-import io.github.dovecoteescapee.byedpi.data.AppSettings
 import io.github.dovecoteescapee.byedpi.fragments.ByeDpiCommandLineSettingsFragment
 import io.github.dovecoteescapee.byedpi.fragments.ByeDpiUISettingsFragment
 import io.github.dovecoteescapee.byedpi.fragments.MainSettingsFragment
-import io.github.dovecoteescapee.byedpi.utility.HistoryUtils
+import io.github.dovecoteescapee.byedpi.utility.SettingsUtils
 import io.github.dovecoteescapee.byedpi.utility.getPreferences
-import io.github.dovecoteescapee.byedpi.utility.getSelectedApps
 import androidx.core.content.edit
 
 class SettingsActivity : BaseActivity() {
@@ -46,7 +41,7 @@ class SettingsActivity : BaseActivity() {
             }
         }
 
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -62,11 +57,7 @@ class SettingsActivity : BaseActivity() {
 
         R.id.action_reset_settings -> {
             val prefs = getPreferences()
-            val editor = prefs.edit()
-
-            editor.clear()
-            editor.apply()
-
+            prefs.edit { clear() }
             recreate()
             true
         }
@@ -89,27 +80,7 @@ class SettingsActivity : BaseActivity() {
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
         uri?.let {
-            val prefs = getPreferences()
-            val history = HistoryUtils(this).getHistory()
-            val apps = prefs.getSelectedApps()
-
-            val settings = prefs.all.filterKeys { key ->
-                key !in setOf("byedpi_command_history", "selected_apps")
-            }
-
-            val export = AppSettings(
-                app = BuildConfig.APPLICATION_ID,
-                version = BuildConfig.VERSION_NAME,
-                history = history,
-                apps = apps,
-                settings = settings
-            )
-
-            val json = Gson().toJson(export)
-
-            contentResolver.openOutputStream(it)?.use { outputStream ->
-                outputStream.write(json.toByteArray())
-            }
+            SettingsUtils.exportSettings(this, it)
         }
     }
 
@@ -117,32 +88,7 @@ class SettingsActivity : BaseActivity() {
         ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri?.let {
-            contentResolver.openInputStream(it)?.use { inputStream ->
-                val json = inputStream.bufferedReader().readText()
-
-                val import = Gson().fromJson(json, AppSettings::class.java)
-
-                if (import.app != BuildConfig.APPLICATION_ID) {
-                    Toast.makeText(this, "Invalid config", Toast.LENGTH_LONG).show()
-                    return@use
-                }
-
-                val prefs = getPreferences()
-                prefs.edit {
-                    clear()
-                    import.settings.forEach { (key, value) ->
-                        when (value) {
-                            is Int -> putInt(key, value)
-                            is Boolean -> putBoolean(key, value)
-                            is String -> putString(key, value)
-                            is Float -> putFloat(key, value)
-                            is Long -> putLong(key, value)
-                        }
-                    }
-                    putStringSet("selected_apps", import.apps.toSet())
-                }
-                HistoryUtils(this).saveHistory(import.history)
-
+            SettingsUtils.importSettings(this, it) {
                 recreate()
             }
         }
