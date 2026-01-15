@@ -32,7 +32,7 @@
     <string name="mode_setting">Mod</string>
     <string name="dbs_ip_setting">DNS</string>
     <string name="byedpi_version">ByeDPI</string>
-    <string name="bye_dpi_proxy_ip_setting">Dinleme IPsi/string>
+    <string name="bye_dpi_proxy_ip_setting">Dinleme IPsi</string>
     <string name="byedpi_proxy_port_setting">Port</string>
     <string name="byedpi_http_connect_setting">HTTP proxy</string>
     <string name="byedpi_http_connect_summary">ByeDPI, HTTP dışında HTTPS veya herhangi bir TCP trafiğini proxyler.</string>
