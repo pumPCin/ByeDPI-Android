@@ -18,7 +18,7 @@ object SettingsUtils {
     private const val TAG = "SettingsUtils"
 
     fun setLang(lang: String) {
-        val appLocale = localeByName(lang) ?: throw IllegalStateException("Invalid value for language: $lang")
+        val appLocale = localeByName(lang) ?: LocaleListCompat.getEmptyLocaleList()
 
         if (AppCompatDelegate.getApplicationLocales().toLanguageTags() != appLocale.toLanguageTags()) {
             AppCompatDelegate.setApplicationLocales(appLocale)
@@ -38,7 +38,7 @@ object SettingsUtils {
     }
 
     fun setTheme(name: String) {
-        val appTheme = themeByName(name) ?: throw IllegalStateException("Invalid value for app_theme: $name")
+        val appTheme = themeByName(name) ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
 
         if (AppCompatDelegate.getDefaultNightMode() != appTheme) {
             AppCompatDelegate.setDefaultNightMode(appTheme)
@@ -104,7 +104,7 @@ object SettingsUtils {
                 }
 
                 val prefs = context.getPreferences()
-                prefs.edit {
+                prefs.edit (commit = true) {
                     clear()
                     import.settings.forEach { (key, value) ->
                         when (value) {
@@ -113,6 +113,19 @@ object SettingsUtils {
                             is String -> putString(key, value)
                             is Float -> putFloat(key, value)
                             is Long -> putLong(key, value)
+                            is Double -> {
+                                when (value) {
+                                    value.toInt().toDouble() -> {
+                                        putInt(key, value.toInt())
+                                    }
+                                    value.toLong().toDouble() -> {
+                                        putLong(key, value.toLong())
+                                    }
+                                    else -> {
+                                        putFloat(key, value.toFloat())
+                                    }
+                                }
+                            }
                             is Collection<*> -> {
                                 if (value.all { it is String }) {
                                     @Suppress("UNCHECKED_CAST")
@@ -125,7 +138,13 @@ object SettingsUtils {
                 }
                 HistoryUtils(context).saveHistory(import.history)
 
-                onRestart()
+                Handler(Looper.getMainLooper()).post {
+                    val newLang = prefs.getString("language", "system") ?: "system"
+                    val newTheme = prefs.getString("app_theme", "system") ?: "system"
+                    setLang(newLang)
+                    setTheme(newTheme)
+                    onRestart()
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to import settings", e)

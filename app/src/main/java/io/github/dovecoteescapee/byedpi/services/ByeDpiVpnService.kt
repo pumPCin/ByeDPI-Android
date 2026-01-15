@@ -115,10 +115,14 @@ class ByeDpiVpnService : LifecycleVpnService() {
         try {
             startForeground()
             mutex.withLock {
+                if (status == ServiceStatus.Connected) {
+                    Log.w(TAG, "VPN already connected")
+                    return@withLock
+                }
                 startProxy()
                 startTun2Socks()
+                updateStatus(ServiceStatus.Connected)
             }
-            updateStatus(ServiceStatus.Connected)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start VPN", e)
             updateStatus(ServiceStatus.Failed)
@@ -151,9 +155,9 @@ class ByeDpiVpnService : LifecycleVpnService() {
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to stop VPN", e)
             }
+            updateStatus(ServiceStatus.Disconnected)
         }
 
-        updateStatus(ServiceStatus.Disconnected)
         stopSelf()
     }
 

@@ -98,9 +98,13 @@ class ByeDpiProxyService : LifecycleService() {
         try {
             startForeground()
             mutex.withLock {
+                if (status == ServiceStatus.Connected) {
+                    Log.w(TAG, "Proxy already connected")
+                    return@withLock
+                }
                 startProxy()
+                updateStatus(ServiceStatus.Connected)
             }
-            updateStatus(ServiceStatus.Connected)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start proxy", e)
             updateStatus(ServiceStatus.Failed)
@@ -128,9 +132,9 @@ class ByeDpiProxyService : LifecycleService() {
             withContext(Dispatchers.IO) {
                 stopProxy()
             }
+            updateStatus(ServiceStatus.Disconnected)
         }
 
-        updateStatus(ServiceStatus.Disconnected)
         stopSelf()
     }
 

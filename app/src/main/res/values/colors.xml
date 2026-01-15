@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="icon_color">#0B4680</color>
+    <color name="green_active">#4CAF50</color>
 </resources>
