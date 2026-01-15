@@ -9,5 +9,13 @@
         <item name="colorOnSecondary">#FFFFFF</item>
 
         <item name="android:statusBarColor">#000000</item>
+        <item name="materialCardViewStyle">@style/SmallShadowCard</item>
+    </style>
+
+    <style name="CircleButton" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">60dp</item>
+        <item name="android:textSize">0sp</item>
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="iconTint">?attr/colorOnPrimary</item>
     </style>
 </resources>

@@ -15,7 +15,7 @@
     <string name="service_pause_btn">Duraklat</string>
     <string name="service_stop_btn">Durdur</string>
     <string name="service_paused_text">Hizmet duraklatıldı</string>
-    <string name="open_editor">Editörü aç</string>
+    <string name="open_editor">Editörü</string>
     <string name="settings">Ayarlar</string>
     <string name="vpn_permission_denied">VPN açma yetkisi yok.</string>
     <string name="settings_unavailable">Ayarları açmak için bağlantıyı kesin</string>

@@ -15,7 +15,7 @@
     <string name="service_pause_btn">Пауза</string>
     <string name="service_stop_btn">Стоп</string>
     <string name="service_paused_text">Приостановлен</string>
-    <string name="open_editor">Открыть редактор</string>
+    <string name="open_editor">Редактор</string>
     <string name="settings">Настройки</string>
     <string name="vpn_permission_denied">Нет разрешения на активацию VPN</string>
     <string name="settings_unavailable">Сначала отключитесь, чтобы зайти в настройки</string>

@@ -140,8 +140,8 @@ class MainActivity : BaseActivity() {
             registerReceiver(receiver, intentFilter)
         }
 
-        binding.statusButton.setOnClickListener {
-            binding.statusButton.isClickable = false
+        binding.statusButtonCard.setOnClickListener {
+            binding.statusButtonCard.isClickable = false
 
             val (status, _) = appStatus
             when (status) {
@@ -149,18 +149,29 @@ class MainActivity : BaseActivity() {
                 AppStatus.Running -> stop()
             }
 
-            binding.statusButton.postDelayed({
-                binding.statusButton.isClickable = true
+            binding.statusButtonCard.postDelayed({
+                binding.statusButtonCard.isClickable = true
             }, 1000)
         }
 
-        binding.openEditorLink.setOnClickListener {
+        binding.editorButton.setOnClickListener {
             val (status, _) = appStatus
 
             if (status == AppStatus.Halted) {
                 val intent = Intent(this, SettingsActivity::class.java)
                 val useCmdSettings = getPreferences().getBoolean("byedpi_enable_cmd_settings", false)
                 intent.putExtra("open_fragment", if (useCmdSettings) "cmd" else "ui")
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.settingsButton.setOnClickListener {
+            val (status, _) = appStatus
+
+            if (status == AppStatus.Halted) {
+                val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
             } else {
                 Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
@@ -276,29 +287,34 @@ class MainActivity : BaseActivity() {
 
         when (status) {
             AppStatus.Halted -> {
+                val typedValue = android.util.TypedValue()
+                theme.resolveAttribute(android.R.attr.colorPrimary, typedValue,true)
+                binding.statusButtonCard.setCardBackgroundColor(typedValue.data)
+
+                binding.statusButtonIcon.clearColorFilter()
+
                 when (preferences.mode()) {
                     Mode.VPN -> {
                         binding.statusText.setText(R.string.vpn_disconnected)
-                        binding.statusButton.setText(R.string.vpn_connect)
                     }
 
                     Mode.Proxy -> {
                         binding.statusText.setText(R.string.proxy_down)
-                        binding.statusButton.setText(R.string.proxy_start)
                     }
                 }
             }
 
             AppStatus.Running -> {
+                binding.statusButtonCard.setCardBackgroundColor(ContextCompat.getColor(this, R.color.green_active))
+                binding.statusButtonIcon.setColorFilter(ContextCompat.getColor(this, android.R.color.white))
+
                 when (mode) {
                     Mode.VPN -> {
                         binding.statusText.setText(R.string.vpn_connected)
-                        binding.statusButton.setText(R.string.vpn_disconnect)
                     }
 
                     Mode.Proxy -> {
                         binding.statusText.setText(R.string.proxy_up)
-                        binding.statusButton.setText(R.string.proxy_stop)
                     }
                 }
             }
