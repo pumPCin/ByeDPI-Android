@@ -35,7 +35,7 @@ void reset_params(void) {
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __attribute__((unused)) jobject thiz, jobjectArray args) {
+Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __attribute__((unused)) jobject thiz, jobjectArray args) {
     if (g_proxy_running) {
         LOG(LOG_S, "proxy already running");
         return -1;
@@ -82,7 +82,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
+Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStopProxy(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
     LOG(LOG_S, "send shutdown to proxy");
 
     if (!g_proxy_running) {
@@ -97,7 +97,7 @@ Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(__attribute_
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniForceClose(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
+Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniForceClose(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
     LOG(LOG_S, "closing server socket (fd: %d)", server_fd);
 
     if (close(server_fd) == -1) {

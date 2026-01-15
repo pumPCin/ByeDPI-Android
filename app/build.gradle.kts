@@ -8,7 +8,7 @@ plugins {
 val abis = setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
 
 android {
-    namespace = "io.github.dovecoteescapee.byedpi"
+    namespace = "io.github.romanvht.byedpi"
     compileSdk = 36
 
     defaultConfig {

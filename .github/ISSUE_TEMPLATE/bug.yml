@@ -1,7 +1,7 @@
 name: Bug Report / Сообщение об ошибке
 description: File a bug report / Сообщить об ошибке в программе
 labels: [ bug ]
-assignees: dovecoteescapee
+assignees: romanvht
 body:
   - type: markdown
     attributes:

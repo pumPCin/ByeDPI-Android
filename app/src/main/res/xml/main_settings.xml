@@ -60,7 +60,7 @@
             android:key="selected_apps"
             android:icon="@drawable/ic_apps"
             android:title="@string/apps_select"
-            app:fragment="io.github.dovecoteescapee.byedpi.fragments.AppSelectionFragment" />
+            app:fragment="io.github.romanvht.byedpi.fragments.AppSelectionFragment" />
 
     </androidx.preference.PreferenceCategory>
 
@@ -95,14 +95,14 @@
             android:icon="@drawable/ic_tune"
             android:title="@string/ui_editor"
             app:useSimpleSummaryProvider="true"
-            app:fragment="io.github.dovecoteescapee.byedpi.fragments.ByeDpiUISettingsFragment" />
+            app:fragment="io.github.romanvht.byedpi.fragments.ByeDpiUISettingsFragment" />
 
         <Preference
             android:key="byedpi_cmd_settings"
             android:icon="@drawable/ic_code"
             android:title="@string/command_line_editor"
             app:useSimpleSummaryProvider="true"
-            app:fragment="io.github.dovecoteescapee.byedpi.fragments.ByeDpiCommandLineSettingsFragment" />
+            app:fragment="io.github.romanvht.byedpi.fragments.ByeDpiCommandLineSettingsFragment" />
 
         <Preference
             android:key="proxy_test"
