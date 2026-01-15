@@ -148,7 +148,7 @@
                 android:layout_marginTop="8dp"
                 android:textSize="14sp"
                 android:textColor="?android:textColorSecondary"
-                tools:text="127.0.0.1:1080" />
+                tools:text="127.0.0.1:10080" />
 
         </LinearLayout>
     </FrameLayout>

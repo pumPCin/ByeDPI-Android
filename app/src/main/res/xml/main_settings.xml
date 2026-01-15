@@ -8,15 +8,6 @@
         android:title="@string/general_category">
 
         <ListPreference
-            android:key="language"
-            android:icon="@drawable/ic_language"
-            android:title="@string/lang_settings"
-            android:entries="@array/languages"
-            android:entryValues="@array/languages_entries"
-            android:summary="%s"
-            android:defaultValue="system" />
-
-        <ListPreference
             android:key="app_theme"
             android:icon="@drawable/ic_palette"
             android:title="@string/theme_settings"
@@ -38,7 +29,7 @@
             android:key="dns_ip"
             android:icon="@drawable/ic_dns"
             android:title="@string/dbs_ip_setting"
-            android:defaultValue="8.8.8.8"
+            android:defaultValue="8.8.4.4"
             app:useSimpleSummaryProvider="true" />
 
         <SwitchPreference
@@ -60,7 +51,7 @@
             android:key="selected_apps"
             android:icon="@drawable/ic_apps"
             android:title="@string/apps_select"
-            app:fragment="io.github.romanvht.byedpi.fragments.AppSelectionFragment" />
+            app:fragment="io.github.dovecoteescapee.byedpi.fragments.AppSelectionFragment" />
 
     </androidx.preference.PreferenceCategory>
 
@@ -95,14 +86,14 @@
             android:icon="@drawable/ic_tune"
             android:title="@string/ui_editor"
             app:useSimpleSummaryProvider="true"
-            app:fragment="io.github.romanvht.byedpi.fragments.ByeDpiUISettingsFragment" />
+            app:fragment="io.github.dovecoteescapee.byedpi.fragments.ByeDpiUISettingsFragment" />
 
         <Preference
             android:key="byedpi_cmd_settings"
             android:icon="@drawable/ic_code"
             android:title="@string/command_line_editor"
             app:useSimpleSummaryProvider="true"
-            app:fragment="io.github.romanvht.byedpi.fragments.ByeDpiCommandLineSettingsFragment" />
+            app:fragment="io.github.dovecoteescapee.byedpi.fragments.ByeDpiCommandLineSettingsFragment" />
 
         <Preference
             android:key="proxy_test"
@@ -163,30 +154,12 @@
         android:title="@string/about_category">
 
         <Preference
-            android:key="telegram_group"
-            android:title="@string/telegram_link"
-            android:icon="@drawable/ic_telegram">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://t.me/byebyedpi_group" />
-        </Preference>
-
-        <Preference
             android:key="source_code"
             android:title="@string/source_code_link"
             android:icon="@drawable/ic_github">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/romanvht/ByeDPIAndroid" />
-        </Preference>
-
-        <Preference
-            android:key="documentation"
-            android:icon="@drawable/ic_documentation"
-            android:title="@string/documentation_link">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/BDManual/ByeByeDPI-Manual" />
+                android:data="https://github.com/pumPCin/ByeDPI-Android" />
         </Preference>
 
         <Preference
