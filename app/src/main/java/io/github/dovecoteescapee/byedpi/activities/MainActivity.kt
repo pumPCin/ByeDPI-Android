@@ -154,6 +154,15 @@ class MainActivity : BaseActivity() {
             }, 1000)
         }
 
+        binding.statusButtonCard.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.statusButtonCard.strokeWidth = 10
+                binding.statusButtonCard.strokeColor = android.graphics.Color.argb(100, 0, 0, 0)
+            } else {
+                binding.statusButtonCard.strokeWidth = 0
+            }
+        }
+
         binding.editorButton.setOnClickListener {
             val (status, _) = appStatus
 
@@ -290,7 +299,6 @@ class MainActivity : BaseActivity() {
                 val typedValue = android.util.TypedValue()
                 theme.resolveAttribute(android.R.attr.colorPrimary, typedValue,true)
                 binding.statusButtonCard.setCardBackgroundColor(typedValue.data)
-
                 binding.statusButtonIcon.clearColorFilter()
 
                 when (preferences.mode()) {
