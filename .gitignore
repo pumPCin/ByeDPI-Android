@@ -1,18 +1,22 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/deploymentTargetDropDown.xml
-/.idea/deploymentTargetSelector.xml
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+# OS
 .DS_Store
-/build
+
+# IDE
+.idea/
+.kotlin/
+*.iml
+
+# Gradle
+.gradle/
+build/
+
+# Local config
+local.properties
+
+# Android
 /captures
 .externalNativeBuild
 .cxx
-local.properties
-/app/src/main/jniLibs
+
+# JNI
+app/src/main/jniLibs/
