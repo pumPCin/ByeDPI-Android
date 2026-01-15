@@ -69,14 +69,3 @@ SHA-256:
 ### Зависимости
 - [ByeDPI](https://github.com/hufrea/byedpi)
 - [hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
-
-### Контрибьюторы
-Эти люди внесли свой вклад в развитие проекта:
-- **gdlbo** (@gdlbo)
-- **mxtherfxcker** (@mxtherfxcker)
-- **Vadim Totok** (@VadimTotok)
-- **topminipie** (@topminipie)
-- **nyaexx** (@nyaexx)
-- **KG7x** (@KG7x)
-- **Viktor45** (@Viktor45)
-- **zra123** (@zra123)
