@@ -45,6 +45,7 @@
     <string name="byedpi_version">ByeDPI</string>
     <string name="close_app">Закрыть приложение</string>
     <string name="cmd_args_clear">Очистить</string>
+    <string name="cmd_args_paste">Вставить</string>
     <string name="cmd_documentation">Документация</string>
     <string name="cmd_history_applied">Применено</string>
     <string name="cmd_history_apply">Применить</string>
