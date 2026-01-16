@@ -14,7 +14,6 @@ static int g_proxy_running = 0;
 
 struct params default_params = {
         .await_int = 10,
-        .cache_ttl = 100800,
         .ipv6 = 1,
         .resolve = 1,
         .udp = 1,
