@@ -97,6 +97,7 @@
     <string name="storage_access_summary">Stratejilerde dosya argümanlarını kullanmak istiyorsanız, depolamaya erişim sağlayın</string>
     <string name="storage_access_allowed_summary">Verildi</string>
     <string name="cmd_args_clear">Temizle</string>
+    <string name="cmd_args_paste">Yapıştır</string>
     <string name="cmd_history_title">Komut geçmişi</string>
     <string name="cmd_history_title_summary">Geçmişi yönetmek için tıklayın</string>
     <string name="cmd_history_delete_all">Tüm geçmişi sil</string>

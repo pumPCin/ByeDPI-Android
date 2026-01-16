@@ -97,6 +97,7 @@
     <string name="storage_access_summary">If you want to use file arguments in strategies, provide access to the storage</string>
     <string name="storage_access_allowed_summary">Allowed</string>
     <string name="cmd_args_clear">Clear</string>
+    <string name="cmd_args_paste">Paste</string>
     <string name="cmd_history_title">Command history</string>
     <string name="cmd_history_title_summary">Tap to manage history</string>
     <string name="cmd_history_delete_all">Delete all history</string>

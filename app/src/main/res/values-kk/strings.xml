@@ -97,6 +97,7 @@
     <string name="storage_access_summary">Стратегияларда файлдарды пайдалану үшін қойманы қолжетімді етіңіз</string>
     <string name="storage_access_allowed_summary">Рұқсат етілген</string>
     <string name="cmd_args_clear">Тазалау</string>
+    <string name="cmd_args_paste">Қою</string>
     <string name="cmd_history_title">Стратегия тізімі</string>
     <string name="cmd_history_title_summary">Тарихты басқару үшін басыңыз</string>
     <string name="cmd_history_delete_all">Тарихты тазалау</string>

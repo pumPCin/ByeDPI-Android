@@ -97,6 +97,7 @@
     <string name="storage_access_summary">Предоставьте доступ к хранилищу, если вы хотите использовать файлы в стратегиях</string>
     <string name="storage_access_allowed_summary">Разрешен</string>
     <string name="cmd_args_clear">Очистить</string>
+    <string name="cmd_args_paste">Вставить</string>
     <string name="cmd_history_title">Список стратегий</string>
     <string name="cmd_history_title_summary">Нажмите для управления историей</string>
     <string name="cmd_history_delete_all">Очистить историю</string>

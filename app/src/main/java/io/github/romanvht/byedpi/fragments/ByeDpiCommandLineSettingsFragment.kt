@@ -21,7 +21,6 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
     private lateinit var cmdHistoryUtils: HistoryUtils
     private lateinit var editTextPreference: EditTextPreference
     private lateinit var historyHeader: Preference
-    private lateinit var clearButton: Preference
     private val historyPreferences = mutableListOf<Preference>()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -31,17 +30,11 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
 
         editTextPreference = findPreferenceNotNull("byedpi_cmd_args")
         historyHeader = findPreferenceNotNull("cmd_history_header")
-        clearButton = findPreferenceNotNull("clear_cmd_args")
 
         editTextPreference.setOnPreferenceChangeListener { _, newValue ->
             val newCommand = newValue.toString()
             if (newCommand.isNotBlank()) cmdHistoryUtils.addCommand(newCommand)
             updateHistoryItems()
-            true
-        }
-
-        clearButton.setOnPreferenceClickListener {
-            editTextPreference.text = ""
             true
         }
 
@@ -53,7 +46,35 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
         updateHistoryItems()
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        view.post {
+            view.findViewById<View>(R.id.btn_clear)?.setOnClickListener {
+                editTextPreference.text = ""
+                updateHistoryItems()
+            }
+
+            view.findViewById<View>(R.id.btn_paste)?.setOnClickListener {
+                val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clipData = clipboard.primaryClip
+                if (clipData != null && clipData.itemCount > 0) {
+                    val text = clipData.getItemAt(0).text?.toString()
+                    if (!text.isNullOrBlank()) {
+                        editTextPreference.text = text
+                        cmdHistoryUtils.addCommand(text)
+                        updateHistoryItems()
+                    }
+                }
+            }
+        }
+    }
+
     private fun updateHistoryItems() {
+        if (listView !== null) {
+            listView.itemAnimator = null
+        }
+
         historyPreferences.forEach { preference ->
             preferenceScreen.removePreference(preference)
         }
