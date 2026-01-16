@@ -6,7 +6,7 @@
         android:key="byedpi_proxytest_delay"
         android:title="@string/test_delay"
         android:inputType="number"
-        android:defaultValue="30"
+        android:defaultValue="5"
         app:useSimpleSummaryProvider="true"
         app:iconSpaceReserved="false" />
 
@@ -30,7 +30,7 @@
         android:key="byedpi_proxytest_timeout"
         android:title="@string/test_timeout"
         android:inputType="number"
-        android:defaultValue="10"
+        android:defaultValue="5"
         app:useSimpleSummaryProvider="true"
         app:iconSpaceReserved="false" />
 
