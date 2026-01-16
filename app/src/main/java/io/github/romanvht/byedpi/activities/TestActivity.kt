@@ -1,6 +1,7 @@
 package io.github.romanvht.byedpi.activities
 
 import android.content.Intent
+import android.net.VpnService
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -30,6 +31,7 @@ import androidx.core.content.edit
 import io.github.romanvht.byedpi.utility.getStringNotNull
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import io.github.romanvht.byedpi.utility.mode
 import kotlinx.coroutines.*
 import java.io.File
 
@@ -74,9 +76,14 @@ class TestActivity : BaseActivity() {
         progressTextView = findViewById(R.id.progressTextView)
         disclaimerTextView = findViewById(R.id.disclaimerTextView)
 
-        strategyAdapter = StrategyResultAdapter(this) { command ->
-            addToHistory(command)
-        }
+        strategyAdapter = StrategyResultAdapter(this,
+            onApply = { command ->
+                addToHistory(command)
+            },
+            onConnect = { command ->
+                addAndConnect(command)
+            }
+        )
 
         strategiesRecyclerView.layoutManager = LinearLayoutManager(this)
         strategiesRecyclerView.adapter = strategyAdapter
@@ -118,7 +125,14 @@ class TestActivity : BaseActivity() {
             override fun handleOnBackPressed() {
                 if (isTesting) {
                     stopTesting()
+                } else {
+                    if (appStatus.first == AppStatus.Running) {
+                        val intent = Intent(this@TestActivity, MainActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        startActivity(intent)
+                    }
                 }
+
                 finish()
             }
         })
@@ -193,6 +207,11 @@ class TestActivity : BaseActivity() {
                 startStopButton.text = getString(R.string.test_stop)
                 progressTextView.text = ""
                 strategyAdapter.updateStrategies(strategies, sortByPercentage = false)
+            }
+
+            if (isProxyRunning()) {
+                ServiceManager.stop(this@TestActivity)
+                waitForProxyStatus(AppStatus.Halted)
             }
 
             val delaySec = prefs.getIntStringNotNull("byedpi_proxytest_delay", 1)
@@ -272,10 +291,10 @@ class TestActivity : BaseActivity() {
             return
         }
 
-        isTesting = false
-        updateCmdArgs(savedCmd)
-
         lifecycleScope.launch(Dispatchers.IO) {
+            isTesting = false
+            updateCmdArgs(savedCmd)
+
             testJob?.cancel()
             testJob = null
 
@@ -295,9 +314,43 @@ class TestActivity : BaseActivity() {
     }
 
     private fun addToHistory(command: String) {
-        updateCmdArgs(command)
-        cmdHistoryUtils.addCommand(command)
-        Toast.makeText(this, R.string.cmd_history_applied, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch(Dispatchers.IO) {
+            updateCmdArgs(command)
+            cmdHistoryUtils.addCommand(command)
+
+            if (isProxyRunning()) {
+                ServiceManager.stop(this@TestActivity)
+                waitForProxyStatus(AppStatus.Halted)
+            }
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@TestActivity, R.string.cmd_history_applied, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun addAndConnect(command: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            updateCmdArgs(command)
+            cmdHistoryUtils.addCommand(command)
+
+            if (isProxyRunning()) {
+                ServiceManager.stop(this@TestActivity)
+                waitForProxyStatus(AppStatus.Halted)
+            }
+
+            val mode = prefs.mode()
+
+            if (mode == Mode.VPN && VpnService.prepare(this@TestActivity) != null) {
+                return@launch
+            }
+
+            ServiceManager.start(this@TestActivity, mode)
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@TestActivity, R.string.test_cmd_connected, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun saveResults(results: List<StrategyResult>) {
