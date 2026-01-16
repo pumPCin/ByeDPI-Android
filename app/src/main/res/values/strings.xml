@@ -107,6 +107,9 @@
     <string name="storage_access_summary">Доступ к хранилищу для файлов преднастроек Command line</string>
     <string name="summary_test">Тест работы преднастроек Command line</string>
     <string name="telegram_link">Группа Telegram</string>
+    <string name="test_cmd_apply">Применить без запуска</string>
+    <string name="test_cmd_connect">Применить и запустить</string>
+    <string name="test_cmd_connected">Подключено</string>
     <string name="test_complete">Тест выполнен</string>
     <string name="test_complete_info">Скопируйте и вставьте преднастройку в редакторе Command line</string>
     <string name="test_delay">Пауза между преднастройками\n(в секундах)</string>
