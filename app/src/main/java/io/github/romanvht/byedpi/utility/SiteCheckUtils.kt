@@ -100,9 +100,7 @@ class SiteCheckUtils(
                     // Stream reading failed
                 }
 
-                val isSuccessful = responseCode in 200..299
-
-                if (isSuccessful || (declaredLength <= 0L || actualLength >= declaredLength)) {
+                if (declaredLength <= 0L || actualLength >= declaredLength) {
                     Log.i("SiteChecker", "Response for $site: $responseCode, Declared: $declaredLength, Actual: $actualLength")
                     responseCount++
                 } else {
