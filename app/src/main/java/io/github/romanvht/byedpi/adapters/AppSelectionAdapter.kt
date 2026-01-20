@@ -95,7 +95,9 @@ class AppSelectionAdapter(
         }
     }
 
-    override fun getItemCount(): Int = filteredApps.size
+    override fun getItemCount(): Int {
+        return filteredApps.size
+    }
 
     override fun onViewRecycled(holder: ViewHolder) {
         super.onViewRecycled(holder)

@@ -30,7 +30,9 @@ class SiteResultAdapter : RecyclerView.Adapter<SiteResultAdapter.SiteViewHolder>
         holder.resultTextView.text = "${site.successCount}/${site.totalCount}"
     }
 
-    override fun getItemCount() = sites.size
+    override fun getItemCount(): Int {
+        return sites.size
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateSites(newSites: List<SiteResult>) {
