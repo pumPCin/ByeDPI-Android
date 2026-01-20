@@ -14,7 +14,7 @@ import io.github.romanvht.byedpi.data.Command
 import io.github.romanvht.byedpi.utility.ClipboardUtils
 import io.github.romanvht.byedpi.utility.HistoryUtils
 
-class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
+class ByeDpiCMDSettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var cmdHistoryUtils: HistoryUtils
     private lateinit var editTextPreference: EditTextPreference
@@ -179,7 +179,7 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
                     1 -> if (command.pinned) unpinCommand(command.text) else pinCommand(command.text)
                     2 -> showRenameDialog(command)
                     3 -> showEditDialog(command)
-                    4 -> ClipboardUtils.copy(requireContext(), command.toString(), "command")
+                    4 -> ClipboardUtils.copy(requireContext(), command.text, "command")
                     5 -> deleteCommand(command.text)
                 }
             }

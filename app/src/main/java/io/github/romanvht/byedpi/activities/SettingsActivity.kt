@@ -5,7 +5,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
 import io.github.romanvht.byedpi.R
-import io.github.romanvht.byedpi.fragments.ByeDpiCommandLineSettingsFragment
+import io.github.romanvht.byedpi.fragments.ByeDpiCMDSettingsFragment
 import io.github.romanvht.byedpi.fragments.ByeDpiUISettingsFragment
 import io.github.romanvht.byedpi.fragments.MainSettingsFragment
 import io.github.romanvht.byedpi.utility.SettingsUtils
@@ -24,7 +24,7 @@ class SettingsActivity : BaseActivity() {
             "cmd" -> {
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.settings, ByeDpiCommandLineSettingsFragment())
+                    .replace(R.id.settings, ByeDpiCMDSettingsFragment())
                     .commit()
             }
             "ui" -> {
