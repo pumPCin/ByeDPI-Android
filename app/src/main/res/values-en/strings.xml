@@ -136,6 +136,7 @@
     <string name="test_cmd_connect">Apply and run</string>
     <string name="test_cmd_apply">Apply without run</string>
     <string name="test_cmd_connected">Connected</string>
+    <string name="toast_copied">Сopied</string>
     <string name="test_settings_sni">SNI fake packets</string>
     <string name="test_settings_fulllog">Host response output</string>
     <string name="test_settings_logclickable">All commands are clickable</string>

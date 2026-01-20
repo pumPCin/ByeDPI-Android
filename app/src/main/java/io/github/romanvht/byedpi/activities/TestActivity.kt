@@ -206,6 +206,8 @@ class TestActivity : BaseActivity() {
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 startStopButton.text = getString(R.string.test_stop)
                 progressTextView.text = ""
+
+                strategyAdapter.setTestingState(true)
                 strategyAdapter.updateStrategies(strategies, sortByPercentage = false)
             }
 
@@ -241,7 +243,6 @@ class TestActivity : BaseActivity() {
                 delay(delaySec * 500L)
 
                 val totalRequests = sites.size * requestsCount
-                strategy.maxProgress = totalRequests
                 strategy.totalRequests = totalRequests
 
                 withContext(Dispatchers.Main) {
@@ -307,7 +308,9 @@ class TestActivity : BaseActivity() {
                 startStopButton.text = getString(R.string.test_start)
                 progressTextView.text = getString(R.string.test_complete)
 
+                strategyAdapter.setTestingState(false)
                 strategyAdapter.updateStrategies(strategies, sortByPercentage = true)
+
                 saveResults(strategies)
             }
         }

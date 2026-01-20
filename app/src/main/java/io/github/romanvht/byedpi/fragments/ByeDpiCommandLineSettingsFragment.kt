@@ -1,8 +1,5 @@
 package io.github.romanvht.byedpi.fragments
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
@@ -14,6 +11,7 @@ import io.github.romanvht.byedpi.R
 import io.github.romanvht.byedpi.utility.findPreferenceNotNull
 import androidx.appcompat.app.AlertDialog
 import io.github.romanvht.byedpi.data.Command
+import io.github.romanvht.byedpi.utility.ClipboardUtils
 import io.github.romanvht.byedpi.utility.HistoryUtils
 
 class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
@@ -56,15 +54,11 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
             }
 
             view.findViewById<View>(R.id.btn_paste)?.setOnClickListener {
-                val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clipData = clipboard.primaryClip
-                if (clipData != null && clipData.itemCount > 0) {
-                    val text = clipData.getItemAt(0).text?.toString()
-                    if (!text.isNullOrBlank()) {
-                        editTextPreference.text = text
-                        cmdHistoryUtils.addCommand(text)
-                        updateHistoryItems()
-                    }
+                val text = ClipboardUtils.paste(requireContext())
+                if (!text.isNullOrBlank()) {
+                    editTextPreference.text = text
+                    cmdHistoryUtils.addCommand(text)
+                    updateHistoryItems()
                 }
             }
         }
@@ -185,7 +179,7 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
                     1 -> if (command.pinned) unpinCommand(command.text) else pinCommand(command.text)
                     2 -> showRenameDialog(command)
                     3 -> showEditDialog(command)
-                    4 -> copyToClipboard(command.text)
+                    4 -> ClipboardUtils.copy(requireContext(), command.toString(), "command")
                     5 -> deleteCommand(command.text)
                 }
             }
@@ -261,11 +255,5 @@ class ByeDpiCommandLineSettingsFragment : PreferenceFragmentCompat() {
     private fun deleteCommand(command: String) {
         cmdHistoryUtils.deleteCommand(command)
         updateHistoryItems()
-    }
-
-    private fun copyToClipboard(command: String) {
-        val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("Command", command)
-        clipboard.setPrimaryClip(clip)
     }
 }

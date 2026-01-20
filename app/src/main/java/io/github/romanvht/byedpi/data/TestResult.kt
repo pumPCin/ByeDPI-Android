@@ -5,7 +5,6 @@ data class StrategyResult(
     var successCount: Int = 0,
     var totalRequests: Int = 0,
     var currentProgress: Int = 0,
-    var maxProgress: Int = 0,
     var isCompleted: Boolean = false,
     val siteResults: MutableList<SiteResult> = mutableListOf(),
     var isExpanded: Boolean = false

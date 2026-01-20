@@ -136,6 +136,7 @@
     <string name="test_cmd_connect">Қолдану және іске қосу</string>
     <string name="test_cmd_apply">Іске қоспай қолдану</string>
     <string name="test_cmd_connected">Қосылу</string>
+    <string name="toast_copied">Нәтиже көшірілген</string>
     <string name="test_settings_sni">SNI жалған пакеттері</string>
     <string name="test_settings_fulllog">Хосттар жауабын шығару</string>
     <string name="test_settings_logclickable">Барлық стратегиялар кликабельді</string>

@@ -136,6 +136,7 @@
     <string name="test_cmd_connect">Применить и запустить</string>
     <string name="test_cmd_apply">Применить без запуска</string>
     <string name="test_cmd_connected">Подключено</string>
+    <string name="toast_copied">Скопировано</string>
     <string name="test_settings_sni">SNI фейк пакетов</string>
     <string name="test_settings_fulllog">Вывод ответа хостов</string>
     <string name="test_settings_logclickable">Все стратегии кликабельны</string>
