@@ -41,9 +41,20 @@ class AppSelectionAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.app_selection_item, parent, false)
-        return ViewHolder(view)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.app_selection_item, parent, false)
+        val holder = ViewHolder(view)
+
+        holder.itemView.setOnClickListener {
+            val position = holder.bindingAdapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                val app = filteredApps[position]
+                app.isSelected = !app.isSelected
+                notifyItemChanged(position)
+                updateSelectedApps()
+            }
+        }
+
+        return holder
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -81,12 +92,6 @@ class AppSelectionAdapter(
                     holder.appIcon.setImageDrawable(icon)
                 }
             }
-        }
-
-        holder.itemView.setOnClickListener {
-            app.isSelected = !app.isSelected
-            holder.appCheckBox.isChecked = app.isSelected
-            updateSelectedApps()
         }
     }
 
