@@ -46,6 +46,8 @@
 -s1 -q1 -a1 -At,r,s -f-1 -r1+s -a1
 -s1 -o1 -a1 -At,r,s -f-1 -r1+s -a1
 -s1 -d1 -a1 -At,r,s -f-1 -r1+s -a1
+-s4+sn -r9+s -Qr -n {sni} -S -a1
+-n {sni} -Qr -m0x02 -f-1 -d7 -a1
 -o1 -d1 -r1+s -S -s1+s -d3+s -a1
 -d1 -r1+s -f-1 -S -t8 -o3+s -a1
 -q1+s -s29+s -o5+s -f-1 -S -a1
