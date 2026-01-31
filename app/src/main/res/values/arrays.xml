@@ -58,27 +58,4 @@
         <item name="blacklist">blacklist</item>
         <item name="whitelist">whitelist</item>
     </array>
-
-    <array name="domain_lists_entries">
-        <item>Общий</item>
-        <item>Социальные</item>
-        <item>Cloudflare</item>
-        <item>Discord</item>
-        <item>GoogleVideo</item>
-        <item>YouTube</item>
-        <item>Свой список</item>
-    </array>
-    <array name="domain_lists_values">
-        <item>general</item>
-        <item>social</item>
-        <item>cloudflare</item>
-        <item>discord</item>
-        <item>googlevideo</item>
-        <item>youtube</item>
-        <item>custom</item>
-    </array>
-    <array name="domain_lists_default">
-        <item>youtube</item>
-        <item>googlevideo</item>
-    </array>
 </resources>

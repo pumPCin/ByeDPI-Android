@@ -22,6 +22,7 @@ class QuickTileService : TileService() {
     }
 
     private var appTile: Tile? = null
+    private var receiverRegistered = false
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -29,39 +30,24 @@ class QuickTileService : TileService() {
         }
     }
 
-    override fun onCreate() {
-        super.onCreate()
-
-        val intentFilter = IntentFilter().apply {
-            addAction(STARTED_BROADCAST)
-            addAction(STOPPED_BROADCAST)
-            addAction(FAILED_BROADCAST)
-        }
-
-        @SuppressLint("UnspecifiedRegisterReceiverFlag")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED)
-        } else {
-            registerReceiver(receiver, intentFilter)
-        }
-    }
-
-    override fun onTileAdded() {
-        super.onTileAdded()
-    }
-
-    override fun onTileRemoved() {
-        super.onTileRemoved()
+    private val intentFilter = IntentFilter().apply {
+        addAction(STARTED_BROADCAST)
+        addAction(STOPPED_BROADCAST)
+        addAction(FAILED_BROADCAST)
     }
 
     override fun onStartListening() {
         super.onStartListening()
+
         appTile = qsTile
+        createReceiver()
         updateStatus()
     }
 
     override fun onStopListening() {
         super.onStopListening()
+
+        deleteReceiver()
         appTile = null
     }
 
@@ -72,39 +58,66 @@ class QuickTileService : TileService() {
 
     private fun handleClick() {
         val (status) = appStatus
+        val mode = getPreferences().mode()
 
         when (status) {
-            AppStatus.Halted -> {
-                val mode = getPreferences().mode()
-
-                if (mode == Mode.VPN && VpnService.prepare(this) != null) {
-                    return
-                }
-
-                ServiceManager.start(this, mode)
-                setState(Tile.STATE_ACTIVE)
-            }
-            AppStatus.Running -> {
-                ServiceManager.stop(this)
-                setState(Tile.STATE_INACTIVE)
-            }
+            AppStatus.Halted -> startService(mode)
+            AppStatus.Running -> stopService()
         }
+    }
+
+    private fun startService(mode: Mode) {
+        if (mode == Mode.VPN && VpnService.prepare(this) != null) {
+            return
+        }
+
+        ServiceManager.start(this, mode)
+        setState(Tile.STATE_ACTIVE)
+    }
+
+    private fun stopService() {
+        ServiceManager.stop(this)
+        setState(Tile.STATE_INACTIVE)
     }
 
     private fun updateStatus() {
         val (status) = appStatus
 
-        if (status == AppStatus.Running) {
-            setState(Tile.STATE_ACTIVE)
-        } else {
-            setState(Tile.STATE_INACTIVE)
+        val newState = when (status) {
+            AppStatus.Running -> Tile.STATE_ACTIVE
+            AppStatus.Halted -> Tile.STATE_INACTIVE
+        }
+
+        setState(newState)
+    }
+
+    private fun setState(state: Int) {
+        appTile?.apply {
+            this.state = state
+            updateTile()
         }
     }
 
-    private fun setState(newState: Int) {
-        appTile?.apply {
-            state = newState
-            updateTile()
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    private fun createReceiver() {
+        if (receiverRegistered) return
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(receiver, intentFilter)
         }
+
+        receiverRegistered = true
+    }
+
+    private fun deleteReceiver() {
+        if (!receiverRegistered) return
+
+        try {
+            unregisterReceiver(receiver)
+        } catch (e: IllegalArgumentException) {}
+
+        receiverRegistered = false
     }
 }

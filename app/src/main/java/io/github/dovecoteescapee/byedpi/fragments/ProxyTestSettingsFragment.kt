@@ -43,18 +43,9 @@ class ProxyTestSettingsFragment : PreferenceFragmentCompat() {
 
     private fun updatePreferences() {
         val switchUserCommands = findPreferenceNotNull<SwitchPreference>("byedpi_proxytest_usercommands")
-        val textUserDomains = findPreferenceNotNull<EditTextPreference>("byedpi_proxytest_domains")
         val textUserCommands = findPreferenceNotNull<EditTextPreference>("byedpi_proxytest_commands")
-        val domainLists = findPreferenceNotNull<MultiSelectListPreference>("byedpi_proxytest_domain_lists")
 
-        val setUserCommands = { enable: Boolean -> textUserCommands.isEnabled = enable }
-
-        textUserDomains.isEnabled = domainLists.values?.contains("custom") == true
-        setUserCommands(switchUserCommands.isChecked)
-
-        if (domainLists.values?.isNotEmpty() == true) {
-            domainLists.summary = domainLists.values.joinToString("\n")
-        }
+        textUserCommands.isEnabled = switchUserCommands.isChecked
     }
 
     private fun setupNumberSummary(key: String, descriptionResId: Int) {

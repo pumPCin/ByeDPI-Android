@@ -93,7 +93,7 @@
             android:icon="@drawable/ic_code"
             android:title="@string/command_line_editor"
             app:useSimpleSummaryProvider="true"
-            app:fragment="io.github.dovecoteescapee.byedpi.fragments.ByeDpiCommandLineSettingsFragment" />
+            app:fragment="io.github.dovecoteescapee.byedpi.fragments.ByeDpiCMDSettingsFragment" />
 
         <Preference
             android:key="proxy_test"

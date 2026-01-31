@@ -43,11 +43,14 @@ object SettingsUtils {
                 key !in setOf("byedpi_command_history", "selected_apps")
             }
 
+            val domainLists = DomainListUtils.getLists(context)
+
             val export = AppSettings(
                 app = BuildConfig.APPLICATION_ID,
                 version = BuildConfig.VERSION_NAME,
                 history = history,
                 apps = apps,
+                domainLists = domainLists,
                 settings = settings
             )
 
@@ -111,9 +114,20 @@ object SettingsUtils {
                             }
                         }
                     }
-                    putStringSet("selected_apps", import.apps.toSet())
+
                 }
-                HistoryUtils(context).saveHistory(import.history)
+
+                if (import.apps !== null) {
+                    prefs.edit (commit = true) { putStringSet("selected_apps", import.apps.toSet()) }
+                }
+
+                if (import.history !== null) {
+                    HistoryUtils(context).saveHistory(import.history)
+                }
+
+                if (import.domainLists !== null) {
+                    DomainListUtils.saveLists(context, import.domainLists)
+                }
 
                 Handler(Looper.getMainLooper()).post {
                     val newTheme = prefs.getString("app_theme", "system") ?: "system"
