@@ -70,7 +70,7 @@ class DomainListAdapter(
             val context = itemView.context
             val options = arrayOf(
                 context.getString(R.string.domain_list_edit),
-                context.getString(R.string.toast_copied),
+                context.getString(R.string.cmd_history_copy),
                 context.getString(R.string.domain_list_delete)
             )
 
