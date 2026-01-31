@@ -14,54 +14,60 @@ import io.github.romanvht.byedpi.R
 import io.github.romanvht.byedpi.data.DomainList
 
 class DomainListAdapter(
-    private val onToggle: (DomainList) -> Unit,
+    private val onStateChanged: (DomainList) -> Unit,
     private val onEdit: (DomainList) -> Unit,
     private val onDelete: (DomainList) -> Unit,
     private val onCopy: (DomainList) -> Unit
 ) : ListAdapter<DomainList, DomainListAdapter.DomainListViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DomainListViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_domain_list, parent, false)
-        return DomainListViewHolder(view)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_domain_list, parent, false)
+        val holder = DomainListViewHolder(view)
+
+        holder.checkbox.setOnClickListener {
+            val position = holder.bindingAdapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                onStateChanged(getItem(position))
+            }
+        }
+
+        holder.contentLayout.setOnClickListener {
+            val position = holder.bindingAdapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                holder.showActionDialog(getItem(position), onEdit, onCopy, onDelete)
+            }
+        }
+
+        return holder
     }
 
     override fun onBindViewHolder(holder: DomainListViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    inner class DomainListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class DomainListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nameText: TextView = itemView.findViewById(R.id.list_name)
         private val countText: TextView = itemView.findViewById(R.id.list_count)
-        private val checkbox: CheckBox = itemView.findViewById(R.id.list_checkbox)
-        private val contentLayout: LinearLayout = itemView.findViewById(R.id.list_content)
+        val checkbox: CheckBox = itemView.findViewById(R.id.list_checkbox)
+        val contentLayout: LinearLayout = itemView.findViewById(R.id.list_content)
 
         fun bind(domainList: DomainList) {
             nameText.text = domainList.name
 
             val domains = domainList.domains.take(5).joinToString("\n")
-
-            val summary = if (domainList.domains.size > 5) {
-                "$domains\n..."
-            } else {
-                domains
-            }
-
+            val summary = if (domainList.domains.size > 5) "$domains\n..." else domains
             countText.text = summary
 
             checkbox.isChecked = domainList.isActive
-            checkbox.setOnCheckedChangeListener { _, _ ->
-                onToggle(domainList)
-            }
-
-            contentLayout.setOnClickListener {
-                showActionDialog(domainList)
-            }
         }
 
-        private fun showActionDialog(domainList: DomainList) {
+        fun showActionDialog(
+            domainList: DomainList,
+            onEdit: (DomainList) -> Unit,
+            onCopy: (DomainList) -> Unit,
+            onDelete: (DomainList) -> Unit
+        ) {
             val context = itemView.context
-
             val options = arrayOf(
                 context.getString(R.string.domain_list_edit),
                 context.getString(R.string.toast_copied),

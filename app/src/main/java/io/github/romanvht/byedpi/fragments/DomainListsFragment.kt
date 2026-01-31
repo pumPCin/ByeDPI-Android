@@ -41,7 +41,7 @@ class DomainListsFragment : Fragment() {
         }
 
         adapter = DomainListAdapter(
-            onToggle = { domainList ->
+            onStateChanged = { domainList ->
                 DomainListUtils.toggleListActive(requireContext(), domainList.id)
                 refreshLists()
             },
