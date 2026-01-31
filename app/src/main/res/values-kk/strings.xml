@@ -161,4 +161,21 @@
     <string name="proxytest_requests_desc">Үлкен мән дәлдікті арттырады, бірақ тұрақтылықты төмендетуі мүмкін</string>
     <string name="proxytest_limit_desc">Үлкен мән тесттің жылдамдығын арттырады, бірақ тұрақтылықты төмендетуі мүмкін</string>
     <string name="proxytest_timeout_desc">Үлкен мән тесттің жылдамдығын азайтады, бірақ тұрақтылықты арттырады</string>
+    <string name="domain_lists">Домендер тізімдері</string>
+    <string name="domain_lists_summary">Тестілеу үшін домендер тізімдерін қосыңыз, өңдеңіз немесе жойыңыз</string>
+    <string name="domain_list_add_new">Жаңа тізім қосу</string>
+    <string name="domain_list_add_new_summary">Тестілеу үшін арнайы домендер тізімін жасаңыз</string>
+    <string name="domain_list_edit">Тізімді өңдеу</string>
+    <string name="domain_list_delete">Тізімді жою</string>
+    <string name="domain_list_name_hint">Тізім атауы</string>
+    <string name="domain_list_domains_hint">Домендер (әр жолда біреуден)</string>
+    <string name="domain_list_summary">%d домен</string>
+    <string name="domain_list_name_empty">Тізім атауы бос болмауы керек</string>
+    <string name="domain_list_domains_empty">Домендер тізімі бос болмауы керек</string>
+    <string name="domain_list_already_exists">Осы атаумен тізім әлдеқашан бар</string>
+    <string name="domain_list_added">Домендер тізімі қосылды</string>
+    <string name="domain_list_updated">Домендер тізімі жаңартылды</string>
+    <string name="domain_list_update_failed">Домендер тізімін жаңарту мүмкін болмады</string>
+    <string name="domain_list_deleted">Домендер тізімі жойылды</string>
+    <string name="domain_list_delete_failed">Домендер тізімін жою мүмкін болмады</string>
 </resources>

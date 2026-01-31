@@ -65,11 +65,14 @@ object SettingsUtils {
                 key !in setOf("byedpi_command_history", "selected_apps")
             }
 
+            val domainLists = DomainListUtils.getLists(context)
+
             val export = AppSettings(
                 app = BuildConfig.APPLICATION_ID,
                 version = BuildConfig.VERSION_NAME,
                 history = history,
                 apps = apps,
+                domainLists = domainLists,
                 settings = settings
             )
 
@@ -136,7 +139,12 @@ object SettingsUtils {
                     }
                     putStringSet("selected_apps", import.apps.toSet())
                 }
+
                 HistoryUtils(context).saveHistory(import.history)
+
+                import.domainLists?.let { lists ->
+                    DomainListUtils.saveLists(context, lists)
+                }
 
                 Handler(Looper.getMainLooper()).post {
                     val newLang = prefs.getString("language", "system") ?: "system"

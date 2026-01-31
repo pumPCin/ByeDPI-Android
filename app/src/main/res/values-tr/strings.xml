@@ -161,4 +161,21 @@
     <string name="proxytest_requests_desc">Daha yüksek bir sayı doğruluğu artırır ama stabiliteyi azaltabilir</string>
     <string name="proxytest_limit_desc">Daha yüksek bir sayı testi hızlandırır ama stabiliteyi azaltabilir</string>
     <string name="proxytest_timeout_desc">Daha yüksek bir sayı testi yavaşlatır ama stabiliteyi artırır</string>
+    <string name="domain_lists">Alan Adı Listeleri</string>
+    <string name="domain_lists_summary">Test için alan adı listelerini ekleyin, düzenleyin veya kaldırın</string>
+    <string name="domain_list_add_new">Yeni Liste Ekle</string>
+    <string name="domain_list_add_new_summary">Test edilecek özel alan adları listesi oluşturun</string>
+    <string name="domain_list_edit">Listeyi Düzenle</string>
+    <string name="domain_list_delete">Listeyi Sil</string>
+    <string name="domain_list_name_hint">Liste adı</string>
+    <string name="domain_list_domains_hint">Alan adları (her satırda bir tane)</string>
+    <string name="domain_list_summary">%d alan adı</string>
+    <string name="domain_list_name_empty">Liste adı boş olamaz</string>
+    <string name="domain_list_domains_empty">Alan adı listesi boş olamaz</string>
+    <string name="domain_list_already_exists">Bu adda bir liste zaten var</string>
+    <string name="domain_list_added">Alan adı listesi eklendi</string>
+    <string name="domain_list_updated">Alan adı listesi güncellendi</string>
+    <string name="domain_list_update_failed">Alan adı listesi güncellenemedi</string>
+    <string name="domain_list_deleted">Alan adı listesi silindi</string>
+    <string name="domain_list_delete_failed">Alan adı listesi silinemedi</string>
 </resources>

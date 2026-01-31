@@ -31,6 +31,7 @@ import androidx.core.content.edit
 import io.github.romanvht.byedpi.utility.getStringNotNull
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import io.github.romanvht.byedpi.utility.DomainListUtils
 import io.github.romanvht.byedpi.utility.mode
 import kotlinx.coroutines.*
 import java.io.File
@@ -378,25 +379,8 @@ class TestActivity : BaseActivity() {
     }
 
     private fun loadSites(): List<String> {
-        val defaultDomainLists = setOf("youtube", "googlevideo")
-        val selectedDomainLists = prefs.getStringSet("byedpi_proxytest_domain_lists", defaultDomainLists) ?: return emptyList()
-
-        val allDomains = mutableListOf<String>()
-
-        for (domainList in selectedDomainLists) {
-            val domains = when (domainList) {
-                "custom" -> {
-                    val customDomains = prefs.getString("byedpi_proxytest_domains", "").orEmpty()
-                    customDomains.lines().map { it.trim() }.filter { it.isNotEmpty() }
-                }
-                else -> {
-                    assets.open("proxytest_$domainList.sites").bufferedReader().useLines { it.toList() }
-                }
-            }
-            allDomains.addAll(domains)
-        }
-
-        return allDomains.distinct()
+        DomainListUtils.initializeDefaultLists(this)
+        return DomainListUtils.getActiveDomains(this)
     }
 
     private fun loadCmds(): List<String> {

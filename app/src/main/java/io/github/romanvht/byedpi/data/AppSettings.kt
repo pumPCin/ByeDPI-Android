@@ -5,5 +5,6 @@ data class AppSettings(
     val version: String,
     val history: List<Command>,
     val apps: List<String>,
+    val domainLists: List<DomainList>? = null,
     val settings: Map<String, Any?>
 )

@@ -161,4 +161,21 @@
     <string name="proxytest_requests_desc">Увеличение значения повышает точность, но может снизить стабильность</string>
     <string name="proxytest_limit_desc">Увеличение значения ускоряет тест, но может снизить стабильность</string>
     <string name="proxytest_timeout_desc">Увеличение значения замедляет тест, но повышает стабильность и точность</string>
+    <string name="domain_lists">Списки доменов</string>
+    <string name="domain_lists_summary">Управление списками доменов для тестирования</string>
+    <string name="domain_list_add_new">Добавить список</string>
+    <string name="domain_list_add_new_summary">Создать пользовательский список доменов для тестирования</string>
+    <string name="domain_list_edit">Редактировать</string>
+    <string name="domain_list_delete">Удалить</string>
+    <string name="domain_list_name_hint">Название списка</string>
+    <string name="domain_list_domains_hint">Домены, каждый с новой строки</string>
+    <string name="domain_list_summary">%d доменов</string>
+    <string name="domain_list_name_empty">Название списка не может быть пустым</string>
+    <string name="domain_list_domains_empty">Список доменов не может быть пустым</string>
+    <string name="domain_list_already_exists">Список с таким названием уже существует</string>
+    <string name="domain_list_added">Список доменов добавлен</string>
+    <string name="domain_list_updated">Список доменов обновлен</string>
+    <string name="domain_list_update_failed">Не удалось обновить список доменов</string>
+    <string name="domain_list_deleted">Список доменов удален</string>
+    <string name="domain_list_delete_failed">Не удалось удалить список доменов</string>
 </resources>

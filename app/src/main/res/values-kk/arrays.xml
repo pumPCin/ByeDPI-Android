@@ -25,14 +25,4 @@
         <item name="blacklist">Қара тізім</item>
         <item name="whitelist">Ақ тізім</item>
     </array>
-
-    <array name="domain_lists_entries">
-        <item>YouTube</item>
-        <item>GoogleVideo</item>
-        <item>Discord</item>
-        <item>Cloudflare</item>
-        <item>Әлеуметтік</item>
-        <item>Жалпы</item>
-        <item>Сіздің тізіміңіз</item>
-    </array>
 </resources>

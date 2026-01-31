@@ -25,14 +25,4 @@
         <item name="blacklist">Karaliste</item>
         <item name="whitelist">Beyazliste</item>
     </array>
-
-    <array name="domain_lists_entries">
-        <item>YouTube</item>
-        <item>GoogleVideo</item>
-        <item>Discord</item>
-        <item>Cloudflare</item>
-        <item>Sosyal</item>
-        <item>Genel</item>
-        <item>Listeniz</item>
-    </array>
 </resources>

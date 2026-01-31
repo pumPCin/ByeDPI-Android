@@ -161,4 +161,21 @@
     <string name="proxytest_requests_desc">A higher number increases accuracy but may reduce stability</string>
     <string name="proxytest_limit_desc">A higher number increases test speed but may reduce stability</string>
     <string name="proxytest_timeout_desc">A higher number reduces test speed but improves stability</string>
+    <string name="domain_lists">Domain Lists</string>
+    <string name="domain_lists_summary">Managing domain lists for testing</string>
+    <string name="domain_list_add_new">Add new list</string>
+    <string name="domain_list_add_new_summary">Create a custom list of domains for testing</string>
+    <string name="domain_list_edit">Edit List</string>
+    <string name="domain_list_delete">Delete List</string>
+    <string name="domain_list_name_hint">List name</string>
+    <string name="domain_list_domains_hint">Domains (one per line)</string>
+    <string name="domain_list_summary">%d domains</string>
+    <string name="domain_list_name_empty">List name cannot be empty</string>
+    <string name="domain_list_domains_empty">Domain list cannot be empty</string>
+    <string name="domain_list_already_exists">A list with this name already exists</string>
+    <string name="domain_list_added">Domain list added</string>
+    <string name="domain_list_updated">Domain list updated</string>
+    <string name="domain_list_update_failed">Failed to update domain list</string>
+    <string name="domain_list_deleted">Domain list deleted</string>
+    <string name="domain_list_delete_failed">Failed to delete domain list</string>
 </resources>
