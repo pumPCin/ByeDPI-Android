@@ -65,7 +65,7 @@ class DomainListsFragment : Fragment() {
 
     private fun refreshLists() {
         val lists = DomainListUtils.getLists(requireContext())
-        adapter.submitList(lists)
+        adapter.submitList(lists.sortedBy { it.name.lowercase() })
     }
 
     private fun copyDomainsToClipboard(domainList: DomainList) {
