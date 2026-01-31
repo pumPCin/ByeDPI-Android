@@ -137,13 +137,19 @@ object SettingsUtils {
                             }
                         }
                     }
-                    putStringSet("selected_apps", import.apps.toSet())
+
                 }
 
-                HistoryUtils(context).saveHistory(import.history)
+                if (import.apps !== null) {
+                    prefs.edit (commit = true) { putStringSet("selected_apps", import.apps.toSet()) }
+                }
 
-                import.domainLists?.let { lists ->
-                    DomainListUtils.saveLists(context, lists)
+                if (import.history !== null) {
+                    HistoryUtils(context).saveHistory(import.history)
+                }
+
+                if (import.domainLists !== null) {
+                    DomainListUtils.saveLists(context, import.domainLists)
                 }
 
                 Handler(Looper.getMainLooper()).post {
