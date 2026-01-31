@@ -165,8 +165,8 @@
     <string name="domain_lists_summary">Тестілеу үшін домендер тізімдерін қосыңыз, өңдеңіз немесе жойыңыз</string>
     <string name="domain_list_add_new">Жаңа тізім қосу</string>
     <string name="domain_list_add_new_summary">Тестілеу үшін арнайы домендер тізімін жасаңыз</string>
-    <string name="domain_list_edit">Тізімді өңдеу</string>
-    <string name="domain_list_delete">Тізімді жою</string>
+    <string name="domain_list_edit">Өңдеу</string>
+    <string name="domain_list_delete">Жою</string>
     <string name="domain_list_name_hint">Тізім атауы</string>
     <string name="domain_list_domains_hint">Домендер (әр жолда біреуден)</string>
     <string name="domain_list_summary">%d домен</string>

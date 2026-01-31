@@ -165,8 +165,8 @@
     <string name="domain_lists_summary">Test için alan adı listelerini ekleyin, düzenleyin veya kaldırın</string>
     <string name="domain_list_add_new">Yeni Liste Ekle</string>
     <string name="domain_list_add_new_summary">Test edilecek özel alan adları listesi oluşturun</string>
-    <string name="domain_list_edit">Listeyi Düzenle</string>
-    <string name="domain_list_delete">Listeyi Sil</string>
+    <string name="domain_list_edit">Düzeltme</string>
+    <string name="domain_list_delete">Kaldırmak</string>
     <string name="domain_list_name_hint">Liste adı</string>
     <string name="domain_list_domains_hint">Alan adları (her satırda bir tane)</string>
     <string name="domain_list_summary">%d alan adı</string>

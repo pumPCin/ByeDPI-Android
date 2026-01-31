@@ -165,8 +165,8 @@
     <string name="domain_lists_summary">Managing domain lists for testing</string>
     <string name="domain_list_add_new">Add new list</string>
     <string name="domain_list_add_new_summary">Create a custom list of domains for testing</string>
-    <string name="domain_list_edit">Edit List</string>
-    <string name="domain_list_delete">Delete List</string>
+    <string name="domain_list_edit">Edit</string>
+    <string name="domain_list_delete">Delete</string>
     <string name="domain_list_name_hint">List name</string>
     <string name="domain_list_domains_hint">Domains (one per line)</string>
     <string name="domain_list_summary">%d domains</string>
