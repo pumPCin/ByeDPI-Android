@@ -320,6 +320,10 @@ class ByeDpiVpnService : LifecycleVpnService() {
         )
         intent.putExtra(SENDER, Sender.VPN.ordinal)
         sendBroadcast(intent)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            QuickTileService.updateTile()
+        }
     }
 
     private fun createNotification(): Notification =

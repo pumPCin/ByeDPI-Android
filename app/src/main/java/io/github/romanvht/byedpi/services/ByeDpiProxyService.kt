@@ -225,6 +225,10 @@ class ByeDpiProxyService : LifecycleService() {
         )
         intent.putExtra(SENDER, Sender.Proxy.ordinal)
         sendBroadcast(intent)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            QuickTileService.updateTile()
+        }
     }
 
     private fun createNotification(): Notification =

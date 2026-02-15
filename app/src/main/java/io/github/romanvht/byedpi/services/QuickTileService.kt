@@ -1,10 +1,6 @@
 package io.github.romanvht.byedpi.services
 
-import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.net.VpnService
 import android.os.Build
 import android.service.quicksettings.Tile
@@ -20,36 +16,28 @@ class QuickTileService : TileService() {
 
     companion object {
         private const val TAG = "QuickTileService"
-    }
+        private var instance: QuickTileService? = null
 
-    private var appTile: Tile? = null
-    private var receiverRegistered = false
-
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d(TAG, "Tile broadcast received: ${intent?.action}")
-            updateStatus()
+        fun updateTile() {
+            instance?.updateStatus()
         }
     }
 
-    private val intentFilter = IntentFilter().apply {
-        addAction(STARTED_BROADCAST)
-        addAction(STOPPED_BROADCAST)
-        addAction(FAILED_BROADCAST)
-    }
+    private var appTile: Tile? = null
 
     override fun onStartListening() {
         super.onStartListening()
 
+        instance = this
         appTile = qsTile
-        createReceiver()
+
         updateStatus()
     }
 
     override fun onStopListening() {
         super.onStopListening()
 
-        deleteReceiver()
+        instance = null
         appTile = null
     }
 
@@ -100,32 +88,5 @@ class QuickTileService : TileService() {
             this.state = state
             updateTile()
         }
-    }
-
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    private fun createReceiver() {
-        if (receiverRegistered) return
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED)
-        } else {
-            registerReceiver(receiver, intentFilter)
-        }
-
-        receiverRegistered = true
-        Log.d(TAG, "Receiver registered")
-    }
-
-    private fun deleteReceiver() {
-        if (!receiverRegistered) return
-
-        try {
-            unregisterReceiver(receiver)
-            Log.d(TAG, "Receiver unregistered")
-        } catch (e: IllegalArgumentException) {
-            Log.w(TAG, "Receiver already unregistered")
-        }
-
-        receiverRegistered = false
     }
 }
