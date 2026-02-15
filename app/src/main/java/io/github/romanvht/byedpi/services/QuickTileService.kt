@@ -1,6 +1,5 @@
 package io.github.romanvht.byedpi.services
 
-import android.content.Context
 import android.net.VpnService
 import android.os.Build
 import android.service.quicksettings.Tile
