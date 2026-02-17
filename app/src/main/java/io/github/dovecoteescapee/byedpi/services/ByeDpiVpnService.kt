@@ -56,6 +56,9 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+
+        startForeground()
+
         return when (val action = intent?.action) {
             START_ACTION -> {
                 lifecycleScope.launch {
@@ -107,7 +110,6 @@ class ByeDpiVpnService : LifecycleVpnService() {
         }
 
         try {
-            startForeground()
             mutex.withLock {
                 if (status == ServiceStatus.Connected) {
                     return@withLock

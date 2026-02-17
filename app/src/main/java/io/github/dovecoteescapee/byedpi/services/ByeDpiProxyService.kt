@@ -46,6 +46,9 @@ class ByeDpiProxyService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+
+        startForeground()
+
         return when (val action = intent?.action) {
             START_ACTION -> {
                 lifecycleScope.launch {
@@ -91,7 +94,6 @@ class ByeDpiProxyService : LifecycleService() {
         }
 
         try {
-            startForeground()
             mutex.withLock {
                 if (status == ServiceStatus.Connected) {
                     return@withLock
