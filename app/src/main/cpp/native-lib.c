@@ -29,7 +29,7 @@ struct params default_params = {
 };
 
 void reset_params(void) {
-    clear_params();
+    clear_params(NULL, NULL);
     params = default_params;
 }
 
