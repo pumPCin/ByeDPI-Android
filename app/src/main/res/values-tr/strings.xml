@@ -126,7 +126,7 @@
     </string>
     <string name="test_crash">
         Uygulama test sırasında çöktü mü?\n\n
-        Test ayarlarına gidin ve komutlar arasındaki bekleme süresini 2 saniye artışlarla artırın. (2, 4, 6..)\n\n
+        Test ayarlarına gidin ve komutlar arasındaki bekleme süresini 2 saniye artışlarla artırın. (2, 4, 6..)
     </string>
     <string name="test_process">Kontrol ediliyor %1$d/%2$d</string>
     <string name="test_proxy_error">Proxy hatası. Test durduruldu.</string>

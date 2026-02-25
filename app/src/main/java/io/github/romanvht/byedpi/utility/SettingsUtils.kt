@@ -31,6 +31,7 @@ object SettingsUtils {
         "en" -> LocaleListCompat.forLanguageTags("en")
         "tr" -> LocaleListCompat.forLanguageTags("tr")
         "kk" -> LocaleListCompat.forLanguageTags("kk")
+        "vi" -> LocaleListCompat.forLanguageTags("vi")
         else -> {
             Log.w(TAG, "Invalid value for language: $lang")
             null
