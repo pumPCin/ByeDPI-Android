@@ -199,7 +199,7 @@ class ByeDpiProxyService : LifecycleService() {
     }
 
     private fun getByeDpiPreferences(): ByeDpiProxyPreferences =
-        ByeDpiProxyPreferences.fromSharedPreferences(getPreferences())
+        ByeDpiProxyPreferences.fromSharedPreferences(getPreferences(), this)
 
     private fun updateStatus(newStatus: ServiceStatus) {
         Log.d(TAG, "Proxy status changed from $status to $newStatus")

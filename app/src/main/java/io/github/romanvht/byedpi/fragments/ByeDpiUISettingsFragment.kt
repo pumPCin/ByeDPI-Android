@@ -4,9 +4,9 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.preference.*
 import io.github.romanvht.byedpi.R
-import io.github.romanvht.byedpi.core.ByeDpiProxyUIPreferences
-import io.github.romanvht.byedpi.core.ByeDpiProxyUIPreferences.DesyncMethod.*
-import io.github.romanvht.byedpi.core.ByeDpiProxyUIPreferences.HostsMode.*
+import io.github.romanvht.byedpi.data.UISettings
+import io.github.romanvht.byedpi.data.UISettings.DesyncMethod.*
+import io.github.romanvht.byedpi.data.UISettings.HostsMode.*
 import io.github.romanvht.byedpi.utility.*
 
 class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
@@ -61,11 +61,8 @@ class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun updatePreferences() {
-        val desyncMethod =
-            findPreferenceNotNull<ListPreference>("byedpi_desync_method")
-                .value.let { ByeDpiProxyUIPreferences.DesyncMethod.fromName(it) }
-        val hostsMode = findPreferenceNotNull<ListPreference>("byedpi_hosts_mode")
-            .value.let { ByeDpiProxyUIPreferences.HostsMode.fromName(it) }
+        val desyncMethod = findPreferenceNotNull<ListPreference>("byedpi_desync_method").value.let { UISettings.DesyncMethod.fromName(it) }
+        val hostsMode = findPreferenceNotNull<ListPreference>("byedpi_hosts_mode").value.let { UISettings.HostsMode.fromName(it) }
 
         val hostsBlacklist = findPreferenceNotNull<EditTextPreference>("byedpi_hosts_blacklist")
         val hostsWhitelist = findPreferenceNotNull<EditTextPreference>("byedpi_hosts_whitelist")
@@ -81,11 +78,9 @@ class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
         val udpFakeCount = findPreferenceNotNull<EditTextPreference>("byedpi_udp_fake_count")
         val hostMixedCase = findPreferenceNotNull<CheckBoxPreference>("byedpi_host_mixed_case")
         val domainMixedCase = findPreferenceNotNull<CheckBoxPreference>("byedpi_domain_mixed_case")
-        val hostRemoveSpaces =
-            findPreferenceNotNull<CheckBoxPreference>("byedpi_host_remove_spaces")
+        val hostRemoveSpaces = findPreferenceNotNull<CheckBoxPreference>("byedpi_host_remove_spaces")
         val splitTlsRec = findPreferenceNotNull<CheckBoxPreference>("byedpi_tlsrec_enabled")
-        val splitTlsRecPosition =
-            findPreferenceNotNull<EditTextPreference>("byedpi_tlsrec_position")
+        val splitTlsRecPosition = findPreferenceNotNull<EditTextPreference>("byedpi_tlsrec_position")
         val splitTlsRecAtSni = findPreferenceNotNull<CheckBoxPreference>("byedpi_tlsrec_at_sni")
 
         hostsBlacklist.isVisible = hostsMode == Blacklist
@@ -103,8 +98,7 @@ class ByeDpiUISettingsFragment : PreferenceFragmentCompat() {
         val isOob = desyncMethod == OOB || desyncMethod == DISOOB
         oobChar.isVisible = isOob
 
-        val desyncAllProtocols =
-            !desyncHttp.isChecked && !desyncHttps.isChecked && !desyncUdp.isChecked
+        val desyncAllProtocols = !desyncHttp.isChecked && !desyncHttps.isChecked && !desyncUdp.isChecked
 
         val desyncHttpEnabled = desyncAllProtocols || desyncHttp.isChecked
         hostMixedCase.isEnabled = desyncHttpEnabled

@@ -176,8 +176,14 @@ class MainActivity : BaseActivity() {
         }
 
         binding.editorButton.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
             val useCmdSettings = getPreferences().getBoolean("byedpi_enable_cmd_settings", false)
+
+            if (!useCmdSettings && appStatus.first == AppStatus.Running) {
+                Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val intent = Intent(this, SettingsActivity::class.java)
             intent.putExtra("open_fragment", if (useCmdSettings) "cmd" else "ui")
             startActivity(intent)
         }
