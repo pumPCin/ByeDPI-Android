@@ -178,4 +178,6 @@
     <string name="domain_list_update_failed">Не удалось обновить список доменов</string>
     <string name="domain_list_deleted">Список доменов удален</string>
     <string name="domain_list_delete_failed">Не удалось удалить список доменов</string>
+    <string name="main_btn_test">Подбор</string>
+    <string name="main_btn_list">Списки</string>
 </resources>

@@ -178,4 +178,6 @@
     <string name="domain_list_update_failed">Alan adı listesi güncellenemedi</string>
     <string name="domain_list_deleted">Alan adı listesi silindi</string>
     <string name="domain_list_delete_failed">Alan adı listesi silinemedi</string>
+    <string name="main_btn_test">Test</string>
+    <string name="main_btn_list">Listeler</string>
 </resources>

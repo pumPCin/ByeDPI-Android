@@ -178,4 +178,6 @@
     <string name="domain_list_update_failed">Failed to update domain list</string>
     <string name="domain_list_deleted">Domain list deleted</string>
     <string name="domain_list_delete_failed">Failed to delete domain list</string>
+    <string name="main_btn_test">Test</string>
+    <string name="main_btn_list">Lists</string>
 </resources>

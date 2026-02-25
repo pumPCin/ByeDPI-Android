@@ -178,4 +178,6 @@
     <string name="domain_list_update_failed">Домендер тізімін жаңарту мүмкін болмады</string>
     <string name="domain_list_deleted">Домендер тізімі жойылды</string>
     <string name="domain_list_delete_failed">Домендер тізімін жою мүмкін болмады</string>
+    <string name="main_btn_test">Тест</string>
+    <string name="main_btn_list">Тізімдер</string>
 </resources>

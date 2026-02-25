@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -187,6 +188,16 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        binding.testProxyButton.setOnClickListener {
+            startActivity(Intent(this, TestActivity::class.java))
+        }
+
+        binding.domainListsButton.setOnClickListener {
+            val intent = Intent(this, TestSettingsActivity::class.java)
+            intent.putExtra("open_fragment", "domain_lists")
+            startActivity(intent)
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
@@ -204,6 +215,7 @@ class MainActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         updateStatus()
+        updateButtonsVisibility()
     }
 
     override fun onDestroy() {
@@ -317,6 +329,12 @@ class MainActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun updateButtonsVisibility() {
+        val useCmdSettings = getPreferences().getBoolean("byedpi_enable_cmd_settings", false)
+        val visibility = if (useCmdSettings) View.VISIBLE else View.GONE
+        binding.cmdButtonsRow.visibility = visibility
     }
 
     private fun requestBatteryOptimization() {
