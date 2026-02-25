@@ -18,6 +18,7 @@
     <string name="open_editor">Редактор</string>
     <string name="settings">Настройки</string>
     <string name="vpn_permission_denied">Нет разрешения на активацию VPN</string>
+    <string name="service_restart">Сервис перезапущен с новыми параметрами</string>
     <string name="settings_unavailable">Сначала отключитесь, чтобы зайти в настройки</string>
     <string name="title_settings">Настройки</string>
     <string name="save_logs">Сохранить логи</string>

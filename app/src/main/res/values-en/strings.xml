@@ -18,6 +18,7 @@
     <string name="open_editor">Editor</string>
     <string name="settings">Settings</string>
     <string name="vpn_permission_denied">No permission to activate VPN</string>
+    <string name="service_restart">Service restarted with new parameters</string>
     <string name="settings_unavailable">Disconnect first to access settings</string>
     <string name="title_settings">Settings</string>
     <string name="save_logs">Save logs</string>

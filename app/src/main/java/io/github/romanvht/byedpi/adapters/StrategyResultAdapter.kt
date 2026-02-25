@@ -20,8 +20,7 @@ import io.github.romanvht.byedpi.utility.ClipboardUtils
 
 class StrategyResultAdapter(
     private val context: Context,
-    private val onApply: (String) -> Unit,
-    private val onConnect: (String) -> Unit
+    private val onApply: (String) -> Unit
 ) : RecyclerView.Adapter<StrategyResultAdapter.StrategyViewHolder>() {
 
     private var isTesting = false
@@ -170,8 +169,7 @@ class StrategyResultAdapter(
 
     private fun showCommandMenu(command: String) {
         val menuItems = arrayOf(
-            context.getString(R.string.test_cmd_connect),
-            context.getString(R.string.test_cmd_apply),
+            context.getString(R.string.cmd_history_apply),
             context.getString(R.string.cmd_history_copy)
         )
 
@@ -179,9 +177,8 @@ class StrategyResultAdapter(
             .setTitle(context.getString(R.string.cmd_history_menu))
             .setItems(menuItems) { _, which ->
                 when (which) {
-                    0 -> onConnect(command)
-                    1 -> onApply(command)
-                    2 -> ClipboardUtils.copy(context, command, "command")
+                    0 -> onApply(command)
+                    1 -> ClipboardUtils.copy(context, command, "command")
                 }
             }
             .show()

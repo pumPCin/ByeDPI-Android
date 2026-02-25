@@ -18,6 +18,7 @@
     <string name="open_editor">Editör</string>
     <string name="settings">Ayarlar</string>
     <string name="vpn_permission_denied">VPN açma yetkisi yok.</string>
+    <string name="service_restart">Servis yeni parametrelerle yeniden başlatıldı</string>
     <string name="settings_unavailable">Ayarları açmak için bağlantıyı kesin</string>
     <string name="title_settings">Ayarlar</string>
     <string name="save_logs">Günlükleri kaydet</string>

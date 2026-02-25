@@ -18,6 +18,7 @@
     <string name="open_editor">Редакторды</string>
     <string name="settings">Баптаулар</string>
     <string name="vpn_permission_denied">VPN-ды активациялауға рұқсат жоқ</string>
+    <string name="service_restart">Қызмет жаңа параметрлермен қайта іске қосылды</string>
     <string name="settings_unavailable">Баптауға өту үшін ең алдымен сөндірңіз</string>
     <string name="title_settings">Баптаулар</string>
     <string name="save_logs">Логтарды сақтау</string>

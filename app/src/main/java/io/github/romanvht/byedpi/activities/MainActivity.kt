@@ -164,19 +164,6 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        binding.editorButton.setOnClickListener {
-            val (status, _) = appStatus
-
-            if (status == AppStatus.Halted) {
-                val intent = Intent(this, SettingsActivity::class.java)
-                val useCmdSettings = getPreferences().getBoolean("byedpi_enable_cmd_settings", false)
-                intent.putExtra("open_fragment", if (useCmdSettings) "cmd" else "ui")
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
-            }
-        }
-
         binding.settingsButton.setOnClickListener {
             val (status, _) = appStatus
 
@@ -186,6 +173,13 @@ class MainActivity : BaseActivity() {
             } else {
                 Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
             }
+        }
+
+        binding.editorButton.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            val useCmdSettings = getPreferences().getBoolean("byedpi_enable_cmd_settings", false)
+            intent.putExtra("open_fragment", if (useCmdSettings) "cmd" else "ui")
+            startActivity(intent)
         }
 
         binding.testProxyButton.setOnClickListener {

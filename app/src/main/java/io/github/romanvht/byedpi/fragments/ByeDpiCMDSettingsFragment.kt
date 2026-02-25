@@ -1,18 +1,26 @@
 package io.github.romanvht.byedpi.fragments
 
+import android.net.VpnService
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.preference.*
 import io.github.romanvht.byedpi.R
 import io.github.romanvht.byedpi.utility.findPreferenceNotNull
 import androidx.appcompat.app.AlertDialog
+import io.github.romanvht.byedpi.data.AppStatus
 import io.github.romanvht.byedpi.data.Command
+import io.github.romanvht.byedpi.data.Mode
+import io.github.romanvht.byedpi.services.ServiceManager
+import io.github.romanvht.byedpi.services.appStatus
 import io.github.romanvht.byedpi.utility.ClipboardUtils
 import io.github.romanvht.byedpi.utility.HistoryUtils
+import io.github.romanvht.byedpi.utility.getPreferences
+import io.github.romanvht.byedpi.utility.mode
 
 class ByeDpiCMDSettingsFragment : PreferenceFragmentCompat() {
 
@@ -31,7 +39,12 @@ class ByeDpiCMDSettingsFragment : PreferenceFragmentCompat() {
 
         editTextPreference.setOnPreferenceChangeListener { _, newValue ->
             val newCommand = newValue.toString()
-            if (newCommand.isNotBlank()) cmdHistoryUtils.addCommand(newCommand)
+
+            if (newCommand.isNotBlank()) {
+                cmdHistoryUtils.addCommand(newCommand)
+                restartService()
+            }
+
             updateHistoryItems()
             true
         }
@@ -240,6 +253,7 @@ class ByeDpiCMDSettingsFragment : PreferenceFragmentCompat() {
     private fun applyCommand(command: String) {
         editTextPreference.text = command
         updateHistoryItems()
+        restartService()
     }
 
     private fun pinCommand(command: String) {
@@ -255,5 +269,16 @@ class ByeDpiCMDSettingsFragment : PreferenceFragmentCompat() {
     private fun deleteCommand(command: String) {
         cmdHistoryUtils.deleteCommand(command)
         updateHistoryItems()
+    }
+
+    private fun restartService() {
+        if (appStatus.first == AppStatus.Running) {
+            val ctx = context ?: return
+            val mode = ctx.getPreferences().mode()
+            if (mode == Mode.VPN && VpnService.prepare(ctx) != null) return
+
+            ServiceManager.restart(ctx, mode)
+            Toast.makeText(ctx, R.string.service_restart, Toast.LENGTH_SHORT).show()
+        }
     }
 }

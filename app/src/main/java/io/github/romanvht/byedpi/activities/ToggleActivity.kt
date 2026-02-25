@@ -73,6 +73,17 @@ class ToggleActivity : Activity() {
         Log.i(TAG, "Toggle service start")
     }
 
+    private fun restartService() {
+        val mode = prefs.mode()
+
+        if (mode == Mode.VPN && VpnService.prepare(this) != null) {
+            return
+        }
+
+        ServiceManager.restart(this, mode)
+        Log.i(TAG, "Toggle service start")
+    }
+
     private fun stopService() {
         ServiceManager.stop(this)
         Log.i(TAG, "Toggle service stop")
@@ -86,11 +97,7 @@ class ToggleActivity : Activity() {
             }
             AppStatus.Running -> {
                 if (restart) {
-                    stopService()
-                    waitForServiceStop { success ->
-                        Log.i(TAG, "Service stop: $success")
-                        startService()
-                    }
+                    restartService()
                 } else {
                     stopService()
                 }
@@ -106,29 +113,5 @@ class ToggleActivity : Activity() {
             return true
         }
         return false
-    }
-
-    private fun waitForServiceStop(onComplete: (Boolean) -> Unit) {
-        val startTime = System.currentTimeMillis()
-        val handler = Handler(Looper.getMainLooper())
-
-        fun check() {
-            val (status) = appStatus
-            val elapsed = System.currentTimeMillis() - startTime
-
-            when {
-                status == AppStatus.Halted -> {
-                    Log.i(TAG, "Service stopped")
-                    onComplete(true)
-                }
-                elapsed >= 3000L -> {
-                    Log.w(TAG, "Timeout waiting for service to stop")
-                    onComplete(false)
-                }
-                else -> handler.postDelayed({ check() }, 100L)
-            }
-        }
-
-        check()
     }
 }

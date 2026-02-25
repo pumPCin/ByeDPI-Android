@@ -19,6 +19,7 @@
     <string name="open_editor">Trình chỉnh sửa</string>
     <string name="settings">Cài đặt</string>
     <string name="vpn_permission_denied">Không có quyền kích hoạt VPN</string>
+    <string name="service_restart">Dịch vụ đã được khởi động lại với tham số mới</string>
     <string name="settings_unavailable">Ngắt kết nối trước để truy cập cài đặt</string>
     <string name="title_settings">Cài đặt</string>
     <string name="save_logs">Lưu nhật ký</string>

@@ -80,9 +80,6 @@ class TestActivity : BaseActivity() {
         strategyAdapter = StrategyResultAdapter(this,
             onApply = { command ->
                 addToHistory(command)
-            },
-            onConnect = { command ->
-                addAndConnect(command)
             }
         )
 
@@ -322,37 +319,18 @@ class TestActivity : BaseActivity() {
             updateCmdArgs(command)
             cmdHistoryUtils.addCommand(command)
 
-            if (isProxyRunning()) {
-                ServiceManager.stop(this@TestActivity)
-                waitForProxyStatus(AppStatus.Halted)
-            }
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(this@TestActivity, R.string.cmd_history_applied, Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun addAndConnect(command: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            updateCmdArgs(command)
-            cmdHistoryUtils.addCommand(command)
-
-            if (isProxyRunning()) {
-                ServiceManager.stop(this@TestActivity)
-                waitForProxyStatus(AppStatus.Halted)
-            }
-
             val mode = prefs.mode()
+            if (mode == Mode.VPN && VpnService.prepare(this@TestActivity) != null) return@launch
 
-            if (mode == Mode.VPN && VpnService.prepare(this@TestActivity) != null) {
-                return@launch
+            val toastText = if (appStatus.first == AppStatus.Running) {
+                ServiceManager.restart(this@TestActivity, mode)
+                R.string.service_restart
+            } else {
+                R.string.cmd_history_applied
             }
 
-            ServiceManager.start(this@TestActivity, mode)
-
             withContext(Dispatchers.Main) {
-                Toast.makeText(this@TestActivity, R.string.test_cmd_connected, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@TestActivity, toastText, Toast.LENGTH_SHORT).show()
             }
         }
     }
