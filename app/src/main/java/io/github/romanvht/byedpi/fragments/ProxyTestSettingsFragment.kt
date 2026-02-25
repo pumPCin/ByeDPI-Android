@@ -44,6 +44,14 @@ class ProxyTestSettingsFragment : PreferenceFragmentCompat() {
     private fun updatePreferences() {
         val switchUserCommands = findPreferenceNotNull<SwitchPreference>("byedpi_proxytest_usercommands")
         val textUserCommands = findPreferenceNotNull<EditTextPreference>("byedpi_proxytest_commands")
+        val manageDomainLists = findPreferenceNotNull<Preference>("manage_domain_lists")
+        val activeLists = DomainListUtils.getLists(requireContext()).filter { it.isActive }
+
+        manageDomainLists.summary = if (activeLists.isEmpty()) {
+            getString(R.string.domain_lists_summary)
+        } else {
+            activeLists.joinToString(", ") { it.name }
+        }
 
         textUserCommands.isEnabled = switchUserCommands.isChecked
     }
