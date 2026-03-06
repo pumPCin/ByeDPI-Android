@@ -1,22 +1,11 @@
-# OS
+*.iml
+.cxx
 .DS_Store
-
-# IDE
+.externalNativeBuild
+.gradle/
 .idea/
 .kotlin/
-*.iml
-
-# Gradle
-.gradle/
-build/
-
-# Local config
-local.properties
-
-# Android
 /captures
-.externalNativeBuild
-.cxx
-
-# JNI
 app/src/main/jniLibs/
+build/
+local.properties
