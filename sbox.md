@@ -1,4 +1,4 @@
-- [Определение устройства](#определение-устройства)
+﻿- [Определение устройства](#определение-устройства)
   - [Устройства на Android 9](#устройства-на-android-9)
   - [Устройства на Android 13](#устройства-на-android-13)
 - [Инструкции по настройке](#инструкции-по-настройке)
@@ -13,7 +13,7 @@
   - [ADB не включается:](#adb-не-включается)
   - [Проблемы подключения:](#проблемы-подключения)
 - [Альтернативный метод для YouTube](#альтернативный-метод-для-youtube)
-  - [1. Настройка ByeByeDPI](#1-настройка-byebyedpi)
+  - [1. Настройка ByeDPI](#1-настройка-byedpi)
   - [2. Настройка SmartTube](#2-настройка-smarttube)
 
 # Определение устройства
@@ -59,9 +59,9 @@
 - На вкладке **Консоль** выполните команды:
 
 ```
-  shell pm grant io.github.romanvht.byedpi android.permission.WRITE_SECURE_SETTINGS
-  shell appops set io.github.romanvht.byedpi WRITE_SETTINGS allow
-  shell appops set io.github.romanvht.byedpi ACTIVATE_VPN allow
+  shell pm grant io.github.dovecoteescapee.byedpi android.permission.WRITE_SECURE_SETTINGS
+  shell appops set io.github.dovecoteescapee.byedpi WRITE_SETTINGS allow
+  shell appops set io.github.dovecoteescapee.byedpi ACTIVATE_VPN allow
 ```
 
 ## Инструкция для Android 9
@@ -80,9 +80,9 @@
 - На вкладке **Консоль** выполните:
 
 ```
-  pm grant io.github.romanvht.byedpi android.permission.WRITE_SECURE_SETTINGS
-  appops set io.github.romanvht.byedpi WRITE_SETTINGS allow
-  appops set io.github.romanvht.byedpi ACTIVATE_VPN allow
+  pm grant io.github.dovecoteescapee.byedpi android.permission.WRITE_SECURE_SETTINGS
+  appops set io.github.dovecoteescapee.byedpi WRITE_SETTINGS allow
+  appops set io.github.dovecoteescapee.byedpi ACTIVATE_VPN allow
 ```
 
 ### 2Б. Через компьютер
@@ -92,9 +92,9 @@
 - На вкладке **Консоль** выполните:
 
 ```
-  shell pm grant io.github.romanvht.byedpi android.permission.WRITE_SECURE_SETTINGS
-  shell appops set io.github.romanvht.byedpi WRITE_SETTINGS allow
-  shell appops set io.github.romanvht.byedpi ACTIVATE_VPN allow
+  shell pm grant io.github.dovecoteescapee.byedpi android.permission.WRITE_SECURE_SETTINGS
+  shell appops set io.github.dovecoteescapee.byedpi WRITE_SETTINGS allow
+  shell appops set io.github.dovecoteescapee.byedpi ACTIVATE_VPN allow
 ```
 
 # Решение проблем
@@ -113,9 +113,9 @@
 
 # Альтернативный метод для YouTube
 
-## 1. Настройка ByeByeDPI
+## 1. Настройка ByeDPI
 
-- В ByeByeDPI:
+- В ByeDPI:
   - Настройки (шестеренка справа вверху)
     - Режим : *Proxy*
     - Порт: *1080*
