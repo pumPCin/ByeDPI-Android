@@ -95,15 +95,12 @@ class ByeDpiProxyService : LifecycleService() {
 
         if (status == ServiceStatus.Connected) {
             Log.w(TAG, "Proxy already connected")
+            updateStatus(ServiceStatus.Connected)
             return
         }
 
         try {
             mutex.withLock {
-                if (status == ServiceStatus.Connected) {
-                    Log.w(TAG, "Proxy already connected")
-                    return@withLock
-                }
                 startProxy()
                 updateStatus(ServiceStatus.Connected)
             }
@@ -130,13 +127,19 @@ class ByeDpiProxyService : LifecycleService() {
     private suspend fun stop() {
         Log.i(TAG, "Stopping")
 
+        if (status != ServiceStatus.Connected) {
+            Log.w(TAG, "Proxy not connected")
+            updateStatus(ServiceStatus.Disconnected)
+            return
+        }
+
         mutex.withLock {
             withContext(Dispatchers.IO) {
                 stopProxy()
             }
-            updateStatus(ServiceStatus.Disconnected)
         }
 
+        updateStatus(ServiceStatus.Disconnected)
         stopSelf()
     }
 
@@ -153,16 +156,14 @@ class ByeDpiProxyService : LifecycleService() {
 
         proxyJob = lifecycleScope.launch(Dispatchers.IO) {
             val code = proxy.startProxy(preferences)
+
             delay(500)
 
             if (code != 0) {
                 Log.e(TAG, "Proxy stopped with code $code")
                 updateStatus(ServiceStatus.Failed)
-            } else {
-                updateStatus(ServiceStatus.Disconnected)
+                stopSelf()
             }
-
-            stopSelf()
         }
 
         Log.i(TAG, "Proxy started")

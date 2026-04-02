@@ -112,15 +112,12 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         if (status == ServiceStatus.Connected) {
             Log.w(TAG, "VPN already connected")
+            updateStatus(ServiceStatus.Connected)
             return
         }
 
         try {
             mutex.withLock {
-                if (status == ServiceStatus.Connected) {
-                    Log.w(TAG, "VPN already connected")
-                    return@withLock
-                }
                 startProxy()
                 startTun2Socks()
                 updateStatus(ServiceStatus.Connected)
@@ -148,6 +145,12 @@ class ByeDpiVpnService : LifecycleVpnService() {
     private suspend fun stop() {
         Log.i(TAG, "Stopping")
 
+        if (status != ServiceStatus.Connected) {
+            Log.w(TAG, "VPN not connected")
+            updateStatus(ServiceStatus.Disconnected)
+            return
+        }
+
         mutex.withLock {
             try {
                 withContext(Dispatchers.IO) {
@@ -157,9 +160,9 @@ class ByeDpiVpnService : LifecycleVpnService() {
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to stop VPN", e)
             }
-            updateStatus(ServiceStatus.Disconnected)
         }
 
+        updateStatus(ServiceStatus.Disconnected)
         stopSelf()
     }
 
@@ -175,17 +178,14 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
         proxyJob = lifecycleScope.launch(Dispatchers.IO) {
             val code = byeDpiProxy.startProxy(preferences)
+
             delay(500)
 
             if (code != 0) {
                 Log.e(TAG, "Proxy stopped with code $code")
                 updateStatus(ServiceStatus.Failed)
-            } else {
-                updateStatus(ServiceStatus.Disconnected)
-            }
-
-            lifecycleScope.launch {
-                stop()
+                stopTun2Socks()
+                stopSelf()
             }
         }
 
@@ -226,6 +226,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         Log.i(TAG, "Starting tun2socks")
 
         if (tunFd != null) {
+            Log.w(TAG, "VPN field not null")
             throw IllegalStateException("VPN field not null")
         }
 
@@ -271,7 +272,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
         Log.i(TAG, "Stopping tun2socks")
 
         if (tunFd == null) {
-            Log.w(TAG, "Tun2socks already stopped, skipping")
+            Log.w(TAG, "VPN field is null, skipping")
             return
         }
 

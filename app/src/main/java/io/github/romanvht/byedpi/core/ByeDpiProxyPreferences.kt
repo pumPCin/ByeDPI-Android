@@ -45,11 +45,10 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
 
             Log.d("ProxyPref", "Added from settings: $prefix")
 
-            return if (prefix.isNotEmpty()) {
-                arrayOf("ciadpi") + shellSplit("$prefix$args")
-            } else {
-                arrayOf("ciadpi") + shellSplit(args)
-            }
+            val blacklist = setOf("--help", "--version", "-h", "-v")
+            val splitArgs = shellSplit("$prefix$args").filter { it !in blacklist }
+
+            return arrayOf("ciadpi") + splitArgs
         }
 
         private fun getLists(cmd: String, context: Context): String {
