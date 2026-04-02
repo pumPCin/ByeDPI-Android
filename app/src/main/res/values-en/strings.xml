@@ -35,8 +35,6 @@
     <string name="byedpi_version">ByeDPI</string>
     <string name="bye_dpi_proxy_ip_setting">Listening IP</string>
     <string name="byedpi_proxy_port_setting">Port</string>
-    <string name="byedpi_http_connect_setting">HTTP proxy</string>
-    <string name="byedpi_http_connect_summary">ByeDPI will proxy HTTPS or any TCP traffic except HTTP</string>
     <string name="byedpi_max_connections_setting">Max connections</string>
     <string name="byedpi_buffer_size_setting">Buffer size</string>
     <string name="byedpi_default_ttl_setting">Default TTL</string>

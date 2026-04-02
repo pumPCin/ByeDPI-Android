@@ -37,13 +37,10 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
             val (cmdIp, cmdPort) = preferences.checkIpAndPortInCmd()
             val ip = preferences.getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
             val port = preferences.getStringNotNull("byedpi_proxy_port", "1080")
-            val enableHttp = preferences.getBoolean("byedpi_http_connect", false)
-            val hasHttp = args.contains("-G") || args.contains("--http-connect")
 
             val prefix = buildString {
                 if (cmdIp == null) append("--ip $ip ")
                 if (cmdPort == null) append("--port $port ")
-                if (enableHttp && !hasHttp) append("--http-connect ")
             }
 
             Log.d("ProxyPref", "Added from settings: $prefix")
@@ -86,7 +83,6 @@ class ByeDpiProxyUIPreferences(val settings: UISettings = UISettings()) : ByeDpi
             if (settings.port != 0) args.add("-p${settings.port}")
             if (settings.maxConnections != 0) args.add("-c${settings.maxConnections}")
             if (settings.bufferSize != 0) args.add("-b${settings.bufferSize}")
-            if (settings.httpConnect) args.add("-G")
 
             val protocols = buildList {
                 if (settings.desyncHttps) add("t")

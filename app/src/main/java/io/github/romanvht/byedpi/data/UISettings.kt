@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 data class UISettings(
     val ip: String = "127.0.0.1",
     val port: Int = 1080,
-    val httpConnect: Boolean = false,
     val maxConnections: Int = 512,
     val bufferSize: Int = 16384,
     val defaultTtl: Int = 0,
@@ -74,7 +73,6 @@ data class UISettings(
             return UISettings(
                 ip = preferences.getString("byedpi_proxy_ip", null) ?: "127.0.0.1",
                 port = preferences.getString("byedpi_proxy_port", null)?.toIntOrNull() ?: 1080,
-                httpConnect = preferences.getBoolean("byedpi_http_connect", false),
                 maxConnections = preferences.getString("byedpi_max_connections", null)?.toIntOrNull() ?: 512,
                 bufferSize = preferences.getString("byedpi_buffer_size", null)?.toIntOrNull() ?: 16384,
                 defaultTtl = preferences.getString("byedpi_default_ttl", null)?.toIntOrNull() ?: 0,

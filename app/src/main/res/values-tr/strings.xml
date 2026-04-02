@@ -35,8 +35,6 @@
     <string name="byedpi_version">ByeDPI</string>
     <string name="bye_dpi_proxy_ip_setting">Dinleme IPsi</string>
     <string name="byedpi_proxy_port_setting">Port</string>
-    <string name="byedpi_http_connect_setting">HTTP proxy</string>
-    <string name="byedpi_http_connect_summary">ByeDPI, HTTP dışında HTTPS veya herhangi bir TCP trafiğini proxyler.</string>
     <string name="byedpi_max_connections_setting">Maksimum bağlantılar</string>
     <string name="byedpi_buffer_size_setting">Tampon boyutu</string>
     <string name="byedpi_default_ttl_setting">Varsayılan TTL</string>
