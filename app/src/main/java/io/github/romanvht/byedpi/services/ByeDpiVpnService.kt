@@ -184,8 +184,9 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 updateStatus(ServiceStatus.Disconnected)
             }
 
-            stopTun2Socks()
-            stopSelf()
+            lifecycleScope.launch {
+                stop()
+            }
         }
 
         Log.i(TAG, "Proxy started")
@@ -268,6 +269,11 @@ class ByeDpiVpnService : LifecycleVpnService() {
 
     private fun stopTun2Socks() {
         Log.i(TAG, "Stopping tun2socks")
+
+        if (tunFd == null) {
+            Log.w(TAG, "Tun2socks already stopped, skipping")
+            return
+        }
 
         try {
             TProxyService.TProxyStopService()
