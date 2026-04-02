@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_copy_log"
+        android:icon="@drawable/baseline_content_copy_24"
+        android:title="@string/save_logs"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_settings"
         android:icon="@drawable/baseline_settings_24"
         android:title="@string/title_settings"

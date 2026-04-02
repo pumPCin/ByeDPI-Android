@@ -145,6 +145,10 @@ class TestActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_copy_log -> {
+                copyLog()
+                true
+            }
             R.id.action_settings -> {
                 if (!isTesting) {
                     val intent = Intent(this, TestSettingsActivity::class.java)
@@ -372,5 +376,33 @@ class TestActivity : BaseActivity() {
             val content = assets.open("proxytest_strategies.list").bufferedReader().readText()
             content.replace("{sni}", sniValue).lines().map { it.trim() }.filter { it.isNotEmpty() }
         }
+    }
+
+    private fun copyLog() {
+        val completeStrategies = strategies.filter { it.isCompleted }
+
+        if (completeStrategies.isEmpty()) {
+            Toast.makeText(this, R.string.toast_copied, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val sb = StringBuilder()
+
+        completeStrategies.forEach { strategy ->
+            sb.appendLine("${strategy.command}\n")
+
+            strategy.siteResults.forEach { site ->
+                sb.appendLine("${site.site} - ${site.successCount}/${site.totalCount}")
+            }
+
+            sb.appendLine("\n${strategy.successCount}/${strategy.totalRequests}")
+            sb.appendLine("-------------")
+        }
+
+        val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        val clip = android.content.ClipData.newPlainText("proxy_test_log", sb.toString())
+        clipboard.setPrimaryClip(clip)
+
+        Toast.makeText(this, R.string.toast_copied, Toast.LENGTH_SHORT).show()
     }
 }

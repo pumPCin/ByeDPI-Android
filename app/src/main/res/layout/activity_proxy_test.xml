@@ -48,7 +48,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="@string/test_disclaimer"
-        android:textSize="12sp"
-        android:textAlignment="center"/>
+        android:textSize="12sp" />
 
 </LinearLayout>
