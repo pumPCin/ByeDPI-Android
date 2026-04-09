@@ -56,9 +56,9 @@ class SettingsActivity : BaseActivity() {
         }
 
         R.id.action_reset_settings -> {
-            val prefs = getPreferences()
-            prefs.edit { clear() }
-            recreate()
+            SettingsUtils.resetSettings(this) {
+                recreate()
+            }
             true
         }
 

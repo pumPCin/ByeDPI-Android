@@ -156,6 +156,11 @@
         android:title="@string/about_category">
 
         <Preference
+            android:key="donate"
+            android:icon="@drawable/ic_favorite"
+            android:title="@string/donate" />
+
+        <Preference
             android:key="telegram_group"
             android:title="@string/telegram_link"
             android:icon="@drawable/ic_telegram">

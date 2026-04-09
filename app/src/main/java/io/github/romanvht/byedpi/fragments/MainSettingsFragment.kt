@@ -10,6 +10,7 @@ import io.github.romanvht.byedpi.BuildConfig
 import io.github.romanvht.byedpi.activities.TestActivity
 import io.github.romanvht.byedpi.data.Mode
 import io.github.romanvht.byedpi.utility.*
+import androidx.core.net.toUri
 
 class MainSettingsFragment : PreferenceFragmentCompat() {
     companion object {
@@ -56,6 +57,12 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         findPreferenceNotNull<Preference>("storage_access")
             .setOnPreferenceClickListener {
                 StorageUtils.requestStoragePermission(this)
+                true
+            }
+
+        findPreferenceNotNull<Preference>("donate")
+            .setOnPreferenceClickListener {
+                showDonateDialog()
                 true
             }
 
@@ -144,5 +151,31 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         } else {
             storageAccess.summary = getString(R.string.storage_access_summary)
         }
+    }
+
+    private fun showDonateDialog() {
+        val context = requireContext()
+
+        val items = arrayOf(
+            getString(R.string.donate_message),
+            getString(R.string.donate_cloudtips),
+            getString(R.string.donate_telegram_bot),
+        )
+
+        androidx.appcompat.app.AlertDialog.Builder(context)
+            .setTitle(getString(R.string.donate))
+            .setItems(items) { _, which ->
+                when (which) {
+                    1 -> openUrl("https://pay.cloudtips.ru/p/92c754db")
+                    2 -> openUrl("https://t.me/romanvht_donate_bot")
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun openUrl(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+        startActivity(intent)
     }
 }

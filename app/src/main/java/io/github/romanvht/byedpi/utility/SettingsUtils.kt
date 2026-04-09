@@ -66,7 +66,7 @@ object SettingsUtils {
                 key !in setOf("byedpi_command_history", "selected_apps")
             }
 
-            val domainLists = DomainListUtils.getLists(context)
+            val domainLists = DomainListUtils.getAllLists(context)
 
             val export = AppSettings(
                 app = BuildConfig.APPLICATION_ID,
@@ -150,14 +150,29 @@ object SettingsUtils {
                 }
 
                 if (import.domainLists !== null) {
-                    DomainListUtils.saveLists(context, import.domainLists)
+                    val normalized = import.domainLists.map {
+                        if (it.isBuiltIn) {
+                            it.copy(
+                                isModified = it.isModified,
+                                isDeleted = it.isDeleted
+                            )
+                        } else {
+                            it.copy(
+                                isModified = false,
+                                isDeleted = false
+                            )
+                        }
+                    }
+
+                    DomainListUtils.saveLists(context, normalized)
                 }
 
+                val newLang = prefs.getString("language", "system") ?: "system"
+                val newTheme = prefs.getString("app_theme", "system") ?: "system"
+                setLang(newLang)
+                setTheme(newTheme)
+
                 Handler(Looper.getMainLooper()).post {
-                    val newLang = prefs.getString("language", "system") ?: "system"
-                    val newTheme = prefs.getString("app_theme", "system") ?: "system"
-                    setLang(newLang)
-                    setTheme(newTheme)
                     onRestart()
                 }
             }
@@ -165,6 +180,31 @@ object SettingsUtils {
             Log.e(TAG, "Failed to import settings", e)
             Handler(Looper.getMainLooper()).post {
                 Toast.makeText(context, "Failed to import settings", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun resetSettings(context: Context, onRestart: () -> Unit) {
+        try {
+            val prefs = context.getPreferences()
+
+            prefs.edit(commit = true) {
+                clear()
+            }
+
+            HistoryUtils(context).saveHistory(emptyList())
+            DomainListUtils.resetLists(context)
+
+            setLang("system")
+            setTheme("system")
+
+            Handler(Looper.getMainLooper()).post {
+                onRestart()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to reset settings", e)
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(context, "Failed to reset settings", Toast.LENGTH_SHORT).show()
             }
         }
     }

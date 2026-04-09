@@ -135,6 +135,7 @@
     <string name="test_cmd_connect">Применить и запустить</string>
     <string name="test_cmd_apply">Применить без запуска</string>
     <string name="test_cmd_connected">Подключено</string>
+    <string name="test_log_copy">Скопировать лог</string>
     <string name="toast_copied">Скопировано</string>
     <string name="test_settings_sni">SNI фейк пакетов</string>
     <string name="test_settings_fulllog">Вывод ответа хостов</string>
@@ -152,10 +153,10 @@
     <string name="test_hide_details">Скрыть детали</string>
     <string name="test_expand">Развернуть</string>
     <string name="battery_optimization">Оптимизация батареи</string>
-    <string name="battery_optimization_summary">Включите для улучшения стабильности</string>
+    <string name="battery_optimization_summary">Отключите для улучшения стабильности</string>
     <string name="battery_optimization_disabled_summary">Отключена</string>
     <string name="permission_category">Разрешения</string>
-    <string name="documentation_link">Документация</string>
+    <string name="documentation_link">Инструкция</string>
     <string name="proxytest_delay_desc">Увеличение значения повышает стабильность</string>
     <string name="proxytest_requests_desc">Увеличение значения повышает точность, но может снизить стабильность</string>
     <string name="proxytest_limit_desc">Увеличение значения ускоряет тест, но может снизить стабильность</string>
@@ -179,4 +180,8 @@
     <string name="domain_list_delete_failed">Не удалось удалить список доменов</string>
     <string name="main_btn_test">Подбор</string>
     <string name="main_btn_list">Списки</string>
+    <string name="donate">Поддержать</string>
+    <string name="donate_message">Если приложение оказалось для вас полезным, можете угостить меня чашечкой кофе ☕️\nСпасибо за вашу поддержку и участие ❤️</string>
+    <string name="donate_cloudtips">CloudTips (карты РФ)</string>
+    <string name="donate_telegram_bot">Keksik (карты, кошельки, крипта)</string>
 </resources>

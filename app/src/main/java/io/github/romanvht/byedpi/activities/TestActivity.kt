@@ -361,7 +361,7 @@ class TestActivity : BaseActivity() {
     }
 
     private fun loadSites(): List<String> {
-        DomainListUtils.initializeDefaultLists(this)
+        DomainListUtils.syncLists(this)
         return DomainListUtils.getActiveDomains(this)
     }
 

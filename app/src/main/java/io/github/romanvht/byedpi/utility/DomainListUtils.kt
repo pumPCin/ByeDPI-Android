@@ -5,30 +5,31 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.github.romanvht.byedpi.data.DomainList
 import java.io.File
-import androidx.core.content.edit
 
 object DomainListUtils {
     private const val DOMAIN_LISTS_FILE = "domain_lists.json"
-    private const val KEY_INITIAL_LOADED = "domain_initial_loaded"
 
     private val gson = Gson()
 
-    fun initializeDefaultLists(context: Context) {
-        val prefs = context.getPreferences()
-        val isInitialized = prefs.getBoolean(KEY_INITIAL_LOADED, false)
+    fun syncLists(context: Context) {
+        val currentLists = getAllLists(context).toMutableList()
 
-        if (isInitialized) return
-
-        val defaultLists = mutableListOf<DomainList>()
+        val builtInMap = currentLists
+            .filter { it.isBuiltIn }
+            .associateBy { it.id }
 
         val assetFiles = context.assets.list("")?.filter {
             it.startsWith("proxytest_") && it.endsWith(".sites")
         } ?: emptyList()
 
+        val newBuiltInIds = mutableSetOf<String>()
+
         for (assetFile in assetFiles) {
-            val listName = assetFile
+            val id = assetFile
                 .removePrefix("proxytest_")
                 .removeSuffix(".sites")
+
+            newBuiltInIds.add(id)
 
             val domains = context.assets.open(assetFile)
                 .bufferedReader()
@@ -36,38 +37,69 @@ object DomainListUtils {
                 .map { it.trim() }
                 .filter { it.isNotEmpty() }
 
-            defaultLists.add(
-                DomainList(
-                    id = listName,
-                    name = listName.replaceFirstChar {
-                        if (it.isLowerCase()) it.titlecase() else it.toString()
-                    },
-                    domains = domains,
-                    isActive = listName in setOf("youtube", "googlevideo"),
-                    isBuiltIn = true
-                )
-            )
+            val existing = builtInMap[id]
+
+            when {
+                existing == null -> {
+                    currentLists.add(
+                        DomainList(
+                            id = id,
+                            name = id.replaceFirstChar { it.uppercase() },
+                            domains = domains,
+                            isActive = id in setOf("youtube", "googlevideo"),
+                            isBuiltIn = true
+                        )
+                    )
+                }
+
+                existing.isDeleted -> {
+                    continue
+                }
+
+                existing.isModified -> {
+                    continue
+                }
+
+                else -> {
+                    val index = currentLists.indexOfFirst { it.id == id }
+
+                    currentLists[index] = existing.copy(
+                        domains = domains
+                    )
+                }
+            }
         }
 
-        saveLists(context, defaultLists)
+        currentLists.removeAll {
+            it.isBuiltIn && it.id !in newBuiltInIds
+        }
 
-        prefs.edit { putBoolean(KEY_INITIAL_LOADED, true) }
+        saveLists(context, currentLists)
     }
 
-    fun getLists(context: Context): List<DomainList> {
+    fun getAllLists(context: Context): MutableList<DomainList> {
         val listsFile = File(context.filesDir, DOMAIN_LISTS_FILE)
 
         if (!listsFile.exists()) {
-            return emptyList()
+            return mutableListOf()
         }
 
         return try {
             val json = listsFile.readText()
             val type = object : TypeToken<List<DomainList>>() {}.type
-            gson.fromJson(json, type) ?: emptyList()
+            val lists: List<DomainList> = gson.fromJson(json, type) ?: emptyList()
+            lists.toMutableList()
         } catch (e: Exception) {
-            emptyList()
+            mutableListOf()
         }
+    }
+
+    fun getLists(context: Context): List<DomainList> {
+        return getAllLists(context).filter { !it.isDeleted }
+    }
+
+    fun getActiveDomains(context: Context): List<String> {
+        return getLists(context).filter { it.isActive }.flatMap { it.domains }.distinct()
     }
 
     fun saveLists(context: Context, lists: List<DomainList>) {
@@ -76,18 +108,30 @@ object DomainListUtils {
         listsFile.writeText(json)
     }
 
-    fun getActiveDomains(context: Context): List<String> {
-        return getLists(context)
-            .filter { it.isActive }
-            .flatMap { it.domains }
-            .distinct()
-    }
-
     fun addList(context: Context, name: String, domains: List<String>): Boolean {
-        val lists = getLists(context).toMutableList()
+        val lists = getAllLists(context).toMutableList()
         val id = name.lowercase().replace(" ", "_")
 
-        if (lists.any { it.id == id }) return false
+        val existing = lists.find { it.id == id }
+
+        if (existing != null) {
+            if (existing.isBuiltIn && existing.isDeleted) {
+                val index = lists.indexOf(existing)
+
+                lists[index] = existing.copy(
+                    name = name,
+                    domains = domains,
+                    isDeleted = false,
+                    isModified = true,
+                    isActive = true
+                )
+
+                saveLists(context, lists)
+                return true
+            }
+
+            return false
+        }
 
         lists.add(
             DomainList(
@@ -104,20 +148,25 @@ object DomainListUtils {
     }
 
     fun updateList(context: Context, id: String, name: String, domains: List<String>): Boolean {
-        val lists = getLists(context).toMutableList()
+        val lists = getAllLists(context).toMutableList()
         val index = lists.indexOfFirst { it.id == id }
 
         if (index == -1) return false
 
         val oldList = lists[index]
-        lists[index] = oldList.copy(name = name, domains = domains)
+
+        lists[index] = oldList.copy(
+            name = name,
+            domains = domains,
+            isModified = oldList.isBuiltIn
+        )
 
         saveLists(context, lists)
         return true
     }
 
     fun toggleListActive(context: Context, id: String): Boolean {
-        val lists = getLists(context).toMutableList()
+        val lists = getAllLists(context).toMutableList()
         val index = lists.indexOfFirst { it.id == id }
 
         if (index == -1) return false
@@ -130,23 +179,33 @@ object DomainListUtils {
     }
 
     fun deleteList(context: Context, id: String): Boolean {
-        val lists = getLists(context).toMutableList()
+        val lists = getAllLists(context).toMutableList()
+        val index = lists.indexOfFirst { it.id == id }
 
-        val iterator = lists.iterator()
-        var removed = false
+        if (index == -1) return false
 
-        while (iterator.hasNext()) {
-            val list = iterator.next()
-            if (list.id == id) {
-                iterator.remove()
-                removed = true
-            }
+        val list = lists[index]
+
+        if (list.isBuiltIn) {
+            lists[index] = list.copy(
+                isDeleted = true,
+                isActive = false
+            )
+        } else {
+            lists.removeAt(index)
         }
 
-        if (removed) {
-            saveLists(context, lists)
+        saveLists(context, lists)
+        return true
+    }
+
+    fun resetLists(context: Context) {
+        val file = File(context.filesDir, DOMAIN_LISTS_FILE)
+
+        if (file.exists()) {
+            file.delete()
         }
 
-        return removed
+        syncLists(context)
     }
 }

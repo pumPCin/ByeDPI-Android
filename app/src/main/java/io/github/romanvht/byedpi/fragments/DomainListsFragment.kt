@@ -33,7 +33,7 @@ class DomainListsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        DomainListUtils.initializeDefaultLists(requireContext())
+        DomainListUtils.syncLists(requireContext())
         recyclerView = view.findViewById(R.id.domain_lists_recycler)
 
         view.findViewById<View>(R.id.add_new_list_button).setOnClickListener {

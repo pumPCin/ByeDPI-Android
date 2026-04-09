@@ -135,6 +135,7 @@
     <string name="test_cmd_connect">Apply and run</string>
     <string name="test_cmd_apply">Apply without run</string>
     <string name="test_cmd_connected">Connected</string>
+    <string name="test_log_copy">Copy log</string>
     <string name="toast_copied">Сopied</string>
     <string name="test_settings_sni">SNI fake packets</string>
     <string name="test_settings_fulllog">Host response output</string>
@@ -152,10 +153,10 @@
     <string name="test_hide_details">Hide details</string>
     <string name="test_expand">Expand</string>
     <string name="battery_optimization">Battery optimization</string>
-    <string name="battery_optimization_summary">Turn it on to improve stability</string>
+    <string name="battery_optimization_summary">Turn off to improve stability</string>
     <string name="battery_optimization_disabled_summary">Disabled</string>
     <string name="permission_category">Permissions</string>
-    <string name="documentation_link">Documentation</string>
+    <string name="documentation_link">Instruction</string>
     <string name="proxytest_delay_desc">A higher number may increase stability</string>
     <string name="proxytest_requests_desc">A higher number increases accuracy but may reduce stability</string>
     <string name="proxytest_limit_desc">A higher number increases test speed but may reduce stability</string>
@@ -179,4 +180,8 @@
     <string name="domain_list_delete_failed">Failed to delete domain list</string>
     <string name="main_btn_test">Test</string>
     <string name="main_btn_list">Lists</string>
+    <string name="donate">Support</string>
+    <string name="donate_message">If the app has been useful to you, you can buy me a cup of coffee ☕️\nThank you for your support and participation ❤️</string>
+    <string name="donate_cloudtips">CloudTips (RU cards only)</string>
+    <string name="donate_telegram_bot">Telegram Bot (RU/KZ cards, wallets, crypto)</string>
 </resources>

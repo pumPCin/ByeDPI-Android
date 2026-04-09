@@ -136,6 +136,7 @@
     <string name="test_cmd_connect">Áp dụng và chạy</string>
     <string name="test_cmd_apply">Áp dụng mà không chạy</string>
     <string name="test_cmd_connected">Đã kết nối</string>
+    <string name="test_log_copy">Sao chép nhật ký</string>
     <string name="toast_copied">Đã sao chép</string>
     <string name="test_settings_sni">Gói giả SNI</string>
     <string name="test_settings_fulllog">Hiển thị phản hồi host</string>
@@ -156,7 +157,7 @@
     <string name="battery_optimization_summary">Bật để tăng độ ổn định</string>
     <string name="battery_optimization_disabled_summary">Đã tắt</string>
     <string name="permission_category">Quyền</string>
-    <string name="documentation_link">Tài liệu</string>
+    <string name="documentation_link">Hướng dẫn sử dụng</string>
     <string name="proxytest_delay_desc">Số lớn hơn có thể tăng độ ổn định</string>
     <string name="proxytest_requests_desc">Số lớn hơn tăng độ chính xác nhưng có thể giảm ổn định</string>
     <string name="proxytest_limit_desc">Số lớn hơn tăng tốc độ kiểm tra nhưng có thể giảm ổn định</string>
@@ -180,4 +181,8 @@
     <string name="domain_list_delete_failed">Không thể xóa danh sách tên miền</string>
     <string name="main_btn_test">Kiểm tra</string>
     <string name="main_btn_list">Danh sách</string>
+    <string name="donate">Ủng hộ</string>
+    <string name="donate_message">Nếu ứng dụng hữu ích với bạn, bạn có thể mời tôi một tách cà phê ☕️\nCảm ơn sự ủng hộ và đóng góp của bạn ❤️</string>
+    <string name="donate_cloudtips">CloudTips (chỉ thẻ Nga)</string>
+    <string name="donate_telegram_bot">Telegram Bot (thẻ RU/KZ, ví điện tử, crypto)</string>
 </resources>

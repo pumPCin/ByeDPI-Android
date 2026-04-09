@@ -5,5 +5,8 @@ data class DomainList(
     val name: String,
     val domains: List<String>,
     val isActive: Boolean = true,
-    val isBuiltIn: Boolean = false
+
+    val isBuiltIn: Boolean = false,
+    val isModified: Boolean = false,
+    val isDeleted: Boolean = false
 )
