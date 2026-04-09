@@ -186,5 +186,5 @@
     <string name="donate">Tặng</string>
     <string name="donate_message">Nếu ứng dụng hữu ích với bạn, bạn có thể mời tôi một tách cà phê ☕️\nCảm ơn sự ủng hộ và đóng góp của bạn ❤️</string>
     <string name="donate_cloudtips">CloudTips (chỉ thẻ Nga)</string>
-    <string name="donate_telegram_bot">Telegram Bot (thẻ RU/KZ, ví điện tử, crypto)</string>
+    <string name="donate_telegram_bot">Telegram Bot (ví điện tử, crypto)</string>
 </resources>

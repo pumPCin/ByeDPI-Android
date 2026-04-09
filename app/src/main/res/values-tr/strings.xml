@@ -185,5 +185,5 @@
     <string name="donate">Bağış yapın</string>
     <string name="donate_message">Uygulama işinize yaradıysa, bana bir fincan kahve ısmarlayabilirsiniz ☕️\nDestek ve katılımınız için teşekkürler ❤️</string>
     <string name="donate_cloudtips">CloudTips (yalnızca Rusya kartları)</string>
-    <string name="donate_telegram_bot">Telegram Bot (RU/KZ kartları, cüzdanlar, kripto)</string>
+    <string name="donate_telegram_bot">Telegram Bot (kartları, cüzdanlar, kripto)</string>
 </resources>

@@ -185,5 +185,5 @@
     <string name="donate">Donate</string>
     <string name="donate_message">If the app has been useful to you, you can buy me a cup of coffee ☕️\nThank you for your support and participation ❤️</string>
     <string name="donate_cloudtips">CloudTips (RU cards only)</string>
-    <string name="donate_telegram_bot">Telegram Bot (RU/KZ cards, wallets, crypto)</string>
+    <string name="donate_telegram_bot">Telegram Bot (cards, wallets, crypto)</string>
 </resources>

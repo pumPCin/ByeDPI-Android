@@ -185,5 +185,5 @@
     <string name="donate">Садақа беру</string>
     <string name="donate_message">Егер қолданба сізге пайдалы болса, маған бір кесе кофе сыйлай аласыз ☕️\nҚолдауыңыз бен қатысуыңызға рахмет ❤️</string>
     <string name="donate_cloudtips">CloudTips (тек ресейлік карталар)</string>
-    <string name="donate_telegram_bot">Telegram бот (РФ/ҚЗ карталары, әмияндар, крипто)</string>
+    <string name="donate_telegram_bot">Telegram бот (карталары, әмияндар, крипто)</string>
 </resources>
