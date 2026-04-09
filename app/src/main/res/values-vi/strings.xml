@@ -179,6 +179,8 @@
     <string name="domain_list_update_failed">Không thể cập nhật danh sách tên miền</string>
     <string name="domain_list_deleted">Đã xóa danh sách tên miền</string>
     <string name="domain_list_delete_failed">Không thể xóa danh sách tên miền</string>
+    <string name="domain_list_reset">Đặt lại danh sách</string>
+    <string name="domain_list_reset_done">Danh sách đã được đặt lại</string>
     <string name="main_btn_test">Kiểm tra</string>
     <string name="main_btn_list">Danh sách</string>
     <string name="donate">Ủng hộ</string>
