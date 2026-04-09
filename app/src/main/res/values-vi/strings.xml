@@ -183,7 +183,7 @@
     <string name="domain_list_reset_done">Danh sách đã được đặt lại</string>
     <string name="main_btn_test">Kiểm tra</string>
     <string name="main_btn_list">Danh sách</string>
-    <string name="donate">Ủng hộ</string>
+    <string name="donate">Tặng</string>
     <string name="donate_message">Nếu ứng dụng hữu ích với bạn, bạn có thể mời tôi một tách cà phê ☕️\nCảm ơn sự ủng hộ và đóng góp của bạn ❤️</string>
     <string name="donate_cloudtips">CloudTips (chỉ thẻ Nga)</string>
     <string name="donate_telegram_bot">Telegram Bot (thẻ RU/KZ, ví điện tử, crypto)</string>

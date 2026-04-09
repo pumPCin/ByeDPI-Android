@@ -371,10 +371,10 @@ class TestActivity : BaseActivity() {
 
         return if (userCommands) {
             val content = prefs.getStringNotNull("byedpi_proxytest_commands", "")
-            content.replace("{sni}", sniValue).lines().map { it.trim() }.filter { it.isNotEmpty() }
+            content.replace("{sni}", "\"${sniValue}\"").lines().map { it.trim() }.filter { it.isNotEmpty() }
         } else {
             val content = assets.open("proxytest_strategies.list").bufferedReader().readText()
-            content.replace("{sni}", sniValue).lines().map { it.trim() }.filter { it.isNotEmpty() }
+            content.replace("{sni}", "\"${sniValue}\"").lines().map { it.trim() }.filter { it.isNotEmpty() }
         }
     }
 

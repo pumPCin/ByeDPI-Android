@@ -182,7 +182,7 @@
     <string name="domain_list_reset_done">Lists have been reset</string>
     <string name="main_btn_test">Test</string>
     <string name="main_btn_list">Lists</string>
-    <string name="donate">Support</string>
+    <string name="donate">Donate</string>
     <string name="donate_message">If the app has been useful to you, you can buy me a cup of coffee ☕️\nThank you for your support and participation ❤️</string>
     <string name="donate_cloudtips">CloudTips (RU cards only)</string>
     <string name="donate_telegram_bot">Telegram Bot (RU/KZ cards, wallets, crypto)</string>
