@@ -37,7 +37,7 @@ Bu uygulama, [ByeDPIAndroid](https://github.com/dovecoteescapee/ByeDPIAndroid) u
 * Otomatik başlatmayı etkinleştirmek için ayarlarda seçeneği aktifleştirin.
 * İlk başta VPN'e bağlanarak isteği kabul etmeniz önerilir.
 * Bundan sonra, cihaz başlatıldığında, uygulama ayarlara göre (VPN/Proxy) hizmeti otomatik olarak başlatacaktır.
-* Topluluktan kapsamlı talimatlar [ByeByeDPI-Manual (İngilizce)](https://github.com/BDManual/ByeByeDPI-Manual)
+* Topluluktan kapsamlı talimatlar [ByeByeDPI-Manual](https://byebyedpi.xyz)
 
 ### Türkiye İle İlgili
 * Uygulama Türkiyede uygulanan DPI'ı aşmak için şuanlık yeterlidir. İlk başta çalıştırdığınızda uygulama DPI'ı aşamayabilir. UI editöründen rastgele taktikler deneyebilirsiniz veya şuan Deneysel özellik olan proxy modundan bazı argümanlar alıp onları Komut satırı editöründe deneyebilirsiniz.

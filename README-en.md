@@ -37,7 +37,7 @@ This application is a fork of [ByeDPIAndroid](https://github.com/dovecoteescapee
 * To enable auto-start, activate the option in settings.
 * It is recommended to connect to the VPN once to accept the request.
 * After that, upon device startup, the application will automatically launch the service based on settings (VPN/Proxy).
-* Comprehensive instruction from the community [ByeByeDPI-Manual (En)](https://github.com/BDManual/ByeByeDPI-Manual)
+* Comprehensive instruction from the community [ByeByeDPI-Manual](https://byebyedpi.xyz)
 
 ### How to use ByeByeDPI with AdGuard?
 * Start ByeByeDPI in proxy mode.
