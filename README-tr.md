@@ -40,8 +40,7 @@ Bu uygulama, [ByeDPIAndroid](https://github.com/dovecoteescapee/ByeDPIAndroid) u
 * Topluluktan kapsamlı talimatlar [ByeByeDPI-Manual](https://byebyedpi.xyz)
 
 ### Türkiye İle İlgili
-* Uygulama Türkiyede uygulanan DPI'ı aşmak için şuanlık yeterlidir. İlk başta çalıştırdığınızda uygulama DPI'ı aşamayabilir. UI editöründen rastgele taktikler deneyebilirsiniz veya şuan Deneysel özellik olan proxy modundan bazı argümanlar alıp onları Komut satırı editöründe deneyebilirsiniz.
-* Türkiye ile alakalı destek için Discord: [nyaex](https://github.com/nyaexx)
+* Uygulama Türkiyede uygulanan DPI'ı aşmak için şuanlık yeterlidir. İlk başta çalıştırdığınızda uygulama DPI'ı aşamayabilir. Proxy Testi kısmından testi başlatıp en iyi sonuçları veren komutu kullanabilirsiniz. Sıra sıra Türkiyede bazı alan adlarına geçici kısıtlamalar uygulandığı için test ettiğiniz **Alan Adı Listeleri**'ini değiştirmeniz gerekebilir.
 
 
 ### ByeByeDPI'yi AdGuard ile nasıl kullanırım?
