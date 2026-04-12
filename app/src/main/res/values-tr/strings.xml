@@ -33,7 +33,7 @@
     <string name="mode_setting">Mod</string>
     <string name="dbs_ip_setting">DNS</string>
     <string name="byedpi_version">ByeDPI</string>
-    <string name="bye_dpi_proxy_ip_setting">Dinleme IPsi</string>
+    <string name="bye_dpi_proxy_ip_setting">Dinleme IP\'si</string>
     <string name="byedpi_proxy_port_setting">Port</string>
     <string name="byedpi_max_connections_setting">Maksimum bağlantılar</string>
     <string name="byedpi_buffer_size_setting">Tampon boyutu</string>
@@ -41,7 +41,7 @@
     <string name="byedpi_no_domain_setting">Alan adı yok</string>
     <string name="byedpi_desync_method_setting">Desenkronizasyon yöntemi</string>
     <string name="byedpi_split_position_setting">Bölme pozisyonu</string>
-    <string name="byedpi_split_at_host_setting">Hostta bölme</string>
+    <string name="byedpi_split_at_host_setting">Host\'ta bölme</string>
     <string name="byedpi_fake_ttl_setting">Sahte paketlerin TTL değeri</string>
     <string name="byedpi_host_mixed_case_setting">Karışık harfli host</string>
     <string name="byedpi_domain_mixed_case_setting">Karışık harfli domain</string>
@@ -73,13 +73,13 @@
     <string name="byedpi_desync">Desenkronizasyon</string>
     <string name="command_line_arguments">Komut satırı argümanları</string>
     <string name="byedpi_hosts_mode_setting">Hostlar</string>
-    <string name="byedpi_hosts_blacklist_setting">Host karaliste</string>
+    <string name="byedpi_hosts_blacklist_setting">Host kara liste</string>
     <string name="byedpi_hosts_whitelist_setting">Host beyazliste</string>
     <string name="byedpi_tcp_fast_open_setting">TCP Fast Open</string>
     <string name="byedpi_udp_fake_count">Sahte UDP sayısı</string>
     <string name="ipv6_setting">IPv6</string>
     <string name="byedpi_fake_offset_setting">Sahte paket ofseti</string>
-    <string name="byedpi_drop_sack_setting">SACKı düşür</string>
+    <string name="byedpi_drop_sack_setting">SACK\'ı düşür</string>
     <string name="desync_udp_category">UDP</string>
     <string name="desync_http_category">HTTP</string>
     <string name="desync_https_category">HTTPS</string>
@@ -156,7 +156,7 @@
     <string name="battery_optimization_summary">Kararlılığı artırmak için etkinleştirin</string>
     <string name="battery_optimization_disabled_summary">Devre dışı bırakıldı</string>
     <string name="permission_category">İzinler</string>
-    <string name="documentation_link">Talimat</string>
+    <string name="documentation_link">Talimatlar</string>
     <string name="proxytest_delay_desc">Daha yüksek bir sayı stabiliteyi artırabilir</string>
     <string name="proxytest_requests_desc">Daha yüksek bir sayı doğruluğu artırır ama stabiliteyi azaltabilir</string>
     <string name="proxytest_limit_desc">Daha yüksek bir sayı testi hızlandırır ama stabiliteyi azaltabilir</string>
@@ -165,8 +165,8 @@
     <string name="domain_lists_summary">Test için alan adı listelerini ekleyin, düzenleyin veya kaldırın</string>
     <string name="domain_list_add_new">Yeni Liste Ekle</string>
     <string name="domain_list_add_new_summary">Test edilecek özel alan adları listesi oluşturun</string>
-    <string name="domain_list_edit">Düzeltme</string>
-    <string name="domain_list_delete">Kaldırmak</string>
+    <string name="domain_list_edit">Düzenle</string>
+    <string name="domain_list_delete">Kaldır</string>
     <string name="domain_list_name_hint">Liste adı</string>
     <string name="domain_list_domains_hint">Alan adları (her satırda bir tane)</string>
     <string name="domain_list_summary">%d alan adı</string>
@@ -185,5 +185,6 @@
     <string name="donate">Bağış yapın</string>
     <string name="donate_message">Uygulama işinize yaradıysa, bana bir fincan kahve ısmarlayabilirsiniz ☕️\nDestek ve katılımınız için teşekkürler ❤️</string>
     <string name="donate_cloudtips">CloudTips (yalnızca Rusya kartları)</string>
-    <string name="donate_telegram_bot">Telegram Bot (kartları, cüzdanlar, kripto)</string>
+    <string name="donate_telegram_bot">Telegram Bot (kartlar, cüzdanlar, kripto)</string>
+    <string name="builtin_list_turkey_blocked">Türkiye Yasaklı Domainler</string>
 </resources>
