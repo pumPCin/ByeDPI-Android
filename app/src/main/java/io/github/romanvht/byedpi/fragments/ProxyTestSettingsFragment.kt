@@ -33,6 +33,7 @@ class ProxyTestSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onResume() {
         super.onResume()
+        updatePreferences()
         sharedPreferences?.registerOnSharedPreferenceChangeListener(preferenceListener)
     }
 
