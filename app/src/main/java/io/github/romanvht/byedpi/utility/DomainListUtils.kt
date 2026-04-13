@@ -1,7 +1,6 @@
 package io.github.romanvht.byedpi.utility
 
 import android.content.Context
-import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.github.romanvht.byedpi.data.DomainList
@@ -12,19 +11,6 @@ object DomainListUtils {
 
     private val gson = Gson()
 
-    private fun getCurrentLanguage(context: Context): String {
-        val appLocales = androidx.appcompat.app.AppCompatDelegate.getApplicationLocales()
-        return if (!appLocales.isEmpty) {
-            appLocales[0]?.language ?: "en"
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                context.resources.configuration.locales[0].language
-            } else {
-                @Suppress("DEPRECATION")
-                context.resources.configuration.locale.language
-            }
-        }
-    }
     fun syncLists(context: Context) {
         val currentLists = getAllLists(context).toMutableList()
 
@@ -37,13 +23,6 @@ object DomainListUtils {
         } ?: emptyList()
 
         val newBuiltInIds = mutableSetOf<String>()
-
-        val isTurkish = getCurrentLanguage(context) == "tr"
-        val defaultActiveIds = if (isTurkish) {
-            setOf("türkiye", "discord")
-        } else {
-            setOf("youtube", "googlevideo")
-        }
 
         for (assetFile in assetFiles) {
             val id = assetFile
@@ -67,7 +46,7 @@ object DomainListUtils {
                             id = id,
                             name = id.replaceFirstChar { it.uppercase() },
                             domains = domains,
-                            isActive = id in defaultActiveIds,
+                            isActive = id in setOf("youtube", "googlevideo"),
                             isBuiltIn = true
                         )
                     )
@@ -226,6 +205,7 @@ object DomainListUtils {
         if (file.exists()) {
             file.delete()
         }
+
         syncLists(context)
     }
 }
