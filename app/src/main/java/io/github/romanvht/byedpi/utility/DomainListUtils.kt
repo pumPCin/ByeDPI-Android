@@ -46,7 +46,7 @@ object DomainListUtils {
                             id = id,
                             name = id.replaceFirstChar { it.uppercase() },
                             domains = domains,
-                            isActive = id in setOf("youtube", "googlevideo"),
+                            isActive = id in SettingsUtils.getDefaultActiveIds(SettingsUtils.getCurrentLanguage(context)),
                             isBuiltIn = true
                         )
                     )
