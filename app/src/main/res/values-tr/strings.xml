@@ -2,7 +2,7 @@
     <string name="byedpi_docs">https://github.com/hufrea/byedpi/blob/main/README.md</string>
     <string name="app_name">ByeByeDPI</string>
     <string name="cmd_documentation">Dökümantasyon</string>
-    <string name="toggle_connect">Aç/Kapa</string>
+    <string name="toggle_connect">Aç/Kapat</string>
     <string name="vpn_connect">Bağlan</string>
     <string name="vpn_disconnect">Bağlantıyı Kes</string>
     <string name="vpn_connected">Bağlandı (VPN)</string>
@@ -74,7 +74,7 @@
     <string name="command_line_arguments">Komut satırı argümanları</string>
     <string name="byedpi_hosts_mode_setting">Hostlar</string>
     <string name="byedpi_hosts_blacklist_setting">Host kara liste</string>
-    <string name="byedpi_hosts_whitelist_setting">Host beyazliste</string>
+    <string name="byedpi_hosts_whitelist_setting">Host beyaz liste</string>
     <string name="byedpi_tcp_fast_open_setting">TCP Fast Open</string>
     <string name="byedpi_udp_fake_count">Sahte UDP sayısı</string>
     <string name="ipv6_setting">IPv6</string>
