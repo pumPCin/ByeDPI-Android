@@ -20,10 +20,9 @@ object SettingsUtils {
     fun getCurrentLanguage(context: Context): String {
         val lang = context.getPreferences().getStringNotNull("language", "system")
         if (lang != "system") return lang
-        return AppCompatDelegate.getApplicationLocales()
-            .takeIf { !it.isEmpty }
-            ?.get(0)?.language
-            ?: java.util.Locale.getDefault().language
+
+        val locales = AppCompatDelegate.getApplicationLocales()
+        return locales[0]?.language ?: java.util.Locale.getDefault().language
     }
 
     fun setLang(lang: String) {
