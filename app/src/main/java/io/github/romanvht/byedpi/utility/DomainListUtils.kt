@@ -11,6 +11,11 @@ object DomainListUtils {
 
     private val gson = Gson()
 
+    fun getDefaultActiveIds(lang: String): Set<String> = when (lang) {
+        "tr" -> setOf("türkiye", "discord")
+        else -> setOf("youtube", "googlevideo")
+    }
+
     fun syncLists(context: Context) {
         val currentLists = getAllLists(context).toMutableList()
 
@@ -46,7 +51,7 @@ object DomainListUtils {
                             id = id,
                             name = id.replaceFirstChar { it.uppercase() },
                             domains = domains,
-                            isActive = id in SettingsUtils.getDefaultActiveIds(SettingsUtils.getCurrentLanguage(context)),
+                            isActive = id in getDefaultActiveIds(SettingsUtils.getCurrentLanguage(context)),
                             isBuiltIn = true
                         )
                     )
