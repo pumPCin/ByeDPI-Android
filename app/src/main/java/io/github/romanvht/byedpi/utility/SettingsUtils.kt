@@ -22,8 +22,14 @@ object SettingsUtils {
         else -> setOf("youtube", "googlevideo")
     }
 
-    fun getCurrentLanguage(context: Context): String =
-        context.getPreferences().getStringNotNull("language", "system")
+    fun getCurrentLanguage(context: Context): String {
+        val lang = context.getPreferences().getStringNotNull("language", "system")
+        if (lang != "system") return lang
+        return AppCompatDelegate.getApplicationLocales()
+            .takeIf { !it.isEmpty }
+            ?.get(0)?.language
+            ?: java.util.Locale.getDefault().language
+    }
 
     fun setLang(lang: String) {
         val appLocale = localeByName(lang) ?: LocaleListCompat.getEmptyLocaleList()
