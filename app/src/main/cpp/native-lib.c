@@ -34,9 +34,8 @@ void reset_params(void) {
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __attribute__((unused)) jobject thiz, jobjectArray args) {
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __attribute__((unused)) jobject thiz, jobjectArray args) {
     if (g_proxy_running) {
-        LOG(LOG_S, "proxy already running");
         return -1;
     }
 
@@ -44,7 +43,6 @@ Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __att
     char **argv = calloc(argc, sizeof(char *));
 
     if (!argv) {
-        LOG(LOG_S, "failed to allocate memory for argv");
         return -1;
     }
 
@@ -64,14 +62,12 @@ Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __att
         (*env)->DeleteLocalRef(env, arg);
     }
     
-    LOG(LOG_S, "starting proxy with %d args", argc);
     reset_params();
     g_proxy_running = 1;
     optind = 1;
 
     int result = main(argc, argv);
 
-    LOG(LOG_S, "proxy return code %d", result);
     g_proxy_running = 0;
 
     for (int i = 0; i < argc; i++) free(argv[i]);
@@ -81,11 +77,9 @@ Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __att
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStopProxy(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
-    LOG(LOG_S, "send shutdown to proxy");
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
 
     if (!g_proxy_running) {
-        LOG(LOG_S, "proxy is not running");
         return -1;
     }
 
@@ -96,15 +90,12 @@ Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStopProxy(__attribute__((unus
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniForceClose(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
-    LOG(LOG_S, "closing server socket (fd: %d)", server_fd);
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniForceClose(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
 
     if (close(server_fd) == -1) {
-        LOG(LOG_S, "failed to close server socket (fd: %d)", server_fd);
         return -1;
     }
 
-    LOG(LOG_S, "proxy socket force close");
     g_proxy_running = 0;
 
     return 0;
