@@ -26,7 +26,7 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
 
     companion object {
         private fun parseCmdToArguments(preferences: SharedPreferences, context: Context): Array<String> {
-            val cmd = preferences.getStringNotNull("byedpi_cmd_args", "-Ku -a1 -An -o1 -At,r,s -d1")
+            val cmd = preferences.getStringNotNull("byedpi_cmd_args", "-o1 -a1 -r-5+se")
             val preparedCmd = getLists(cmd, context)
 
             val firstArgIndex = preparedCmd.indexOf("-")

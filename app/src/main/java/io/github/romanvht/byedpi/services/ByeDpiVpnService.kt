@@ -91,9 +91,16 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 }
                 START_NOT_STICKY
             }
-            null -> {
-                Log.i(TAG, "Started by Always On VPN (null intent)")
-                lifecycleScope.launch { start() }
+
+            SERVICE_INTERFACE -> {
+                Log.i(TAG, "Started by Android")
+
+                lifecycleScope.launch {
+                    if (prepare(this@ByeDpiVpnService) == null) {
+                        start()
+                    }
+                }
+
                 START_STICKY
             }
 
