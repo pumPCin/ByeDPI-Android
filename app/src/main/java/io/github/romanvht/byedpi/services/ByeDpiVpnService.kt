@@ -91,6 +91,11 @@ class ByeDpiVpnService : LifecycleVpnService() {
                 }
                 START_NOT_STICKY
             }
+            null -> {
+                Log.i(TAG, "Started by Always On VPN (null intent)")
+                lifecycleScope.launch { start() }
+                START_STICKY
+            }
 
             else -> {
                 Log.w(TAG, "Unknown action: $action")
