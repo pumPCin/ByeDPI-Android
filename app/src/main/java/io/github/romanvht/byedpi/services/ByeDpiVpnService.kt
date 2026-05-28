@@ -95,10 +95,14 @@ class ByeDpiVpnService : LifecycleVpnService() {
             SERVICE_INTERFACE -> {
                 Log.i(TAG, "Started by Android")
 
+                if (getPreferences().mode() != Mode.VPN) {
+                    Log.w(TAG, "Always-On disabled in proxy mode")
+                    stopSelf()
+                    return START_NOT_STICKY
+                }
+
                 lifecycleScope.launch {
-                    if (prepare(this@ByeDpiVpnService) == null) {
-                        start()
-                    }
+                    start()
                 }
 
                 START_STICKY
