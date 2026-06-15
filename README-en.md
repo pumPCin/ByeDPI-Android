@@ -16,6 +16,8 @@
   </p>
 </div>
 
+## This app now has an official website -> https://byebyedpi.xyz
+
 An Android application that locally runs ByeDPI and routes all traffic through it.
 
 For stable operation, you may need to adjust the settings. You can read more about different settings in the [ByeDPI documentation](https://github.com/hufrea/byedpi/blob/v0.13/README.md).
