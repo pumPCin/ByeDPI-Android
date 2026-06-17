@@ -151,7 +151,7 @@ class ByeDpiVpnService : LifecycleVpnService() {
             startForeground(
                 FOREGROUND_SERVICE_ID,
                 notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED,
             )
         } else {
             startForeground(FOREGROUND_SERVICE_ID, notification)
