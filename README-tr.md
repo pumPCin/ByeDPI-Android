@@ -16,9 +16,11 @@
   </p>
 </div>
 
+## Bu uygulamanın artık resmi bir web sitesi var -> https://byebyedpi.xyz
+
 ByeDPI'yi yerel olarak çalıştıran ve tüm trafiği bunun üzerinden yönlendiren bir Android uygulaması.
 
-Kararlı bir çalışma için ayarları yapmanız gerekebilir. Farklı ayarlar hakkında daha fazla bilgiye [ByeDPI dökümantasyonundan](https://github.com/hufrea/byedpi/blob/v0.13/README.md) ulaşabilirsiniz.
+Kararlı bir çalışma için ayarları yapmanız gerekebilir. Farklı ayarlar hakkında daha fazla bilgiye [ByeDPI dökümantasyonundan](https://github.com/hufrea/byedpi/blob/main/README.md) ulaşabilirsiniz.
 
 Bu uygulama **VPN** değildir. Trafiği yönlendirmek için Android'in VPN modunu kullanır ancak herhangi bir veriyi uzak bir sunucuya iletmez. Trafiği şifrelemez veya IP adresinizi gizlemez.
 
@@ -39,8 +41,8 @@ Bu uygulama, [ByeDPIAndroid](https://github.com/dovecoteescapee/ByeDPIAndroid) u
 * Bundan sonra, cihaz başlatıldığında, uygulama ayarlara göre (VPN/Proxy) hizmeti otomatik olarak başlatacaktır.
 * Topluluktan kapsamlı talimatlar [ByeByeDPI-Manual](https://byebyedpi.xyz)
 
-### Türkiye İle İlgili
-* Uygulama Türkiyede uygulanan DPI'ı aşmak için şuanlık yeterlidir. İlk başta çalıştırdığınızda uygulama DPI'ı aşamayabilir. Proxy Testi kısmından testi başlatıp en iyi sonuçları veren komutu kullanabilirsiniz. Sıra sıra Türkiyede bazı alan adlarına geçici kısıtlamalar uygulandığı için test ettiğiniz **Alan Adı Listeleri**'ini değiştirmeniz gerekebilir.
+### Türkiye'ye Özel Notlar
+* Bu uygulama, Türkiye'de uygulanan DPI kısıtlamalarını aşmak adına mevcut koşullarda tamamen yeterlidir. İlk çalıştırmada doğrudan sonuç alamazsanız, 'Proxy Testi' bölümünden bir test başlatabilir ve en iyi performansı veren komutu kullanabilirsiniz. Türkiye genelinde bazı alan adlarına zaman zaman geçici kısıtlamalar getirildiğinden, test ettiğiniz Alan Adı Listelerini duruma göre değiştirmeniz gerekebilir.
 
 
 ### ByeByeDPI'yi AdGuard ile nasıl kullanırım?
