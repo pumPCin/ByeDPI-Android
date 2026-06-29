@@ -186,4 +186,9 @@
     <string name="donate_message">Uygulama işinize yaradıysa, bana bir fincan kahve ısmarlayabilirsiniz ☕️\nDestek ve katılımınız için teşekkürler ❤️</string>
     <string name="donate_cloudtips">CloudTips (yalnızca Rusya kartları)</string>
     <string name="donate_telegram_bot">Telegram Bot (kartlar, cüzdanlar, kripto)</string>
+    <string name="dns_system">Sistem</string>
+    <string name="dns_google">Google</string>
+    <string name="dns_cloudflare">Cloudflare</string>
+    <string name="dns_quad9">Quad9</string>
+    <string name="dns_custom">Özel</string>
 </resources>

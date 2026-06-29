@@ -34,12 +34,15 @@
             android:summary="%s"
             android:defaultValue="vpn" />
 
+        <Preference
+            android:key="dns_ip_picker"
+            android:icon="@drawable/ic_dns"
+            android:title="@string/dbs_ip_setting" />
+
         <EditTextPreference
             android:key="dns_ip"
-            android:icon="@drawable/ic_dns"
             android:title="@string/dbs_ip_setting"
-            android:defaultValue="8.8.8.8"
-            app:useSimpleSummaryProvider="true" />
+            android:defaultValue="1.1.1.1" />
 
         <SwitchPreference
             android:key="ipv6_enable"

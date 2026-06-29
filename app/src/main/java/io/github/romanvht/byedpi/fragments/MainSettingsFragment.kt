@@ -4,6 +4,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
 import androidx.preference.*
 import io.github.romanvht.byedpi.R
 import io.github.romanvht.byedpi.BuildConfig
@@ -66,6 +68,12 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
 
+        findPreferenceNotNull<Preference>("dns_ip_picker")
+            .setOnPreferenceClickListener {
+                showDnsDialog()
+                true
+            }
+
         findPreferenceNotNull<Preference>("version").summary = BuildConfig.VERSION_NAME
         findPreferenceNotNull<Preference>("byedpi_version").summary = "0.17.3 (ba53229)"
 
@@ -86,7 +94,8 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
     private fun updatePreferences() {
         val cmdEnable = findPreferenceNotNull<SwitchPreference>("byedpi_enable_cmd_settings").isChecked
         val mode = findPreferenceNotNull<ListPreference>("byedpi_mode").value.let { Mode.fromString(it) }
-        val dns = findPreferenceNotNull<EditTextPreference>("dns_ip")
+        val dns = findPreferenceNotNull<Preference>("dns_ip_picker")
+        val dnsEdit = findPreferenceNotNull<EditTextPreference>("dns_ip")
         val ipv6 = findPreferenceNotNull<SwitchPreference>("ipv6_enable")
         val proxy = findPreferenceNotNull<PreferenceCategory>("byedpi_proxy_category")
 
@@ -109,6 +118,9 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         uiSettings.isEnabled = !cmdEnable
         cmdSettings.isEnabled = cmdEnable
         proxyTest.isEnabled = cmdEnable
+
+        dns.summary = dnsSummary()
+        dnsEdit.isVisible = false
 
         when (mode) {
             Mode.VPN -> {
@@ -153,6 +165,41 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private val dnsPresets: List<Pair<String, String>>
+        get() = listOf(
+            "" to getString(R.string.dns_system),
+            "8.8.8.8" to getString(R.string.dns_google),
+            "1.1.1.1" to getString(R.string.dns_cloudflare),
+            "9.9.9.9" to getString(R.string.dns_quad9),
+        )
+
+    private fun dnsSummary(): String {
+        val ip = sharedPreferences?.getStringNotNull("dns_ip", "1.1.1.1") ?: "1.1.1.1"
+        val preset = dnsPresets.firstOrNull { it.first == ip } ?: return ip
+        return if (preset.first.isBlank()) preset.second else "${preset.second} ($ip)"
+    }
+
+    private fun showDnsDialog() {
+        val context = requireContext()
+        val presets = dnsPresets
+
+        val items = (presets.map { it.second } + getString(R.string.dns_custom)).toTypedArray()
+        val dnsPref = findPreferenceNotNull<EditTextPreference>("dns_ip")
+
+        AlertDialog.Builder(context)
+            .setTitle(getString(R.string.dbs_ip_setting))
+            .setItems(items) { _, which ->
+                if (which < presets.size) {
+                    sharedPreferences?.edit { putString("dns_ip", presets[which].first) }
+                } else {
+                    dnsPref.text = ""
+                    onDisplayPreferenceDialog(dnsPref)
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
     private fun showDonateDialog() {
         val context = requireContext()
 
@@ -162,7 +209,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             getString(R.string.donate_telegram_bot),
         )
 
-        androidx.appcompat.app.AlertDialog.Builder(context)
+        AlertDialog.Builder(context)
             .setTitle(getString(R.string.donate))
             .setItems(items) { _, which ->
                 when (which) {

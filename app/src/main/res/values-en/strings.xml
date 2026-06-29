@@ -186,4 +186,9 @@
     <string name="donate_message">If the app has been useful to you, you can buy me a cup of coffee ☕️\nThank you for your support and participation ❤️</string>
     <string name="donate_cloudtips">CloudTips (RU cards only)</string>
     <string name="donate_telegram_bot">Telegram Bot (cards, wallets, crypto)</string>
+    <string name="dns_system">System</string>
+    <string name="dns_google">Google</string>
+    <string name="dns_cloudflare">Cloudflare</string>
+    <string name="dns_quad9">Quad9</string>
+    <string name="dns_custom">Custom</string>
 </resources>

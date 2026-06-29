@@ -186,4 +186,9 @@
     <string name="donate_message">Егер қолданба сізге пайдалы болса, маған бір кесе кофе сыйлай аласыз ☕️\nҚолдауыңыз бен қатысуыңызға рахмет ❤️</string>
     <string name="donate_cloudtips">CloudTips (тек ресейлік карталар)</string>
     <string name="donate_telegram_bot">Telegram бот (карталары, әмияндар, крипто)</string>
+    <string name="dns_system">Жүйе</string>
+    <string name="dns_google">Google</string>
+    <string name="dns_cloudflare">Cloudflare</string>
+    <string name="dns_quad9">Quad9</string>
+    <string name="dns_custom">Таңдамалы</string>
 </resources>
