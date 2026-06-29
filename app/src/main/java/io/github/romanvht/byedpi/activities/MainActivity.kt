@@ -14,8 +14,13 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import io.github.romanvht.byedpi.R
@@ -32,6 +37,7 @@ import androidx.core.content.edit
 
 class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var historyUtils: HistoryUtils
 
     companion object {
         private val TAG: String = MainActivity::class.java.simpleName
@@ -128,6 +134,8 @@ class MainActivity : BaseActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        historyUtils = HistoryUtils(this)
+
         val intentFilter = IntentFilter().apply {
             addAction(STARTED_BROADCAST)
             addAction(STOPPED_BROADCAST)
@@ -198,6 +206,10 @@ class MainActivity : BaseActivity() {
             startActivity(intent)
         }
 
+        binding.strategyButton.setOnClickListener {
+            showStrategyPicker()
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
@@ -215,7 +227,7 @@ class MainActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         updateStatus()
-        updateButtonsVisibility()
+        updateStrategyButton()
     }
 
     override fun onDestroy() {
@@ -331,10 +343,108 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun updateButtonsVisibility() {
+    private fun updateStrategyButton() {
         val useCmdSettings = getPreferences().getCmdEnable()
-        val visibility = if (useCmdSettings) View.VISIBLE else View.GONE
-        binding.cmdButtonsRow.visibility = visibility
+
+        if (!useCmdSettings) {
+            binding.cmdButtonsRow.visibility = View.GONE
+            binding.strategyButton.visibility = View.GONE
+            return
+        }
+
+        binding.cmdButtonsRow.visibility = View.VISIBLE
+
+        val pinned = historyUtils.getPinnedHistory()
+        val currentCmdArgs = getPreferences().getString("byedpi_cmd_args", "") ?: ""
+
+        if (pinned.isEmpty() || currentCmdArgs.isBlank()) {
+            binding.strategyButton.visibility = View.GONE
+            return
+        }
+
+        val matched = pinned.find { it.text == currentCmdArgs }
+
+        val label = when {
+            matched == null -> currentCmdArgs
+            matched.name.isNullOrBlank() -> matched.text
+            else -> "${matched.name}: ${matched.text}"
+        }
+
+        binding.strategyButtonText.text = label
+        binding.strategyButton.visibility = View.VISIBLE
+    }
+
+    private fun showStrategyPicker() {
+        val pinned = historyUtils.getPinnedHistory()
+        if (pinned.isEmpty()) return
+
+        val adapter = object : ArrayAdapter<Command>(
+            this,
+            R.layout.item_main_strategy,
+            pinned
+        ) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = convertView ?: layoutInflater.inflate(
+                    R.layout.item_main_strategy,
+                    parent,
+                    false
+                )
+
+                val command = getItem(position)!!
+
+                val nameView = view.findViewById<TextView>(R.id.strategyName)
+                val textView = view.findViewById<TextView>(R.id.strategyText)
+
+                val name = command.name?.takeIf { it.isNotBlank() }
+
+                if (name != null) {
+                    nameView.visibility = View.VISIBLE
+                    nameView.text = name
+                    textView.maxLines = 2
+                } else {
+                    nameView.visibility = View.GONE
+                    textView.maxLines = 3
+                }
+
+                textView.text = command.text
+
+                return view
+            }
+        }
+
+        val listView = ListView(this).apply {
+            divider = null
+            this.adapter = adapter
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(getString(R.string.main_strategy_picker))
+            .setView(listView)
+            .setNegativeButton(getString(android.R.string.cancel), null)
+            .create()
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            applyStrategy(pinned[position].text)
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun applyStrategy(commandText: String) {
+        getPreferences().edit { putString("byedpi_cmd_args", commandText) }
+
+        updateStrategyButton()
+
+        if (appStatus.first == AppStatus.Running) {
+            val mode = getPreferences().mode()
+            if (mode == Mode.VPN && VpnService.prepare(this) != null) {
+                return
+            }
+
+            ServiceManager.restart(this, mode)
+            Toast.makeText(this, R.string.service_restart, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun requestBatteryOptimization() {

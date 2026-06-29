@@ -192,4 +192,5 @@
     <string name="dns_cloudflare">Cloudflare</string>
     <string name="dns_quad9">Quad9</string>
     <string name="dns_custom">Tùy chỉnh</string>
+    <string name="main_strategy_picker">Thay đổi cài đặt</string>
 </resources>

@@ -191,4 +191,5 @@
     <string name="dns_cloudflare">Cloudflare</string>
     <string name="dns_quad9">Quad9</string>
     <string name="dns_custom">Özel</string>
+    <string name="main_strategy_picker">Ayarları değiştir</string>
 </resources>

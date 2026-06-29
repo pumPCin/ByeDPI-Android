@@ -71,6 +71,10 @@ class HistoryUtils(context: Context) {
         }
     }
 
+    fun getPinnedHistory(): List<Command> {
+        return getHistory().filter { it.pinned }
+    }
+
     fun saveHistory(history: List<Command>) {
         val historyJson = Gson().toJson(history)
         sharedPreferences.edit { putString(historyKey, historyJson) }

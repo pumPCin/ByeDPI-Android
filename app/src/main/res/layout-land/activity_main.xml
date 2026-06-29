@@ -59,6 +59,35 @@
             android:textColor="?android:textColorSecondary"
             tools:text="127.0.0.1:1080" />
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/strategy_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            app:cardElevation="1dp"
+            app:shapeAppearanceOverlay="@style/PillCard"
+            app:cardUseCompatPadding="true"
+            tools:visibility="visible">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/strategy_button_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="260dp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:paddingStart="18dp"
+                android:paddingEnd="18dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textSize="13sp"
+                tools:text="strategy_name" />
+
+        </com.google.android.material.card.MaterialCardView>
+
     </LinearLayout>
 
     <LinearLayout
