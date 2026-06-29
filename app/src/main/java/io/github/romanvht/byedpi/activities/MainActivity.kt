@@ -176,7 +176,7 @@ class MainActivity : BaseActivity() {
         }
 
         binding.editorButton.setOnClickListener {
-            val useCmdSettings = getPreferences().getBoolean("byedpi_enable_cmd_settings", false)
+            val useCmdSettings = getPreferences().getCmdEnable()
 
             if (!useCmdSettings && appStatus.first == AppStatus.Running) {
                 Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
@@ -332,7 +332,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateButtonsVisibility() {
-        val useCmdSettings = getPreferences().getBoolean("byedpi_enable_cmd_settings", false)
+        val useCmdSettings = getPreferences().getCmdEnable()
         val visibility = if (useCmdSettings) View.VISIBLE else View.GONE
         binding.cmdButtonsRow.visibility = visibility
     }

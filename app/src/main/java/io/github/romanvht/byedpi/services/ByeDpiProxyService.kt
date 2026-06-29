@@ -3,7 +3,7 @@ package io.github.romanvht.byedpi.services
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Intent
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+import android.content.pm.ServiceInfo
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.LifecycleService
@@ -117,7 +117,7 @@ class ByeDpiProxyService : LifecycleService() {
             startForeground(
                 FOREGROUND_SERVICE_ID,
                 notification,
-                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
             )
         } else {
             startForeground(FOREGROUND_SERVICE_ID, notification)

@@ -30,7 +30,7 @@ object ShortcutUtils {
 
             shortcuts.add(toggleShortcut)
 
-            if (context.getPreferences().getBoolean("byedpi_enable_cmd_settings", false)) {
+            if (context.getPreferences().getCmdEnable()) {
                 val history = HistoryUtils(context)
                 val pinned = history.getHistory().filter { it.pinned }.take(3)
 

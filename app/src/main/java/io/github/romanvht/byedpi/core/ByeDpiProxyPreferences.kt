@@ -6,13 +6,14 @@ import android.util.Log
 import io.github.romanvht.byedpi.data.UISettings
 import io.github.romanvht.byedpi.utility.DomainListUtils
 import io.github.romanvht.byedpi.utility.checkIpAndPortInCmd
+import io.github.romanvht.byedpi.utility.getCmdEnable
 import io.github.romanvht.byedpi.utility.getStringNotNull
 import io.github.romanvht.byedpi.utility.shellSplit
 
 sealed interface ByeDpiProxyPreferences {
     companion object {
         fun fromSharedPreferences(preferences: SharedPreferences, context: Context): ByeDpiProxyPreferences =
-            when (preferences.getBoolean("byedpi_enable_cmd_settings", false)) {
+            when (preferences.getCmdEnable()) {
                 true -> ByeDpiProxyCmdPreferences(preferences, context)
                 false -> ByeDpiProxyUIPreferences(preferences)
             }
