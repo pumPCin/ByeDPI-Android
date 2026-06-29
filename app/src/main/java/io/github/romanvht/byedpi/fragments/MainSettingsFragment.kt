@@ -192,7 +192,6 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
                 if (which < presets.size) {
                     sharedPreferences?.edit { putString("dns_ip", presets[which].first) }
                 } else {
-                    dnsPref.text = ""
                     onDisplayPreferenceDialog(dnsPref)
                 }
             }
