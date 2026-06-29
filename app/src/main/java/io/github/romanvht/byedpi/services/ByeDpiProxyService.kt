@@ -117,7 +117,7 @@ class ByeDpiProxyService : LifecycleService() {
             startForeground(
                 FOREGROUND_SERVICE_ID,
                 notification,
-                FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
             )
         } else {
             startForeground(FOREGROUND_SERVICE_ID, notification)
