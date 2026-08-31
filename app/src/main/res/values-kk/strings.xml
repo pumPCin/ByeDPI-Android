@@ -191,6 +191,7 @@
     <string name="donate">Садақа беру</string>
     <string name="donate_message">Егер қолданба сізге пайдалы болса, маған бір кесе кофе сыйлай аласыз ☕️</string>
     <string name="donate_cloudtips">💳 CloudTips (тек ресейлік карталар)</string>
+    <string name="donate_boosty">🧡 Boosty (РФ және шетелдік карталар)</string>
     <string name="donate_telegram_bot">🍰 Telegram бот (карталары, әмияндар, крипто)</string>
     <string name="donate_thanks">Қолдауыңыз бен қатысуыңызға рахмет ❤️</string>
     <string name="dns_system">Жүйе</string>

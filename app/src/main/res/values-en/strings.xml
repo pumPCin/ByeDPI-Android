@@ -191,6 +191,7 @@
     <string name="donate">Donate</string>
     <string name="donate_message">If the app has been useful to you, you can buy me a cup of coffee ☕️</string>
     <string name="donate_cloudtips">💳 CloudTips (RU cards only)</string>
+    <string name="donate_boosty">🧡 Boosty (RU and international cards)</string>
     <string name="donate_telegram_bot">🍰 Telegram Bot (cards, wallets, crypto)</string>
     <string name="donate_thanks">Thank you for your support and participation ❤️</string>
     <string name="dns_system">System</string>

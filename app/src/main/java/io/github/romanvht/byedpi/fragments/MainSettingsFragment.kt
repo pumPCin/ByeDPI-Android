@@ -205,6 +205,7 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
         val items = arrayOf(
             getString(R.string.donate_message),
             getString(R.string.donate_cloudtips),
+            getString(R.string.donate_boosty),
             getString(R.string.donate_telegram_bot),
             getString(R.string.donate_thanks),
         )
@@ -214,7 +215,8 @@ class MainSettingsFragment : PreferenceFragmentCompat() {
             .setItems(items) { _, which ->
                 when (which) {
                     1 -> openUrl("https://pay.cloudtips.ru/p/92c754db")
-                    2 -> openUrl("https://t.me/romanvht_donate_bot")
+                    2 -> openUrl("https://boosty.to/romanvht/donate")
+                    3 -> openUrl("https://t.me/romanvht_donate_bot")
                 }
             }
             .setNegativeButton(android.R.string.cancel, null)

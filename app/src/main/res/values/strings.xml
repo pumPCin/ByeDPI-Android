@@ -191,6 +191,7 @@
     <string name="donate">Поддержать</string>
     <string name="donate_message">Если приложение оказалось для вас полезным, можете угостить меня чашечкой кофе ☕️</string>
     <string name="donate_cloudtips">💳 CloudTips (карты РФ)</string>
+    <string name="donate_boosty">🧡 Boosty (карты РФ и других стран)</string>
     <string name="donate_telegram_bot">🍰 Keksik (карты, кошельки, крипта)</string>
     <string name="donate_thanks">Спасибо за вашу поддержку и участие ❤️</string>
     <string name="dns_system">Системный</string>

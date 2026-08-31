@@ -192,6 +192,7 @@
     <string name="donate">Tặng</string>
     <string name="donate_message">Nếu ứng dụng hữu ích với bạn, bạn có thể mời tôi một tách cà phê ☕️</string>
     <string name="donate_cloudtips">💳 CloudTips (chỉ thẻ Nga)</string>
+    <string name="donate_boosty">🧡 Boosty (thẻ Nga và quốc tế)</string>
     <string name="donate_telegram_bot">🍰 Telegram Bot (ví điện tử, crypto)</string>
     <string name="donate_thanks">Cảm ơn sự ủng hộ và đóng góp của bạn ❤️</string>
     <string name="dns_system">Hệ thống</string>

@@ -191,6 +191,7 @@
     <string name="donate">Bağış yapın</string>
     <string name="donate_message">Uygulama işinize yaradıysa, bana bir fincan kahve ısmarlayabilirsiniz ☕️</string>
     <string name="donate_cloudtips">💳 CloudTips (yalnızca Rusya kartları)</string>
+    <string name="donate_boosty">🧡 Boosty (Rusya ve uluslararası kartlar)</string>
     <string name="donate_telegram_bot">🍰 Telegram Bot (kartlar, cüzdanlar, kripto)</string>
     <string name="donate_thanks">Destek ve katılımınız için teşekkürler ❤️</string>
     <string name="dns_system">Sistem</string>
