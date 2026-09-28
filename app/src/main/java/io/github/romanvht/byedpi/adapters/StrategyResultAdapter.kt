@@ -155,21 +155,18 @@ class StrategyResultAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun setTestingState(testing: Boolean) {
+        if (isTesting == testing) return
         isTesting = testing
         notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateStrategies(newStrategies: List<StrategyResult>, sortByPercentage: Boolean = true) {
+    fun updateStrategies(newStrategies: List<StrategyResult>) {
         strategies.clear()
 
-        val sorted = if (sortByPercentage) {
-            newStrategies.sortedWith(compareByDescending<StrategyResult> { it.isCompleted }
-                .thenByDescending { it.successPercentage }
-                .thenByDescending { it.successCount })
-        } else {
-            newStrategies
-        }
+        val sorted = newStrategies.sortedWith(compareByDescending<StrategyResult> { it.isCompleted }
+            .thenByDescending { it.successPercentage }
+            .thenByDescending { it.successCount })
 
         strategies.addAll(sorted)
         notifyDataSetChanged()

@@ -13,6 +13,7 @@ internal object EngineProtocol {
     const val CONFIGURED = 8
 
     const val CONTROL_ACTION = "${BuildConfig.APPLICATION_ID}.ENGINE"
+    const val BOUND_CONTROL_ACTION = "${BuildConfig.APPLICATION_ID}.BOUND_ENGINE"
     const val STATE_IDLE = 0
     const val STATE_STARTING = 1
     const val STATE_RUNNING = 2
@@ -28,5 +29,4 @@ internal object EngineProtocol {
     const val PID = "pid"
     const val STATE = "state"
     const val ERROR = "error"
-    const val PORT_RELEASED = "port_released"
 }

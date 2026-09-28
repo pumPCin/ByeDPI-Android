@@ -33,7 +33,16 @@ class ByeDpiProxyService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        return if (intent.action == EngineProtocol.CONTROL_ACTION) session.binder else null
+        return when (intent.action) {
+            EngineProtocol.CONTROL_ACTION -> session.binder
+            EngineProtocol.BOUND_CONTROL_ACTION -> if (session.onBound()) session.binder else null
+            else -> null
+        }
+    }
+
+    override fun onUnbind(intent: Intent): Boolean {
+        if (intent.action == EngineProtocol.BOUND_CONTROL_ACTION) session.onUnbound()
+        return super.onUnbind(intent)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

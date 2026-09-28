@@ -99,6 +99,11 @@
         </service>
 
         <service
+            android:name=".services.TestService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
+
+        <service
             android:name=".services.QuickTileService"
             android:icon="@drawable/ic_notification"
             android:label="@string/app_name"

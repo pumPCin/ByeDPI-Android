@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import io.github.romanvht.byedpi.data.UISettings
 import io.github.romanvht.byedpi.utility.DomainListUtils
-import io.github.romanvht.byedpi.utility.checkIpAndPortInCmd
+import io.github.romanvht.byedpi.utility.checkIpAndPortInArgs
 import io.github.romanvht.byedpi.utility.getCmdArgs
 import io.github.romanvht.byedpi.utility.getCmdEnable
 import io.github.romanvht.byedpi.utility.getStringNotNull
@@ -22,35 +22,22 @@ sealed interface ByeDpiProxyPreferences {
 }
 
 class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreferences {
-    constructor(preferences: SharedPreferences, context: Context) : this(
-        parseCmdToArguments(preferences, context)
-    )
-
     companion object {
-        private fun parseCmdToArguments(preferences: SharedPreferences, context: Context): Array<String> {
-            val cmd = preferences.getCmdArgs()
-            val preparedCmd = getLists(cmd, context)
-
-            val firstArgIndex = preparedCmd.indexOf("-")
-            val args = (if (firstArgIndex > 0) preparedCmd.substring(firstArgIndex) else preparedCmd).trim()
-
-            Log.d("ProxyPref", "CMD: $args")
-
-            val (cmdIp, cmdPort) = preferences.checkIpAndPortInCmd()
-            val ip = preferences.getStringNotNull("byedpi_proxy_ip", "127.0.0.1")
-            val port = preferences.getStringNotNull("byedpi_proxy_port", "1080")
-
-            val prefix = buildString {
-                if (cmdIp == null) append("--ip $ip ")
-                if (cmdPort == null) append("--port $port ")
+        private fun parseCmdToArguments(context: Context, command: String, host: String, port: String): Array<String> {
+            val blacklist = setOf("--help", "--version", "-h", "-v")
+            val args = shellSplit(getLists(command, context))
+                .dropWhile { !it.startsWith("-") }
+                .filter { it !in blacklist }
+            val (cmdIp, cmdPort) = args.checkIpAndPortInArgs()
+            val prefix = buildList {
+                if (cmdIp == null) addAll(listOf("--ip", host))
+                if (cmdPort == null) addAll(listOf("--port", port))
             }
 
-            Log.d("ProxyPref", "Added from settings: $prefix")
+            Log.d("ProxyPref", "CMD: ${args.joinToString(" ")}")
+            Log.d("ProxyPref", "Added from settings: ${prefix.joinToString(" ")}")
 
-            val blacklist = setOf("--help", "--version", "-h", "-v")
-            val splitArgs = shellSplit("$prefix$args").filter { it !in blacklist }
-
-            return arrayOf("ciadpi") + splitArgs
+            return (listOf("ciadpi") + prefix + args).toTypedArray()
         }
 
         private fun getLists(cmd: String, context: Context): String {
@@ -68,6 +55,19 @@ class ByeDpiProxyCmdPreferences(val args: Array<String>) : ByeDpiProxyPreference
             }
         }
     }
+
+    constructor(preferences: SharedPreferences, context: Context) : this(
+        parseCmdToArguments(
+            context,
+            preferences.getCmdArgs(),
+            preferences.getStringNotNull("byedpi_proxy_ip", "127.0.0.1"),
+            preferences.getStringNotNull("byedpi_proxy_port", "1080"),
+        )
+    )
+
+    constructor(context: Context, command: String, host: String, port: Int) : this(
+        parseCmdToArguments(context, command, host, port.toString())
+    )
 }
 
 class ByeDpiProxyUIPreferences(val settings: UISettings = UISettings()) : ByeDpiProxyPreferences {

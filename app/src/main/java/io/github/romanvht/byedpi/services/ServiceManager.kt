@@ -12,10 +12,6 @@ import io.github.romanvht.byedpi.data.*
 import io.github.romanvht.byedpi.utility.createPauseNotification
 import io.github.romanvht.byedpi.utility.registerNotificationChannel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -31,10 +27,6 @@ object ServiceManager {
     )
     private val commands = AtomicLong()
     private val mutex = Mutex()
-    private val failures = MutableStateFlow(0L)
-    private val stopEvents = MutableStateFlow(0L)
-    val engineFailure: StateFlow<Long> = failures.asStateFlow()
-    val stopRequests: StateFlow<Long> = stopEvents.asStateFlow()
     private var application: Application? = null
     private var session: Session? = null
 
@@ -45,7 +37,46 @@ object ServiceManager {
         val stopped = CompletableDeferred<Unit>()
         var stopping = false
         var job: Job? = null
-        var failureReported = false
+    }
+
+    fun start(context: Context, mode: Mode) {
+        val app = context.applicationContext as Application
+        scope.launch { waitStart(app, mode) }
+    }
+
+    suspend fun waitStart(context: Context, mode: Mode): Boolean {
+        val app = context.applicationContext as Application
+        val command = commands.incrementAndGet()
+        return withContext(Dispatchers.Main.immediate) {
+            startSession(app, mode, command)
+        }
+    }
+
+    fun stop() {
+        scope.launch { waitStop() }
+    }
+
+    suspend fun waitStop() {
+        commands.incrementAndGet()
+        withContext(Dispatchers.Main.immediate + NonCancellable) {
+            application?.let {
+                restore(it)
+                (it.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(PAUSE_NOTIFICATION_ID)
+            }
+            val current = session ?: return@withContext
+            stopSession(current)
+        }
+    }
+
+    fun restart(context: Context, mode: Mode) {
+        val app = context.applicationContext as Application
+        val command = commands.incrementAndGet()
+        scope.launch {
+            if (TestService.isRunning) return@launch
+            restore(app)
+            session?.let { stopSession(it) }
+            if (commands.get() == command) startSession(app, mode, command)
+        }
     }
 
     fun refresh(context: Context) {
@@ -53,39 +84,70 @@ object ServiceManager {
         scope.launch { restore(app) }
     }
 
-    private fun restore(app: Application) {
-        application = app
-        if (session != null) return
-        val running = NativeEngine.running(app)
-        if (running == null) {
-            if (appStatus.first != AppStatus.Halted) publish(appStatus.second, AppStatus.Halted, STOPPED_BROADCAST)
-            return
+    suspend fun handleAction(context: Context, action: String, mode: Mode, sourcePid: Int = 0) {
+        val app = context.applicationContext as Application
+        withContext(Dispatchers.Main.immediate) {
+            if (TestService.isRunning) return@withContext
+            restore(app)
+            val activePid = session?.engine?.processId?.takeIf { it > 0 } ?: NativeEngine.running(app)?.second
+            if (sourcePid > 0 && sourcePid != activePid) return@withContext
+            if (sourcePid > 0 && (action == STOP_ACTION || action == PAUSE_ACTION) && session?.mode != mode) {
+                return@withContext
+            }
+            when (action) {
+                START_ACTION, RESUME_ACTION, RESTART_ACTION -> {
+                    if (mode != Mode.VPN || VpnService.prepare(app) == null) {
+                        val configured = CompletableDeferred<Boolean>()
+                        val command = commands.incrementAndGet()
+                        val startup = scope.launch {
+                            try {
+                                if (action == RESTART_ACTION) {
+                                    session?.let { stopSession(it) }
+                                }
+                                startSession(app, mode, command, configured)
+                            } finally {
+                                configured.complete(false)
+                            }
+                        }
+                        if (withTimeoutOrNull(8_000) { configured.await() } != true) {
+                            startup.cancel()
+                            if (commands.get() == command) {
+                                session?.let {
+                                    stopSession(it, await = false)
+                                    it.engine.abort()
+                                }
+                                waitStop()
+                            }
+                        }
+                    } else if (session?.mode == mode) {
+                        waitStop()
+                    }
+                }
+                STOP_ACTION, PAUSE_ACTION -> {
+                    val activeMode = session?.mode ?: mode
+                    waitStop()
+                    if (session != null || TestService.isRunning) return@withContext
+                    if (action == PAUSE_ACTION) {
+                        val notifications = app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        val channel = if (activeMode == Mode.VPN) "ByeDPIVpn" else "ByeDPI Proxy"
+                        val name = if (activeMode == Mode.VPN) R.string.vpn_channel_name else R.string.proxy_channel_name
+                        registerNotificationChannel(app, channel, name)
+                        notifications.notify(PAUSE_NOTIFICATION_ID, createPauseNotification(
+                            app, channel, R.string.notification_title, R.string.service_paused_text, activeMode,
+                        ))
+                    }
+                }
+            }
         }
-        val current = Session(running.first, NativeEngine(app, running.first, running.second))
-        session = current
-        publish(current.mode, AppStatus.Running, STARTED_BROADCAST)
-        monitor(current, launchService = false)
     }
 
-    fun start(context: Context, mode: Mode) {
-        val app = context.applicationContext as Application
-        val command = commands.incrementAndGet()
-        scope.launch { start(app, mode, command) }
-    }
-
-    suspend fun startAndAwait(context: Context, mode: Mode): Boolean {
-        val app = context.applicationContext as Application
-        val command = commands.incrementAndGet()
-        return withContext(Dispatchers.Main.immediate) { start(app, mode, command) }
-    }
-
-    private suspend fun start(
+    private suspend fun startSession(
         app: Application,
         mode: Mode,
         command: Long,
         configured: CompletableDeferred<Boolean>? = null,
     ): Boolean = mutex.withLock {
-        if (commands.get() != command) return@withLock false
+        if (TestService.isRunning || commands.get() != command) return@withLock false
         restore(app)
         session?.let { previous ->
             if (!previous.stopping && previous.mode == mode) {
@@ -93,10 +155,9 @@ object ServiceManager {
                 configured?.complete(previous.configured.await())
                 return@withLock previous.started.await()
             }
-            requestStop(previous)
-            previous.stopped.await()
+            stopSession(previous)
         }
-        if (commands.get() != command) return@withLock false
+        if (TestService.isRunning || commands.get() != command) return@withLock false
 
         val current = Session(mode, NativeEngine(app, mode))
         session = current
@@ -108,9 +169,18 @@ object ServiceManager {
             configured?.complete(current.configured.await())
             current.started.await()
         } catch (e: CancellationException) {
-            requestStop(current)
+            stopSession(current, await = false)
             throw e
         }
+    }
+
+    private suspend fun stopSession(current: Session, await: Boolean = true) {
+        if (!current.stopping) {
+            current.stopping = true
+            current.started.complete(false)
+            current.job?.cancel()
+        }
+        if (await) current.stopped.await()
     }
 
     private fun configure(current: Session, app: Application) {
@@ -120,6 +190,20 @@ object ServiceManager {
         } catch (e: Exception) {
             current.configuration.completeExceptionally(e)
         }
+    }
+
+    private fun restore(app: Application) {
+        application = app
+        if (session != null || TestService.isRunning) return
+        val running = NativeEngine.running(app)
+        if (running == null) {
+            if (appStatus.first != AppStatus.Halted) publish(appStatus.second, AppStatus.Halted, STOPPED_BROADCAST)
+            return
+        }
+        val current = Session(running.first, NativeEngine(app, running.first, running.second))
+        session = current
+        publish(current.mode, AppStatus.Running, STARTED_BROADCAST)
+        monitor(current, launchService = false)
     }
 
     private fun monitor(current: Session, launchService: Boolean) {
@@ -154,7 +238,7 @@ object ServiceManager {
                     current.started.complete(true)
                 }
                 current.engine.awaitExit()
-            } catch (e: CancellationException) {
+            } catch (_: CancellationException) {
                 failed = !current.stopping
             } catch (e: Exception) {
                 failed = !current.stopping
@@ -169,8 +253,6 @@ object ServiceManager {
                         Log.e(TAG, "Could not confirm native process exit", e)
                         current.started.complete(false)
                         current.stopped.completeExceptionally(e)
-                        failures.update { it + 1 }
-                        current.failureReported = true
                         publish(current.mode, AppStatus.Halted, FAILED_BROADCAST)
                         scope.launch {
                             current.engine.awaitStopped()
@@ -183,111 +265,10 @@ object ServiceManager {
         current.job?.start()
     }
 
-    fun stop() {
-        commands.incrementAndGet()
-        stopEvents.update { it + 1 }
-        scope.launch {
-            application?.let { restore(it) }
-            session?.let { requestStop(it) }
-        }
-    }
-
-    suspend fun stopAndAwait() {
-        commands.incrementAndGet()
-        withContext(Dispatchers.Main.immediate) {
-            application?.let { restore(it) }
-            session?.let {
-                requestStop(it)
-                it.stopped.await()
-            }
-        }
-    }
-
-    fun restart(context: Context, mode: Mode) {
-        val app = context.applicationContext as Application
-        val command = commands.incrementAndGet()
-        scope.launch {
-            restore(app)
-            session?.let {
-                requestStop(it)
-                it.stopped.await()
-            }
-            if (commands.get() == command) start(app, mode, command)
-        }
-    }
-
-    suspend fun handleAction(context: Context, action: String, mode: Mode, sourcePid: Int = 0) {
-        val app = context.applicationContext as Application
-        withContext(Dispatchers.Main.immediate) {
-            restore(app)
-            val activePid = session?.engine?.processId?.takeIf { it > 0 } ?: NativeEngine.running(app)?.second
-            if (sourcePid > 0 && sourcePid != activePid) return@withContext
-            if (sourcePid > 0 && (action == STOP_ACTION || action == PAUSE_ACTION) && session?.mode != mode) {
-                return@withContext
-            }
-            when (action) {
-                START_ACTION, RESUME_ACTION, RESTART_ACTION -> {
-                    if (mode != Mode.VPN || VpnService.prepare(app) == null) {
-                        val configured = CompletableDeferred<Boolean>()
-                        val command = commands.incrementAndGet()
-                        val startup = scope.launch {
-                            try {
-                                if (action == RESTART_ACTION) {
-                                    session?.let {
-                                        requestStop(it)
-                                        it.stopped.await()
-                                    }
-                                }
-                                start(app, mode, command, configured)
-                            } finally {
-                                configured.complete(false)
-                            }
-                        }
-                        if (withTimeoutOrNull(8_000) { configured.await() } != true) {
-                            startup.cancel()
-                            if (commands.get() == command) {
-                                stop()
-                                session?.engine?.abort()
-                            }
-                        }
-                    } else if (session?.mode == mode) {
-                        stop()
-                        stopAndAwait()
-                    }
-                }
-                STOP_ACTION, PAUSE_ACTION -> {
-                    val activeMode = session?.mode ?: mode
-                    stop()
-                    stopAndAwait()
-                    if (session != null) return@withContext
-                    val notifications = app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                    if (action == PAUSE_ACTION) {
-                        val channel = if (activeMode == Mode.VPN) "ByeDPIVpn" else "ByeDPI Proxy"
-                        val name = if (activeMode == Mode.VPN) R.string.vpn_channel_name else R.string.proxy_channel_name
-                        registerNotificationChannel(app, channel, name)
-                        notifications.notify(PAUSE_NOTIFICATION_ID, createPauseNotification(
-                            app, channel, R.string.notification_title, R.string.service_paused_text, activeMode,
-                        ))
-                    } else {
-                        notifications.cancel(PAUSE_NOTIFICATION_ID)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun requestStop(current: Session) {
-        if (current.stopping) return
-        current.stopping = true
-        current.started.complete(false)
-        current.job?.cancel()
-    }
-
     private fun finish(current: Session, failed: Boolean) {
         current.engine.onStopping = null
         if (session === current) {
             session = null
-            if (failed && !current.failureReported) failures.update { it + 1 }
             publish(current.mode, AppStatus.Halted, if (failed) FAILED_BROADCAST else STOPPED_BROADCAST)
         }
         current.started.complete(false)

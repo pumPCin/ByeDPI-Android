@@ -68,7 +68,6 @@ class QuickTileService : TileService() {
 
         sendBroadcast(Intent(this, ServiceActionReceiver::class.java).setAction(START_ACTION)
             .putExtra(ServiceActionReceiver.EXTRA_MODE, mode.name))
-        setState(Tile.STATE_ACTIVE)
     }
 
     private fun stopService() {

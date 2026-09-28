@@ -28,6 +28,7 @@ import io.github.romanvht.byedpi.R
 import io.github.romanvht.byedpi.data.*
 import io.github.romanvht.byedpi.databinding.ActivityMainBinding
 import io.github.romanvht.byedpi.services.ServiceManager
+import io.github.romanvht.byedpi.services.TestService
 import io.github.romanvht.byedpi.services.appStatus
 import io.github.romanvht.byedpi.utility.*
 import kotlinx.coroutines.Dispatchers
@@ -231,7 +232,8 @@ class MainActivity : BaseActivity() {
             requestBatteryOptimization()
         }
 
-        if (getPreferences().getBoolean("auto_connect", false) && appStatus.first != AppStatus.Running) {
+        if (!TestService.isRunning && getPreferences().getBoolean("auto_connect", false) &&
+            appStatus.first != AppStatus.Running) {
             this.start()
         }
 
@@ -283,10 +285,11 @@ class MainActivity : BaseActivity() {
             }
 
             R.id.action_close_app -> {
-                ServiceManager.stop()
+                TestService.stop()
                 lifecycleScope.launch {
                     try {
-                        ServiceManager.stopAndAwait()
+                        TestService.awaitStopped()
+                        ServiceManager.waitStop()
                     } catch (exception: Exception) {
                         Log.e(TAG, "Failed to stop service before closing", exception)
                         return@launch
@@ -337,6 +340,10 @@ class MainActivity : BaseActivity() {
     }
 
     private fun start() {
+        if (TestService.isRunning) {
+            Toast.makeText(this, R.string.test_connection_unavailable, Toast.LENGTH_SHORT).show()
+            return
+        }
         when (getPreferences().mode()) {
             Mode.VPN -> {
                 val intentPrepare = VpnService.prepare(this)

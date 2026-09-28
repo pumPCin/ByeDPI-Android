@@ -44,34 +44,42 @@ fun SharedPreferences.getCmdArgs(): String {
 
 fun SharedPreferences.checkIpAndPortInCmd(): Pair<String?, String?> {
     if (!getCmdEnable()) return Pair(null, null)
-    val cmdArgs = shellSplit(getCmdArgs())
+    return shellSplit(getCmdArgs()).checkIpAndPortInArgs()
+}
 
-    fun getArgValue(argsList: List<String>, keys: List<String>): String? {
-        for (i in argsList.indices) {
-            val arg = argsList[i]
-            for (key in keys) {
-                if (key.startsWith("--")) {
-                    if (arg == key && i + 1 < argsList.size) {
-                        return argsList[i + 1]
-                    } else if (arg.startsWith("$key=")) {
-                        return arg.substringAfter('=')
-                    }
-                } else if (key.startsWith("-")) {
-                    if (arg.startsWith(key) && arg.length > key.length) {
-                        return arg.substring(key.length)
-                    } else if (arg == key && i + 1 < argsList.size) {
-                        return argsList[i + 1]
-                    }
+fun List<String>.checkIpAndPortInArgs(): Pair<String?, String?> {
+    val flags = setOf(
+        "--daemon", "--no-domain", "--no-ipv6", "--no-udp", "--help", "--version",
+        "--transparent", "--tfo", "--md5sig", "--wait-send", "--drop-sack",
+    )
+    var host: String? = null
+    var port: String? = null
+    var index = 0
+    while (index < size) {
+        val arg = this[index++]
+        if (arg == "--") break
+        if (arg.startsWith("--")) {
+            val key = arg.substringBefore('=')
+            if (flags.any { it.startsWith(key) }) continue
+            val value = if ('=' in arg) arg.substringAfter('=') else getOrNull(index++)
+            when (key) {
+                "--ip" -> host = value
+                "--po", "--por", "--port" -> port = value
+            }
+        } else if (arg.startsWith("-")) {
+            for (position in 1 until arg.length) {
+                val key = arg[position]
+                if (key in "DNXUhvEFSZY") continue
+                val value = arg.substring(position + 1).ifEmpty { getOrNull(index++) }
+                when (key) {
+                    'i' -> host = value
+                    'p' -> port = value
                 }
+                break
             }
         }
-        return null
     }
-
-    val cmdIp = getArgValue(cmdArgs, listOf("--ip", "-i"))
-    val cmdPort = getArgValue(cmdArgs, listOf("--port", "-p"))
-
-    return Pair(cmdIp, cmdPort)
+    return host to port
 }
 
 

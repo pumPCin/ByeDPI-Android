@@ -51,6 +51,7 @@ internal class NativeSession(
     private var clientDeath: IBinder.DeathRecipient? = null
     private var configuration: Configuration? = null
     private var foregroundStarted = false
+    private var stopOnClientDeath = false
     private var nativeStarted = false
     private var state = EngineProtocol.STATE_IDLE
     private var proxy: ByeDpiProxy? = null
@@ -60,6 +61,20 @@ internal class NativeSession(
     private var startJob: Job? = null
 
     val binder: IBinder get() = messenger.binder
+
+    fun onBound(): Boolean {
+        if (state == EngineProtocol.STATE_STOPPING || foregroundStarted ||
+            configuration != null && !stopOnClientDeath) return false
+        if (!stopOnClientDeath) {
+            stopOnClientDeath = true
+            handler.postDelayed({ if (configuration == null) fail("Engine configuration timed out") }, START_TIMEOUT)
+        }
+        return true
+    }
+
+    fun onUnbound() {
+        if (stopOnClientDeath) stop()
+    }
 
     fun onStarted() {
         if (state == EngineProtocol.STATE_STOPPING) return
@@ -110,8 +125,6 @@ internal class NativeSession(
                 reply(EngineProtocol.HELLO_ACK, Bundle().apply {
                     putInt(EngineProtocol.PID, Process.myPid())
                     putInt(EngineProtocol.STATE, state)
-                    putString(EngineProtocol.HOST, configuration?.host)
-                    putInt(EngineProtocol.PORT, configuration?.port ?: 0)
                 })
             }
             EngineProtocol.START -> start(message.data)
@@ -126,7 +139,7 @@ internal class NativeSession(
                 if (client?.binder == replyTo.binder) {
                     client = null
                     clientDeath = null
-                    if (configuration == null) stop()
+                    if (stopOnClientDeath || configuration == null) stop()
                 }
             }
         }
@@ -137,7 +150,7 @@ internal class NativeSession(
         } catch (e: RemoteException) {
             client = null
             clientDeath = null
-            if (configuration == null) stop()
+            if (stopOnClientDeath || configuration == null) stop()
         }
     }
 
@@ -174,13 +187,13 @@ internal class NativeSession(
         )
         state = EngineProtocol.STATE_STARTING
         reply(EngineProtocol.CONFIGURED)
-        handler.postDelayed({ if (!foregroundStarted) stop() }, START_TIMEOUT)
+        handler.postDelayed({ if (!foregroundStarted && !stopOnClientDeath) stop() }, START_TIMEOUT)
         startNative()
     }
 
     private fun startNative() {
         val config = configuration ?: return
-        if (!foregroundStarted || nativeStarted || state == EngineProtocol.STATE_STOPPING) return
+        if ((!foregroundStarted && !stopOnClientDeath) || nativeStarted || state == EngineProtocol.STATE_STOPPING) return
         if (!processStarted.compareAndSet(false, true)) {
             fail("Native session already started")
             return
@@ -229,7 +242,7 @@ internal class NativeSession(
             Log.e(TAG, "$name failed", e)
             "$name: ${e.message ?: "native engine failed"}"
         }
-        handler.post { if (state != EngineProtocol.STATE_STOPPING) fail(error, proxyExited = name == "ByeDPI") }
+        handler.post { if (state != EngineProtocol.STATE_STOPPING) fail(error) }
     }
 
     private suspend fun awaitProxy(host: String, port: Int) {
@@ -257,13 +270,12 @@ internal class NativeSession(
         }
     }
 
-    private fun fail(error: String, proxyExited: Boolean = false) {
+    private fun fail(error: String) {
         if (state == EngineProtocol.STATE_STOPPING) return
         Log.e(TAG, error)
         state = EngineProtocol.STATE_STOPPING
         reply(EngineProtocol.FAILED, Bundle().apply {
             putString(EngineProtocol.ERROR, error)
-            putBoolean(EngineProtocol.PORT_RELEASED, proxyExited || proxyThread == null)
         })
         terminate()
     }
@@ -274,7 +286,7 @@ internal class NativeSession(
         } catch (e: RemoteException) {
             client = null
             clientDeath = null
-            if (configuration == null) stop()
+            if (stopOnClientDeath || configuration == null) stop()
         }
     }
 

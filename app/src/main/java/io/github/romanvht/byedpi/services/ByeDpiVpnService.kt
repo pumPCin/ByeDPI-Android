@@ -1,5 +1,6 @@
 package io.github.romanvht.byedpi.services
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -17,6 +18,7 @@ import io.github.romanvht.byedpi.data.*
 import io.github.romanvht.byedpi.receiver.ServiceActionReceiver
 import io.github.romanvht.byedpi.utility.*
 
+@SuppressLint("VpnServicePolicy")
 class ByeDpiVpnService : VpnService() {
     companion object {
         private const val TAG = "ByeDpiVpnService"

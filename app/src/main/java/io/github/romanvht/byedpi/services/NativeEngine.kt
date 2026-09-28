@@ -29,21 +29,19 @@ import io.github.romanvht.byedpi.data.PrivateDnsState
 import io.github.romanvht.byedpi.data.START_ACTION
 import io.github.romanvht.byedpi.utility.*
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
-import java.net.BindException
-import java.net.InetAddress
-import java.net.InetSocketAddress
-import java.net.NetworkInterface
-import java.net.ServerSocket
+import java.io.File
 
-internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initialPid: Int = 0) {
+internal class NativeEngine(
+    context: Context,
+    private val mode: Mode = Mode.Proxy,
+    initialPid: Int = 0,
+    private val foreground: Boolean = true,
+) {
     companion object {
         private const val TAG = "NativeEngine"
-        private const val SESSION_PREFERENCES = "native_session"
 
         fun configuration(context: Context): Configuration {
             val preferences = context.getPreferences()
@@ -52,9 +50,10 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
                 is ByeDpiProxyCmdPreferences -> proxy.args
                 is ByeDpiProxyUIPreferences -> proxy.uiargs
             }
-            val (host, port) = preferences.getProxyIpAndPort()
+            val (defaultHost, defaultPort) = preferences.getProxyIpAndPort()
+            val (host, port) = args.toList().checkIpAndPortInArgs()
             return Configuration(
-                args.toList(), host, port.toInt(),
+                args.toList(), host ?: defaultHost, (port ?: defaultPort).toInt(),
                 dns = if (PrivateDnsUtils.getState(context) is PrivateDnsState.Configured) ""
                     else preferences.getStringNotNull("dns_ip", "1.1.1.1"),
                 ipv6 = preferences.getBoolean("ipv6_enable", false),
@@ -63,7 +62,7 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
             )
         }
 
-        fun serviceClass(mode: Mode): Class<out Service> = when (mode) {
+        private fun serviceClass(mode: Mode): Class<out Service> = when (mode) {
             Mode.VPN -> ByeDpiVpnService::class.java
             Mode.Proxy -> ByeDpiProxyService::class.java
         }
@@ -73,6 +72,7 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
             val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             for (service in manager.getRunningServices(Int.MAX_VALUE).sortedBy { it.activeSince }) {
                 if (service.uid != Process.myUid() || service.pid <= 0) continue
+                if (!service.started) continue
                 val mode = Mode.entries.firstOrNull { service.service.className == serviceClass(it).name }
                     ?: continue
                 return mode to service.pid
@@ -82,7 +82,6 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
     }
 
     private val application = context.applicationContext as Application
-    private val savedSession = application.getSharedPreferences(SESSION_PREFERENCES, Context.MODE_PRIVATE)
     private val hello = CompletableDeferred<Unit>()
     private val configured = CompletableDeferred<Unit>()
     private val started = CompletableDeferred<Unit>()
@@ -97,24 +96,16 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
     private var startSent = false
     private var serviceStarted = initialPid > 0
     private var pid = initialPid
+    private var processStartTime = if (initialPid > 0) readProcessStartTime() else null
+    private var processStopped = false
     private var state = EngineProtocol.STATE_IDLE
     private var failure: String? = null
-    private var proxyAddress: InetAddress? = null
-    private var proxyPort = 0
-    private var portReleased = true
     internal val processId: Int get() = pid
     val needsConfiguration: Boolean get() = state == EngineProtocol.STATE_IDLE && !startSent
     var onStopping: (() -> Unit)? = null
 
     init {
-        if (pid > 0 && savedSession.getInt(EngineProtocol.PID, 0) == pid) {
-            val host = savedSession.getString(EngineProtocol.HOST, null)
-            val port = savedSession.getInt(EngineProtocol.PORT, 0)
-            if (host != null && port in 1..65535) {
-                setEndpoint(host, port)
-                portReleased = false
-            }
-        }
+        require(foreground || mode == Mode.Proxy)
     }
 
     private val deathRecipient = IBinder.DeathRecipient {
@@ -131,14 +122,8 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
                     return@Handler true
                 }
                 pid = remotePid
+                if (processStartTime == null) processStartTime = readProcessStartTime()
                 state = message.data.getInt(EngineProtocol.STATE)
-                val host = message.data.getString(EngineProtocol.HOST)
-                val port = message.data.getInt(EngineProtocol.PORT)
-                if (host != null && port in 1..65535) {
-                    setEndpoint(host, port)
-                    portReleased = false
-                    saveEndpoint()
-                }
                 hello.complete(Unit)
                 if (state != EngineProtocol.STATE_IDLE) configured.complete(Unit)
                 when (state) {
@@ -161,7 +146,6 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
             }
             EngineProtocol.FAILED -> {
                 failure = message.data.getString(EngineProtocol.ERROR) ?: "Native engine stopped"
-                portReleased = message.data.getBoolean(EngineProtocol.PORT_RELEASED)
                 started.completeExceptionally(IllegalStateException(failure))
             }
         }
@@ -171,6 +155,10 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             if (exited.isCompleted) return
+            if (binder != null && binder != service) {
+                onExit()
+                return
+            }
             binder = service
             remote = Messenger(service)
             try {
@@ -192,16 +180,18 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
         check(!closing)
         if (!connecting) {
             connecting = true
-            if (launchService) {
+            if (launchService && foreground) {
                 ContextCompat.startForegroundService(application,
                     Intent(application, serviceClass(mode)).setAction(START_ACTION))
                 serviceStarted = true
             }
             bound = application.bindService(
-                Intent(application, serviceClass(mode)).setAction(EngineProtocol.CONTROL_ACTION),
+                Intent(application, serviceClass(mode)).setAction(
+                    if (foreground) EngineProtocol.CONTROL_ACTION else EngineProtocol.BOUND_CONTROL_ACTION),
                 connection,
-                0,
+                if (foreground) 0 else Context.BIND_AUTO_CREATE,
             )
+            if (!foreground) serviceStarted = bound
             check(bound) { "Could not bind native engine" }
         }
         withTimeout(10_000) { hello.await() }
@@ -212,10 +202,8 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
         connect(launchService = !serviceStarted)
         if (state == EngineProtocol.STATE_IDLE && !startSent) {
             require(configuration.args.isNotEmpty()) { "Proxy arguments are empty" }
-            setEndpoint(configuration.host, configuration.port)
+            validateEndpoint(configuration.host, configuration.port)
             startSent = true
-            portReleased = false
-            saveEndpoint()
             send(EngineProtocol.START, Bundle().apply {
                 putStringArray(EngineProtocol.ARGS, configuration.args.toTypedArray())
                 putString(EngineProtocol.HOST, configuration.host)
@@ -244,29 +232,26 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
     }
 
     suspend fun awaitStopped() {
-        awaitProcessExit()
-        awaitPortRelease()
+        while (processAlive()) {
+            if (forceStopping) abort()
+            delay(20)
+        }
+        processStopped = true
+        onExit()
     }
 
     suspend fun stop() {
         closing = true
-        if (!exited.isCompleted) {
+        if (!processStopped) {
             findPid()
             sendStop()
-            if (withTimeoutOrNull(2_000) { awaitProcessExit(); true } == null) {
+            if (withTimeoutOrNull(2_000) { awaitStopped(); true } == null) {
                 Log.w(TAG, "Native engine did not stop in time, killing process $pid")
                 abort()
             }
         }
         withTimeout(5_000) { awaitStopped() }
         unbind()
-    }
-
-    private suspend fun awaitProcessExit() {
-        while (!exited.isCompleted) {
-            if (forceStopping) abort()
-            if (!processAlive()) onExit() else delay(20)
-        }
     }
 
     private fun sendStop() {
@@ -277,103 +262,92 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
         }
     }
 
-    private fun setEndpoint(host: String, port: Int) {
+    private fun validateEndpoint(host: String, port: Int) {
         require(port in 1..65535) { "Invalid proxy port" }
         val address = host.removeSurrounding("[", "]")
-        proxyAddress = requireNotNull(Os.inet_pton(OsConstants.AF_INET, address)
+        requireNotNull(Os.inet_pton(OsConstants.AF_INET, address)
             ?: Os.inet_pton(OsConstants.AF_INET6, address)) { "Invalid proxy address" }
-        proxyPort = port
-    }
-
-    private fun saveEndpoint() {
-        savedSession.edit()
-            .putInt(EngineProtocol.PID, pid)
-            .putString(EngineProtocol.HOST, proxyAddress?.hostAddress)
-            .putInt(EngineProtocol.PORT, proxyPort)
-            .commit()
-    }
-
-    private suspend fun awaitPortRelease() {
-        val address = proxyAddress ?: return
-        while (!portReleased) {
-            val available = withContext(Dispatchers.IO) {
-                try {
-                    ServerSocket().use { socket ->
-                        socket.reuseAddress = true
-                        socket.bind(InetSocketAddress(address, proxyPort))
-                        true
-                    }
-                } catch (e: BindException) {
-                    !address.isAnyLocalAddress && NetworkInterface.getByInetAddress(address) == null
-                }
-            }
-            if (available) portReleased = true else delay(20)
-        }
     }
 
     fun abort() {
         closing = true
         forceStopping = true
-        if (exited.isCompleted) return
+        if (processStopped) return
         findPid()
+        if (!foreground) unbind()
         if (pid <= 0 && serviceStarted) {
             cancelUnconnectedStart()
             if (pid <= 0) return
         }
         unbind()
-        if (pid > 0 && pid != Process.myPid() && processAlive()) {
-            Process.killProcess(pid)
-        } else {
+        if (!processAlive()) {
+            processStopped = true
             onExit()
+        } else if (pid > 0 && pid != Process.myPid()) {
+            val startTime = readProcessStartTime()
+            val manager = application.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val sameProcess = if (processStartTime != null && startTime != null) {
+                processStartTime == startTime
+            } else manager.runningAppProcesses.orEmpty().any {
+                it.pid == pid && it.uid == Process.myUid() && it.processName == "${application.packageName}:native"
+            }
+            if (sameProcess) Process.killProcess(pid)
         }
     }
 
-    fun detach() {
-        unlink()
-        unbind()
-        binder = null
-        remote = null
-    }
-
+    @Suppress("DEPRECATION")
     private fun findPid() {
-        if (pid > 0) return
-        pid = running(application)?.takeIf { it.first == mode }?.second ?: 0
+        if (pid > 0 || processStopped) return
+        val manager = application.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        pid = manager.getRunningServices(Int.MAX_VALUE).firstOrNull {
+            it.uid == Process.myUid() && it.pid > 0 && it.service.className == serviceClass(mode).name
+        }?.pid ?: manager.runningAppProcesses.orEmpty().firstOrNull {
+            it.uid == Process.myUid() && it.processName == "${application.packageName}:native"
+        }?.pid ?: 0
+        if (pid > 0) processStartTime = readProcessStartTime()
     }
 
     @Suppress("DEPRECATION")
     private fun cancelUnconnectedStart() {
-        application.stopService(Intent(application, serviceClass(mode)))
+        unbind()
+        if (foreground) application.stopService(Intent(application, serviceClass(mode)))
         val manager = application.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val process = manager.runningAppProcesses.orEmpty().firstOrNull {
             it.uid == Process.myUid() && it.processName == "${application.packageName}:native"
         }
         if (process != null && process.pid > 0) {
             pid = process.pid
+            processStartTime = readProcessStartTime()
             return
         }
         val pending = manager.getRunningServices(Int.MAX_VALUE).any {
             it.uid == Process.myUid() && it.service.className == serviceClass(mode).name
         }
-        if (!pending && process == null) onExit()
+        if (!pending && process == null) {
+            serviceStarted = false
+            processStopped = true
+            onExit()
+        }
     }
 
     private fun processAlive(): Boolean {
-        if (exited.isCompleted) return false
-        if (binder?.isBinderAlive == false) return false
+        if (processStopped) return false
         findPid()
         if (pid <= 0) return serviceStarted
-        if (binder == null) {
-            val manager = application.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-            if (manager.runningAppProcesses.orEmpty().none {
-                    it.pid == pid && it.uid == Process.myUid() && it.processName == "${application.packageName}:native"
-                }) return false
-        }
+        val startTime = readProcessStartTime()
+        if (processStartTime != null && startTime != null && processStartTime != startTime) return false
         return try {
             Os.kill(pid, 0)
             true
         } catch (e: ErrnoException) {
             if (e.errno == OsConstants.ESRCH || e.errno == OsConstants.EPERM) false else throw e
         }
+    }
+
+    private fun readProcessStartTime(): Long? = try {
+        File("/proc/$pid/stat").readText().substringAfterLast(')').trim().split(' ').getOrNull(19)?.toLongOrNull()
+    } catch (_: Exception) {
+        null
     }
 
     private fun send(what: Int, data: Bundle = Bundle()) {
@@ -392,9 +366,6 @@ internal class NativeEngine(context: Context, val mode: Mode = Mode.Proxy, initi
         hello.completeExceptionally(error)
         configured.completeExceptionally(error)
         started.completeExceptionally(error)
-        if (pid > 0 && savedSession.getInt(EngineProtocol.PID, 0) == pid) {
-            savedSession.edit().clear().apply()
-        }
     }
 
     private fun unbind() {
