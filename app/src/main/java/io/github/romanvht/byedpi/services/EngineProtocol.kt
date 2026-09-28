@@ -1,5 +1,7 @@
 package io.github.romanvht.byedpi.services
 
+import io.github.romanvht.byedpi.BuildConfig
+
 internal object EngineProtocol {
     const val HELLO = 1
     const val START = 2
@@ -10,7 +12,7 @@ internal object EngineProtocol {
     const val STOPPING = 7
     const val CONFIGURED = 8
 
-    const val CONTROL_ACTION = "io.github.romanvht.byedpi.ENGINE"
+    const val CONTROL_ACTION = "${BuildConfig.APPLICATION_ID}.ENGINE"
     const val STATE_IDLE = 0
     const val STATE_STARTING = 1
     const val STATE_RUNNING = 2
