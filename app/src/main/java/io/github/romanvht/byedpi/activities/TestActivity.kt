@@ -125,7 +125,7 @@ class TestActivity : BaseActivity() {
                     val intent = Intent(this, TestSettingsActivity::class.java)
                     startActivity(intent)
                 } else {
-                    Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.test_unavailable, Toast.LENGTH_SHORT).show()
                 }
                 true
             }

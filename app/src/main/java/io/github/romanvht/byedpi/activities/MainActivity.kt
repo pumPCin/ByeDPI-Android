@@ -189,14 +189,18 @@ class MainActivity : BaseActivity() {
         }
 
         binding.settingsButton.setOnClickListener {
-            val (status, _) = appStatus
-
-            if (status == AppStatus.Halted) {
-                val intent = Intent(this, SettingsActivity::class.java)
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
+            if (TestService.isRunning) {
+                Toast.makeText(this, R.string.test_unavailable, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            if (appStatus.first == AppStatus.Running) {
+                Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
         }
 
         binding.editorButton.setOnClickListener {
@@ -341,7 +345,7 @@ class MainActivity : BaseActivity() {
 
     private fun start() {
         if (TestService.isRunning) {
-            Toast.makeText(this, R.string.test_connection_unavailable, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.test_unavailable, Toast.LENGTH_SHORT).show()
             return
         }
         when (getPreferences().mode()) {
