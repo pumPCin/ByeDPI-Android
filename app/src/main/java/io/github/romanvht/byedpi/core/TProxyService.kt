@@ -2,16 +2,10 @@ package io.github.romanvht.byedpi.core
 
 object TProxyService {
     init {
-        System.loadLibrary("hev-socks5-tunnel")
+        System.loadLibrary("byedpi")
     }
 
-    @JvmStatic
-    external fun TProxyStartService(configPath: String, fd: Int)
+    external fun startTunnel(config: String, fd: Int): Int
 
-    @JvmStatic
-    external fun TProxyStopService()
-
-    @JvmStatic
-    @Suppress("unused")
-    external fun TProxyGetStats(): LongArray
+    external fun stopTunnel()
 }

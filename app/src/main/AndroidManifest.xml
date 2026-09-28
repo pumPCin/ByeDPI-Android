@@ -76,6 +76,7 @@
             android:exported="false"/>
 
         <service android:name=".services.ByeDpiVpnService"
+            android:process=":native"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:foregroundServiceType="systemExempted"
             android:exported="false"
@@ -92,6 +93,7 @@
         </service>
 
         <service android:name=".services.ByeDpiProxyService"
+            android:process=":native"
             android:foregroundServiceType="dataSync"
             android:exported="false">
         </service>
@@ -110,6 +112,10 @@
                     android:name="android.service.quicksettings.action.QS_TILE"/>
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".receiver.ServiceActionReceiver"
+            android:exported="false" />
 
         <receiver
             android:name=".receiver.BootReceiver"

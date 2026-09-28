@@ -1,5 +1,6 @@
 package io.github.romanvht.byedpi.services
 
+import android.content.Intent
 import android.net.VpnService
 import android.os.Build
 import android.service.quicksettings.Tile
@@ -7,6 +8,7 @@ import android.service.quicksettings.TileService
 import android.util.Log
 import androidx.annotation.RequiresApi
 import io.github.romanvht.byedpi.data.*
+import io.github.romanvht.byedpi.receiver.ServiceActionReceiver
 import io.github.romanvht.byedpi.utility.getPreferences
 import io.github.romanvht.byedpi.utility.mode
 
@@ -30,6 +32,7 @@ class QuickTileService : TileService() {
         instance = this
         appTile = qsTile
 
+        ServiceManager.refresh(this)
         updateStatus()
     }
 
@@ -42,6 +45,7 @@ class QuickTileService : TileService() {
 
     override fun onClick() {
         super.onClick()
+        ServiceManager.refresh(this)
         handleClick()
     }
 
@@ -62,12 +66,14 @@ class QuickTileService : TileService() {
             return
         }
 
-        ServiceManager.start(this, mode)
+        sendBroadcast(Intent(this, ServiceActionReceiver::class.java).setAction(START_ACTION)
+            .putExtra(ServiceActionReceiver.EXTRA_MODE, mode.name))
         setState(Tile.STATE_ACTIVE)
     }
 
     private fun stopService() {
-        ServiceManager.stop(this)
+        sendBroadcast(Intent(this, ServiceActionReceiver::class.java).setAction(STOP_ACTION)
+            .putExtra(ServiceActionReceiver.EXTRA_MODE, appStatus.second.name))
         setState(Tile.STATE_INACTIVE)
     }
 

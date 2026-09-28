@@ -143,6 +143,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ServiceManager.refresh(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -239,6 +240,7 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        ServiceManager.refresh(this)
         updateStatus()
         updateStrategyButton()
     }
@@ -266,8 +268,6 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val (status, _) = appStatus
-
         return when (item.itemId) {
             R.id.action_diagnostics -> {
                 showDiagnostics()
@@ -283,10 +283,19 @@ class MainActivity : BaseActivity() {
             }
 
             R.id.action_close_app -> {
-                if (status == AppStatus.Running) stop()
-                finishAffinity()
-                android.os.Process.killProcess(android.os.Process.myPid())
-                exitProcess(0)
+                ServiceManager.stop()
+                lifecycleScope.launch {
+                    try {
+                        ServiceManager.stopAndAwait()
+                    } catch (exception: Exception) {
+                        Log.e(TAG, "Failed to stop service before closing", exception)
+                        return@launch
+                    }
+                    finishAffinity()
+                    android.os.Process.killProcess(android.os.Process.myPid())
+                    exitProcess(0)
+                }
+                true
             }
 
             else -> super.onOptionsItemSelected(item)
@@ -343,7 +352,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun stop() {
-        ServiceManager.stop(this)
+        ServiceManager.stop()
     }
 
     private fun updateStatus() {

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.net.VpnService
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -36,6 +37,8 @@ import io.github.romanvht.byedpi.utility.DomainListUtils
 import io.github.romanvht.byedpi.utility.getCmdArgs
 import io.github.romanvht.byedpi.utility.mode
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.selects.select
 import java.io.File
 
 class TestActivity : BaseActivity() {
@@ -66,6 +69,7 @@ class TestActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ServiceManager.refresh(this)
         setContentView(R.layout.activity_proxy_test)
         setupToolbar()
 
@@ -150,6 +154,11 @@ class TestActivity : BaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    override fun onDestroy() {
+        if (testJob != null) stopTesting()
+        super.onDestroy()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_test, menu)
         return true
@@ -178,27 +187,13 @@ class TestActivity : BaseActivity() {
         }
     }
 
-    private suspend fun waitForProxyStatus(statusNeeded: AppStatus): Boolean {
-        val startTime = System.currentTimeMillis()
-        while (System.currentTimeMillis() - startTime < 3000) {
-            if (appStatus.first == statusNeeded) {
-                delay(500)
-                return true
-            }
-            delay(100)
-        }
-        return false
-    }
-
-    private suspend fun isProxyRunning(): Boolean = withContext(Dispatchers.IO) {
-        appStatus.first == AppStatus.Running
-    }
-
     private fun updateCmdArgs(cmd: String) {
         prefs.edit(commit = true) { putString("byedpi_cmd_args", cmd) }
     }
 
     private fun startTesting() {
+        if (testJob != null) return
+
         sites = loadSites()
         cmds = loadCmds()
 
@@ -207,62 +202,124 @@ class TestActivity : BaseActivity() {
             return
         }
 
-        testJob = lifecycleScope.launch(Dispatchers.IO) {
-            isTesting = true
-            savedCmd = prefs.getCmdArgs()
+        isTesting = true
+        savedCmd = prefs.getCmdArgs()
+        val stopGeneration = ServiceManager.stopRequests.value
+
+        testJob = lifecycleScope.launch {
+            var currentStrategy: StrategyResult? = null
+            var failed = false
+            val testingJob = coroutineContext.job
+            val stopWatcher = launch {
+                ServiceManager.stopRequests.first { it != stopGeneration }
+                testingJob.cancel()
+            }
 
             strategies.clear()
             strategies.addAll(cmds.map { StrategyResult(command = it) })
 
-            withContext(Dispatchers.Main) {
-                disclaimerTextView.visibility = View.GONE
+            disclaimerTextView.visibility = View.GONE
 
-                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                startStopButton.text = getString(R.string.test_stop)
-                progressTextView.text = ""
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            startStopButton.text = getString(R.string.test_stop)
+            progressTextView.text = ""
 
-                strategyAdapter.setTestingState(true)
-                strategyAdapter.updateStrategies(strategies, sortByPercentage = false)
-            }
+            strategyAdapter.setTestingState(true)
+            strategyAdapter.updateStrategies(strategies, sortByPercentage = false)
 
-            if (isProxyRunning()) {
-                ServiceManager.stop(this@TestActivity)
-                waitForProxyStatus(AppStatus.Halted)
-            }
+            try {
+                ServiceManager.stopAndAwait()
 
-            val delaySec = prefs.getIntStringNotNull("byedpi_proxytest_delay", 1)
-            val requestsCount = prefs.getIntStringNotNull("byedpi_proxytest_requests", 1)
-            val requestTimeout = prefs.getLongStringNotNull("byedpi_proxytest_timeout", 5)
-            val requestLimit = prefs.getIntStringNotNull("byedpi_proxytest_limit", 20)
+                val delaySec = prefs.getIntStringNotNull("byedpi_proxytest_delay", 1)
+                val requestsCount = prefs.getIntStringNotNull("byedpi_proxytest_requests", 1)
+                val requestTimeout = prefs.getLongStringNotNull("byedpi_proxytest_timeout", 5)
+                val requestLimit = prefs.getIntStringNotNull("byedpi_proxytest_limit", 20)
 
-            for (strategyIndex in strategies.indices) {
-                if (!isActive) break
+                for ((strategyIndex, strategy) in strategies.withIndex()) {
+                    ensureActive()
+                    currentStrategy = strategy
+                    progressTextView.text = getString(R.string.test_process, strategyIndex + 1, cmds.size)
 
-                val strategy = strategies[strategyIndex]
-                val cmdIndex = strategyIndex + 1
+                    updateCmdArgs(strategy.command)
+                    strategy.totalRequests = sites.size * requestsCount
+                    strategyAdapter.updateStrategy(strategy)
 
-                withContext(Dispatchers.Main) {
-                    progressTextView.text = getString(R.string.test_process, cmdIndex, cmds.size)
+                    if (!checkStrategy(strategy, delaySec, requestsCount, requestTimeout, requestLimit, stopGeneration)) {
+                        resetStrategyResult(strategy)
+                    }
+                    strategy.isCompleted = true
+
+                    strategyAdapter.updateStrategies(strategies, sortByPercentage = true)
+                    withContext(Dispatchers.IO) { saveResults(strategies) }
+
+                    ServiceManager.stopAndAwait()
+                    currentStrategy = null
+                    delay(delaySec * 500L)
                 }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e("TestActivity", "Failed to run proxy tests", e)
+                failed = true
+            } finally {
+                stopWatcher.cancel()
+                withContext(NonCancellable) {
+                    currentStrategy?.takeIf { !it.isCompleted }?.let {
+                        resetStrategyResult(it)
+                        it.isCompleted = true
+                    }
 
-                updateCmdArgs(strategy.command)
+                    try {
+                        ServiceManager.stopAndAwait()
+                    } catch (e: Exception) {
+                        Log.e("TestActivity", "Failed to stop proxy tests", e)
+                        failed = true
+                    } finally {
+                        updateCmdArgs(savedCmd)
+                        isTesting = false
 
-                if (isProxyRunning()) stopTesting()
-                else ServiceManager.start(this@TestActivity, Mode.Proxy)
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                        startStopButton.text = getString(R.string.test_start)
+                        startStopButton.isEnabled = true
+                        progressTextView.text = getString(if (failed) R.string.test_proxy_error else R.string.test_complete)
 
-                if (!waitForProxyStatus(AppStatus.Running)) {
-                    stopTesting()
+                        strategyAdapter.setTestingState(false)
+                        strategyAdapter.updateStrategies(strategies, sortByPercentage = true)
+
+                        try {
+                            withContext(Dispatchers.IO) { saveResults(strategies) }
+                        } catch (e: Exception) {
+                            Log.e("TestActivity", "Failed to save proxy test results", e)
+                            progressTextView.text = getString(R.string.test_proxy_error)
+                        } finally {
+                            testJob = null
+                        }
+                    }
                 }
+            }
+        }
+    }
 
+    private suspend fun checkStrategy(
+        strategy: StrategyResult,
+        delaySec: Int,
+        requestsCount: Int,
+        requestTimeout: Long,
+        requestLimit: Int,
+        stopGeneration: Long
+    ): Boolean = coroutineScope {
+        val failureGeneration = ServiceManager.engineFailure.value
+        val engineFailure = async {
+            ServiceManager.engineFailure.first { it != failureGeneration }
+        }
+        val check = async {
+            if (ServiceManager.stopRequests.value != stopGeneration) {
+                throw CancellationException("Proxy test stopped")
+            }
+            if (!ServiceManager.startAndAwait(this@TestActivity, Mode.Proxy)) {
+                false
+            } else {
                 delay(delaySec * 500L)
-
-                val totalRequests = sites.size * requestsCount
-                strategy.totalRequests = totalRequests
-
-                withContext(Dispatchers.Main) {
-                    strategyAdapter.notifyItemChanged(strategyIndex)
-                }
-
                 siteChecker.checkSitesAsync(
                     sites = sites,
                     requestsCount = requestsCount,
@@ -270,35 +327,36 @@ class TestActivity : BaseActivity() {
                     concurrentRequests = requestLimit,
                     fullLog = true,
                     onSiteChecked = { site, successCount, countRequests ->
-                        lifecycleScope.launch(Dispatchers.Main) {
+                        withContext(Dispatchers.Main) {
                             strategy.currentProgress += countRequests
                             strategy.successCount += successCount
                             strategy.siteResults.add(SiteResult(site, successCount, countRequests))
 
-                            strategyAdapter.notifyItemChanged(strategyIndex, "progress")
+                            strategyAdapter.updateStrategy(strategy)
                         }
                     }
                 )
-
-                strategy.isCompleted = true
-
-                withContext(Dispatchers.Main) {
-                    strategyAdapter.updateStrategies(strategies, sortByPercentage = true)
-                    saveResults(strategies)
-                }
-
-                if (isProxyRunning()) ServiceManager.stop(this@TestActivity)
-                else stopTesting()
-
-                if (!waitForProxyStatus(AppStatus.Halted)) {
-                    stopTesting()
-                }
-
-                delay(delaySec * 500L)
+                ServiceManager.engineFailure.value == failureGeneration
             }
-
-            stopTesting()
         }
+
+        try {
+            select {
+                engineFailure.onAwait { false }
+                check.onAwait { it }
+            }
+        } finally {
+            engineFailure.cancel()
+            check.cancel()
+        }
+    }
+
+    private fun resetStrategyResult(strategy: StrategyResult) {
+        val requestsCount = strategy.totalRequests / sites.size
+        strategy.successCount = 0
+        strategy.currentProgress = 0
+        strategy.siteResults.clear()
+        strategy.siteResults.addAll(sites.map { SiteResult(it, 0, requestsCount) })
     }
 
     private fun stopTesting() {
@@ -306,31 +364,14 @@ class TestActivity : BaseActivity() {
             return
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            isTesting = false
-            updateCmdArgs(savedCmd)
-
-            testJob?.cancel()
-            testJob = null
-
-            if (isProxyRunning()) {
-                ServiceManager.stop(this@TestActivity)
-            }
-
-            withContext(Dispatchers.Main) {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                startStopButton.text = getString(R.string.test_start)
-                progressTextView.text = getString(R.string.test_complete)
-
-                strategyAdapter.setTestingState(false)
-                strategyAdapter.updateStrategies(strategies, sortByPercentage = true)
-
-                saveResults(strategies)
-            }
-        }
+        startStopButton.isEnabled = false
+        testJob?.cancel()
+        ServiceManager.stop()
     }
 
     private fun addToHistory(command: String) {
+        if (isTesting) return
+
         lifecycleScope.launch(Dispatchers.IO) {
             updateCmdArgs(command)
             cmdHistoryUtils.addCommand(command)

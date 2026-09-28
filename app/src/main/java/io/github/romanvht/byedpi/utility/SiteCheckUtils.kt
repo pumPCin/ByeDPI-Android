@@ -1,9 +1,11 @@
 package io.github.romanvht.byedpi.utility
 
 import android.util.Log
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
@@ -12,6 +14,7 @@ import java.net.HttpURLConnection
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.URL
+import kotlin.coroutines.coroutineContext
 
 class SiteCheckUtils(
     private val proxyIp: String,
@@ -24,7 +27,7 @@ class SiteCheckUtils(
         requestTimeout: Long,
         concurrentRequests: Int = 20,
         fullLog: Boolean,
-        onSiteChecked: ((String, Int, Int) -> Unit)? = null
+        onSiteChecked: (suspend (String, Int, Int) -> Unit)? = null
     ): List<Pair<String, Int>> {
         val semaphore = Semaphore(concurrentRequests)
         return withContext(Dispatchers.IO) {
@@ -32,6 +35,7 @@ class SiteCheckUtils(
                 async {
                     semaphore.withPermit {
                         val successCount = checkSiteAccess(site, requestsCount, requestTimeout)
+                        coroutineContext.ensureActive()
                         if (fullLog) {
                             onSiteChecked?.invoke(site, successCount, requestsCount)
                         }
@@ -62,6 +66,7 @@ class SiteCheckUtils(
         val proxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress(proxyIp, proxyPort))
 
         repeat(requestsCount) { attempt ->
+            coroutineContext.ensureActive()
             Log.i("SiteChecker", "Attempt ${attempt + 1}/$requestsCount for $site")
 
             var connection: HttpURLConnection? = null
@@ -89,6 +94,7 @@ class SiteCheckUtils(
                         val limit = if (declaredLength > 0) declaredLength else 1024L * 1024
 
                         while (actualLength < limit) {
+                            coroutineContext.ensureActive()
                             val remaining = limit - actualLength
                             val toRead = if (remaining > buffer.size) buffer.size else remaining.toInt()
                             bytesRead = inputStream.read(buffer, 0, toRead)
@@ -107,6 +113,8 @@ class SiteCheckUtils(
                     Log.w("SiteChecker", "Block detected for $site, Declared: $declaredLength, Actual: $actualLength")
                 }
 
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Log.e("SiteChecker", "Error accessing $site: ${e.message}")
             } finally {

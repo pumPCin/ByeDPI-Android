@@ -115,6 +115,9 @@ class StrategyResultAdapter(
             val strategy = strategies[position]
 
             if (strategy.totalRequests > 0) {
+                holder.progressLayout.visibility = View.VISIBLE
+                holder.progressTextView.visibility = View.VISIBLE
+
                 val isProgress = isTesting && !strategy.isCompleted
 
                 if (isProgress) {
@@ -143,6 +146,11 @@ class StrategyResultAdapter(
 
     override fun getItemCount(): Int {
         return strategies.size
+    }
+
+    fun updateStrategy(strategy: StrategyResult) {
+        val position = strategies.indexOfFirst { it === strategy }
+        if (position != -1) notifyItemChanged(position, "progress")
     }
 
     @SuppressLint("NotifyDataSetChanged")
