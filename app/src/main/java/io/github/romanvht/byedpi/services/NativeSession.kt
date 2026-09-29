@@ -147,7 +147,7 @@ internal class NativeSession(
         clientDeath = death
         try {
             replyTo.binder.linkToDeath(death, 0)
-        } catch (e: RemoteException) {
+        } catch (_: RemoteException) {
             client = null
             clientDeath = null
             if (stopOnClientDeath || configuration == null) stop()
@@ -261,7 +261,7 @@ internal class NativeSession(
                         val input = socket.getInputStream()
                         input.read() == 5 && input.read() == 0
                     }
-                } catch (e: IOException) {
+                } catch (_: IOException) {
                     false
                 }
             }
@@ -283,14 +283,20 @@ internal class NativeSession(
     private fun reply(what: Int, data: Bundle = Bundle()) {
         try {
             client?.send(Message.obtain(null, what).apply { this.data = data })
-        } catch (e: RemoteException) {
+        } catch (_: RemoteException) {
             client = null
             clientDeath = null
             if (stopOnClientDeath || configuration == null) stop()
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun terminate() {
-        Process.killProcess(Process.myPid())
+        try {
+            service.stopForeground(true)
+            service.stopSelf()
+        } finally {
+            Process.killProcess(Process.myPid())
+        }
     }
 }

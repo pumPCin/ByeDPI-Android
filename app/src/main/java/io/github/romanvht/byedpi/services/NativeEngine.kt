@@ -251,6 +251,7 @@ internal class NativeEngine(
             }
         }
         withTimeout(5_000) { awaitStopped() }
+        if (foreground && serviceStarted) application.stopService(Intent(application, serviceClass(mode)))
         unbind()
     }
 
