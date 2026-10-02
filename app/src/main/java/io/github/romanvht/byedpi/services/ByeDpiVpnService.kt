@@ -21,10 +21,10 @@ import io.github.romanvht.byedpi.utility.*
 @SuppressLint("VpnServicePolicy")
 class ByeDpiVpnService : VpnService() {
     companion object {
-        private const val TAG = "ByeDpiVpnService"
-        private const val FOREGROUND_SERVICE_ID = 1
+        internal const val FOREGROUND_SERVICE_ID = 1
         private const val PAUSE_NOTIFICATION_ID = 3
         private const val NOTIFICATION_CHANNEL_ID = "ByeDPIVpn"
+        private const val TAG = "ByeDpiVpnService"
     }
 
     private val session by lazy { NativeSession(this, ::createTunnel) }

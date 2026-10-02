@@ -197,6 +197,11 @@ object ServiceManager {
         if (session != null || TestService.isRunning) return
         val running = NativeEngine.running(app)
         if (running == null) {
+            app.stopService(Intent(app, ByeDpiVpnService::class.java))
+            app.stopService(Intent(app, ByeDpiProxyService::class.java))
+            val notifications = app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notifications.cancel(ByeDpiVpnService.FOREGROUND_SERVICE_ID)
+            notifications.cancel(ByeDpiProxyService.FOREGROUND_SERVICE_ID)
             if (appStatus.first != AppStatus.Halted) publish(appStatus.second, AppStatus.Halted, STOPPED_BROADCAST)
             return
         }

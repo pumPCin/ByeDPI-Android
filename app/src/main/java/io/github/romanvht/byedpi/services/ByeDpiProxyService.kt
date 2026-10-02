@@ -15,7 +15,7 @@ import io.github.romanvht.byedpi.utility.*
 
 class ByeDpiProxyService : Service() {
     companion object {
-        private const val FOREGROUND_SERVICE_ID = 2
+        internal const val FOREGROUND_SERVICE_ID = 2
         private const val PAUSE_NOTIFICATION_ID = 3
         private const val NOTIFICATION_CHANNEL_ID = "ByeDPI Proxy"
     }
