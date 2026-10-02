@@ -210,7 +210,7 @@ object ServiceManager {
         current.engine.onStopping = {
             if (session === current && !current.stopping) stop()
         }
-        current.job = scope.launch(start = CoroutineStart.LAZY) {
+        current.job = scope.launch(start = CoroutineStart.UNDISPATCHED) {
             var failed = false
             try {
                 current.engine.connect(launchService)
@@ -262,7 +262,6 @@ object ServiceManager {
                 }
             }
         }
-        current.job?.start()
     }
 
     private fun finish(current: Session, failed: Boolean) {
