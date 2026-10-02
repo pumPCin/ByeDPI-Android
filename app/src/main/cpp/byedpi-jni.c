@@ -14,17 +14,15 @@ static int proxy_started;
 static int proxy_running;
 
 int __wrap_daemon(__attribute__((unused)) int nochdir, __attribute__((unused)) int noclose) {
-    LOG(LOG_S, "daemon mode is not supported in the native worker");
     errno = EPERM;
     return -1;
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __attribute__((unused)) jobject thiz, jobjectArray args) {
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __attribute__((unused)) jobject thiz, jobjectArray args) {
     pthread_mutex_lock(&proxy_mutex);
     if (proxy_started) {
         pthread_mutex_unlock(&proxy_mutex);
-        LOG(LOG_S, "proxy process already used");
         return -1;
     }
     proxy_started = 1;
@@ -54,7 +52,6 @@ Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __att
         }
     }
 
-    LOG(LOG_S, "starting proxy with %d args", argc);
     pthread_mutex_lock(&proxy_mutex);
     server_fd = -1;
     proxy_running = 1;
@@ -65,7 +62,6 @@ Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStartProxy(JNIEnv *env, __att
     pthread_mutex_lock(&proxy_mutex);
     proxy_running = 0;
     pthread_mutex_unlock(&proxy_mutex);
-    LOG(LOG_S, "proxy return code %d", result);
 
 cleanup:
     for (int i = 0; i < argc; i++) free(argv[i]);
@@ -74,8 +70,7 @@ cleanup:
 }
 
 JNIEXPORT jint JNICALL
-Java_io_github_romanvht_byedpi_core_ByeDpiProxy_jniStopProxy(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
-    LOG(LOG_S, "send shutdown to proxy");
+Java_io_github_dovecoteescapee_byedpi_core_ByeDpiProxy_jniStopProxy(__attribute__((unused)) JNIEnv *env, __attribute__((unused)) jobject thiz) {
     pthread_mutex_lock(&proxy_mutex);
     int result = proxy_running && server_fd >= 0 ? shutdown(server_fd, SHUT_RDWR) : -1;
     pthread_mutex_unlock(&proxy_mutex);

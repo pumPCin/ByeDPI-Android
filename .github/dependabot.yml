@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      maven:
+        patterns:
+          - "*"
+    ignore:
+      - dependency-name: "androidx.core:core-ktx"
